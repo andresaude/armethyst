@@ -1,2 +1,2 @@
 # armethyst
-A simple ARM simulator for teaching purposes
+A simple ARM simulator for teaching purposes.
