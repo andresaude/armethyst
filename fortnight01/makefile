@@ -1,7 +1,7 @@
 CC=g++
 
 IDIR=./include
-CFLAGS=-std=c++14 -I$(IDIR). 
+CFLAGS=-std=c++14 -I$(IDIR) 
 
 ODIR=obj
 
