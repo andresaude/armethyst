@@ -92,6 +92,16 @@ class BasicCPU: public CPU
 		 */
 		void setW(int n, int value);
 
+		/**
+		 * Lê registrador inteiro de 64 bits.
+		 */
+		int getX(int n);
+
+		/**
+		 * Escreve registrador inteiro de 64 bits.
+		 */
+		void setX(int n, long value);
+
 		// Registradores auxiliares
 		// ATIVIDADE FUTURA:
 		//		Declarar todos os registradores auxiliares do caminho de

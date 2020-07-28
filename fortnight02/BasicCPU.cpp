@@ -156,7 +156,7 @@ int BasicCPU::decodeDataProcImm() {
 			if (n == 31) {
 				A = SP;
 			} else {
-				A = getW(n);
+				A = getX(n); // 64-bit variant
 			}
 			imm = (IR & 0x003FFC00) >> 10;
 			B = imm;
@@ -333,4 +333,18 @@ int BasicCPU::getW(int n) {
  */
 void BasicCPU::setW(int n, int value) {
 	R[n] = (long)value;
+}
+
+/**
+ * Lê registrador inteiro de 64 bits.
+ */
+int BasicCPU::getX(int n) {
+	return R[n];
+}
+
+/**
+ * Escreve registrador inteiro de 32 bits.
+ */
+void BasicCPU::setX(int n, long value) {
+	R[n] = value;
 }
