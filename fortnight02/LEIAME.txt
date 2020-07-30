@@ -7,14 +7,15 @@ Para compilar o código há três opções.
 
 	b) Ir na linha de comando e digitar 'make'. Deve ser criado um executável de nome 'armethyst' ou 'armethyst.exe'.
 
-2. Via seu IDE predileto:
-
-	Crie um projeto no seu IDE contendo todos os arquivos desta pasta.
-
-3. Digitando diretamente o comando completo de compilação:
+2. Digitando diretamente o comando completo de compilação:
 
 	Esta opção não é recomendável visto que o projeto irá crescer e o comando de compilação ficará cada vez mais complexo. Para este primeiro trabalho, o comando é
 	
-	g++ -std=c++14 -I./include -o armethyst.exe armethyst.cpp Memory.cpp Processor.cpp
+	g++ -o test test.cpp BasicCPUTest.cpp BasicCPU.cpp BasicProcessor.cpp Memory.cpp -std=c++14 -I./include
+
+3. Via seu IDE predileto:
+
+	Crie um projeto no seu IDE contendo todos os arquivos desta pasta e compile pela linha
+	de comando do item 2.
 
 
