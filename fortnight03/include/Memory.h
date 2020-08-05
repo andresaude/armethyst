@@ -35,7 +35,12 @@
 
 #pragma once
 
+#include "config.h"
+
 #include <string>
+#include <fstream>
+
+using namespace std;
 
 class Memory
 {
@@ -47,12 +52,36 @@ public:
 	void writeBinaryAsText (std::string basename);
 	
 	/**
-	 * Lê um inteiro de 32 bits considerando um endereçamento em bytes.
+	 * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
 	 */
-	int readInt(long address);
+	virtual int readInstruction32(long address);
 
-private:
+	/**
+	 * Lê um dado de 32 bits considerando um endereçamento em bytes.
+	 */
+	virtual int readData32(long address);
+
+	/**
+	 * Lê um dado de 64 bits considerando um endereçamento em bytes.
+	 */
+	virtual long readData64(long address);
+	
+	/**
+	 * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
+	 */
+	virtual void writeData32(long address, int value);
+
+	/**
+	 * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
+	 */
+	virtual void writeData64(long address, long value);
+	
+protected:
 	char* data;        //memory data
 	unsigned short fileSize;    //size of the loaded binary file
-};
+/* #ifdef MEMORY_LOG_FILE
+	ofstream memLogStream;
+#endif
+ */
+ };
 

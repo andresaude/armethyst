@@ -36,8 +36,7 @@
 #include "Memory.h"
 
 #include <iostream>
-#include <fstream>
-#include  <iomanip>
+#include <iomanip>
 
 using namespace std;
 
@@ -52,13 +51,55 @@ Memory::~Memory()
 }
 
 /**
- * Lê um inteiro de 32 bits considerando um endereçamento em bytes.
+ * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
+ *
+ * Nesta versão, Memory.cpp implementa a arquitetura de Von Neumman, com apenas uma
+ * memória, que armazena instruções e dados.
  */
-int Memory::readInt(long address) {
+int Memory::readInstruction32(long address)
+{
 	return ((int*)data)[address >> 2];
 }
 
-// carrega arquivo binário na memória
+/**
+ * Lê um dado de 32 bits considerando um endereçamento em bytes.
+ */
+int Memory::readData32(long address)
+{
+	//TODO
+	return 0;
+}
+
+/**
+ * Lê um dado de 64 bits considerando um endereçamento em bytes.
+ */
+long Memory::readData64(long address)
+{
+	//TODO
+	return 0;
+}
+
+/**
+ * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
+ */
+void Memory::writeData32(long address, int value)
+{
+	//TODO
+	return;
+}
+
+/**
+ * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
+ */
+void Memory::writeData64(long address, long value)
+{
+	//TODO
+	return;
+}
+
+/**
+ * carrega arquivo binário na memória
+ */
 void Memory::loadBinary(string filename)
 {
     streampos size;
@@ -79,7 +120,9 @@ void Memory::loadBinary(string filename)
 }
 
 
-//Escreve arquivo binario em um arquivo legível
+/**
+ * Escreve arquivo binario em um arquivo legível
+ */
 #define LINE_SIZE 4
 void Memory::writeBinaryAsText (string basename) {
     string filename = "txt_" + basename + ".txt";
@@ -110,5 +153,3 @@ void Memory::writeBinaryAsText (string basename) {
     }
     ofp.close();
 }
-
-

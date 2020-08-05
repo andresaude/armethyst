@@ -38,3 +38,4 @@
 #define MEMORY_SIZE 65536
 #define FILENAME "isummation.o"
 #define STARTADDRESS 0x40
+#define MEMORY_LOG_FILE "saida.txt"

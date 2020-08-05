@@ -1,44 +1,114 @@
+all: armethyst runtest
+
+#
+# global
+#
 CC=g++
+CFLAGS=-std=c++14
 
 IDIR=./include
-CFLAGS=-std=c++14 -I$(IDIR) 
+ODIR=./obj
 
-ODIR=obj
+# ###################
+# # armethyst
+# ###################
+IFLAGS=-I./$(IDIR) -I$(PROC_IDIR) -I$(CPU_IDIR)
 
-all: armethyst test
+#
+# Processor config (selecionar a implementação de Processador desejada)
+#	Processadores disponíveis:
+#		- BasicProcessor - A single core processor with a BasicCPU.
+#		- OutroProcessador: se houver outra implementação de Processor
+#
+ProcImpl=BasicProcessor
+#ProcessorImpl=OutroProcessador
+
+#
+# CPU config (selecionar a implementação de CPU desejada)
+#	CPUs disponíveis:
+#		- BasicCPU: a basic CPU with the following characteristics:
+#			- AArch64 ISA (limited), from ARMv8
+#			- MIPS datapath
+#		- OutraCPU: se houver outra implementação de CPU
+#
+CPUImpl=BasicCPU
+#CPUImpl=OutraCPU
+
+#
+# Processor
+#
+PROC_DIR=./processor/$(ProcImpl)
+PROC_IDIR=$(PROC_DIR)/$(IDIR)
+PROC_DEPS = $(PROC_IDIR)/$(ProcImpl).h
+$(ODIR)/ProcessorImpl.o: $(PROC_DIR)/$(ProcImpl).cpp $(PROC_DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
+
+
+#
+# CPU
+#
+CPU_DIR=./cpu/$(CPUImpl)
+CPU_IDIR=$(CPU_DIR)/$(IDIR)
+CPU_DEPS = $(CPU_IDIR)/$(CPUImpl).h
+$(ODIR)/CPUImpl.o: $(CPU_DIR)/$(CPUImpl).cpp $(CPU_DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
+
+#
+# general
+#
+_OBJ = CPUImpl.o ProcessorImpl.o Memory.o
+$(ODIR)/%.o: %.cpp $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 
 #
 # armethyst
 #
-_DEPS = BasicCPU.h BasicProcessor.h config.h CPU.h Memory.h Processor.h
+_DEPS = config.h CPU.h Memory.h Processor.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
-
-_OBJ = BasicCPU.o BasicProcessor.o Memory.o
 
 _MAINOBJ = armethyst.o $(_OBJ)
 MAINOBJ = $(patsubst %,$(ODIR)/%,$(_MAINOBJ))
 
-$(ODIR)/%.o: %.cpp $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
-
 armethyst: $(MAINOBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
+	$(CC) -o $@ $^ $(CFLAGS) $(IFLAGS)
+
+###################
+# armethyst test
+###################
+
+TEST_DIR=./test
+TEST_IDIR=$(TEST_DIR)/$(IDIR)
+TEST_IFLAGS=$(IFLAGS) -I./$(TEST_IDIR) -I$(CPU_DIR)/$(TEST_IDIR)
+
+#
+# Memory test
+#
+$(ODIR)/MemoryTest.o: $(TEST_DIR)/MemoryTest.cpp $(TEST_IDIR)/MemoryTest.h 
+	$(CC) -c -o $@ $< $(CFLAGS) $(TEST_IFLAGS)
+
+#
+# CPU test
+#
+$(ODIR)/CPUTest.o: $(CPU_DIR)/$(CPUImpl)Test.cpp $(CPU_DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(TEST_IFLAGS)
 
 #
 # test
 #
-_TESTDEPS = $(_DEPS) BasicCPUTest.h
-TESTDEPS = $(patsubst %,$(IDIR)/%,$(_TESTDEPS))
 
-_TESTOBJ = test.o BasicCPUTest.o $(_OBJ)
+_TESTOBJ = $(_OBJ) runtest.o CPUTest.o MemoryTest.o 
 TESTOBJ = $(patsubst %,$(ODIR)/%,$(_TESTOBJ))
 
-test: $(TESTOBJ)
-	$(CC) -o $@ $^ $(CFLAGS)
+$(ODIR)/runtest.o: runtest.cpp $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(TEST_IFLAGS)
+
+runtest: $(TESTOBJ)
+	$(CC) -o $@ $^ $(CFLAGS) $(TEST_IFLAGS)
 
 #
 # clean
 #
 clean:
-	rm -f armethyst test *.exe
+	rm -f armethyst runtest *.exe
+	rm -f *.o.txt saida.txt
 	rm -f $(ODIR)/*.o
