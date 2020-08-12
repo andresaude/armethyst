@@ -89,7 +89,7 @@ $(ODIR)/MemoryTest.o: $(TEST_DIR)/MemoryTest.cpp $(TEST_IDIR)/MemoryTest.h
 #
 # CPU test
 #
-$(ODIR)/CPUTest.o: $(CPU_DIR)/$(CPUImpl)Test.cpp $(CPU_DEPS)
+$(ODIR)/CPUTest.o: $(CPU_DIR)/$(TEST_DIR)/$(CPUImpl)Test.cpp $(CPU_DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(TEST_IFLAGS)
 
 #
