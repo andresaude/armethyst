@@ -79,9 +79,5 @@ public:
 protected:
 	char* data;        //memory data
 	unsigned short fileSize;    //size of the loaded binary file
-/* #ifdef MEMORY_LOG_FILE
-	ofstream memLogStream;
-#endif
- */
  };
 
