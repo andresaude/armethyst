@@ -15,6 +15,7 @@ Para compilar o código há três opções.
 
 	Esta opção não é recomendável visto que o projeto irá crescer e o comando de compilação ficará cada vez mais complexo. Para este primeiro trabalho, o comando é
 	
-	g++ -std=c++14 -I./include -o armethyst.exe armethyst.cpp Memory.cpp Processor.cpp
+	g++ -std=c++14 -o runtest runtest.cpp Memory.cpp ./test/MemoryTest.cpp -I././include -I./processor/BasicProcessor/./include -I./cpu/BasicCPU/./include -I././include -I./processor/BasicProcessor/./include -I./cpu/BasicCPU/./include -I././test/./include -I./cpu/BasicCPU/./test/./include ./processor/BasicProcessor/BasicProcessor.cpp ./cpu/BasicCPU/BasicCPU.cpp ./cpu/BasicCPU/./test/BasicCPUTest.cpp
+
 
 

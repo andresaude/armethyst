@@ -1,5 +1,8 @@
 all: armethyst runtest
 
+testcmd:
+	$(CC) $(CFLAGS) -o runtest runtest.cpp Memory.cpp $(TEST_DIR)/MemoryTest.cpp $(IFLAGS) $(TEST_IFLAGS) $(PROC_CFILES) $(CPU_CFILES) $(CPU_TEST_CFILES) 
+
 #
 # global
 #
@@ -40,7 +43,8 @@ CPUImpl=BasicCPU
 PROC_DIR=./processor/$(ProcImpl)
 PROC_IDIR=$(PROC_DIR)/$(IDIR)
 PROC_DEPS = $(PROC_IDIR)/$(ProcImpl).h
-$(ODIR)/ProcessorImpl.o: $(PROC_DIR)/$(ProcImpl).cpp $(PROC_DEPS)
+PROC_CFILES = $(PROC_DIR)/$(ProcImpl).cpp
+$(ODIR)/ProcessorImpl.o: $(PROC_CFILES) $(PROC_DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 
 
@@ -50,7 +54,8 @@ $(ODIR)/ProcessorImpl.o: $(PROC_DIR)/$(ProcImpl).cpp $(PROC_DEPS)
 CPU_DIR=./cpu/$(CPUImpl)
 CPU_IDIR=$(CPU_DIR)/$(IDIR)
 CPU_DEPS = $(CPU_IDIR)/$(CPUImpl).h
-$(ODIR)/CPUImpl.o: $(CPU_DIR)/$(CPUImpl).cpp $(CPU_DEPS)
+CPU_CFILES = $(CPU_DIR)/$(CPUImpl).cpp
+$(ODIR)/CPUImpl.o: $(CPU_CFILES) $(CPU_DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 
 #
@@ -89,7 +94,8 @@ $(ODIR)/MemoryTest.o: $(TEST_DIR)/MemoryTest.cpp $(TEST_IDIR)/MemoryTest.h
 #
 # CPU test
 #
-$(ODIR)/CPUTest.o: $(CPU_DIR)/$(TEST_DIR)/$(CPUImpl)Test.cpp $(CPU_DEPS)
+CPU_TEST_CFILES = $(CPU_DIR)/$(TEST_DIR)/$(CPUImpl)Test.cpp
+$(ODIR)/CPUTest.o: $(CPU_TEST_CFILES) $(CPU_DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(TEST_IFLAGS)
 
 #
