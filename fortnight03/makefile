@@ -23,7 +23,8 @@ IFLAGS=-I./$(IDIR) -I$(PROC_IDIR) -I$(CPU_IDIR)
 #		- BasicProcessor - A single core processor with a BasicCPU.
 #		- OutroProcessador: se houver outra implementação de Processor
 #
-ProcImpl=basicprocessor
+ProcImpl=BasicProcessor
+ProcImplDir=basicprocessor
 #ProcessorImpl=OutroProcessador
 
 #
@@ -41,7 +42,7 @@ CPUImplDir=basiccpu
 #
 # Processor
 #
-PROC_DIR=./processor/$(ProcImpl)
+PROC_DIR=./processor/$(ProcImplDir)
 PROC_IDIR=$(PROC_DIR)/$(IDIR)
 PROC_DEPS = $(PROC_IDIR)/$(ProcImpl).h
 PROC_CFILES = $(PROC_DIR)/$(ProcImpl).cpp
