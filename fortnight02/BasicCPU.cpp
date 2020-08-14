@@ -35,9 +35,6 @@
 
 #include "BasicCPU.h"
 
-#include <iostream>
-using namespace std;
-
 BasicCPU::BasicCPU(Memory *memory) {
 	this->memory = memory;
 }
