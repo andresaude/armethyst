@@ -56,7 +56,7 @@ Memory::~Memory()
  * Nesta versão, Memory.cpp implementa a arquitetura de Von Neumman, com apenas uma
  * memória, que armazena instruções e dados.
  */
-int Memory::readInstruction32(long address)
+int Memory::readInstruction32(unsigned long address)
 {
 	return ((int*)data)[address >> 2];
 }
@@ -64,7 +64,7 @@ int Memory::readInstruction32(long address)
 /**
  * Lê um dado de 32 bits considerando um endereçamento em bytes.
  */
-int Memory::readData32(long address)
+int Memory::readData32(unsigned long address)
 {
 	//TODO
 	return 0;
@@ -73,7 +73,7 @@ int Memory::readData32(long address)
 /**
  * Lê um dado de 64 bits considerando um endereçamento em bytes.
  */
-long Memory::readData64(long address)
+long Memory::readData64(unsigned long address)
 {
 	//TODO
 	return 0;
@@ -82,7 +82,7 @@ long Memory::readData64(long address)
 /**
  * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
  */
-void Memory::writeData32(long address, int value)
+void Memory::writeData32(unsigned long address, int value)
 {
 	//TODO
 	return;
@@ -91,7 +91,7 @@ void Memory::writeData32(long address, int value)
 /**
  * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
  */
-void Memory::writeData64(long address, long value)
+void Memory::writeData64(unsigned long address, long value)
 {
 	//TODO
 	return;

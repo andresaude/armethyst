@@ -54,27 +54,27 @@ public:
 	/**
 	 * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
 	 */
-	virtual int readInstruction32(long address);
+	virtual int readInstruction32(unsigned long address);
 
 	/**
 	 * Lê um dado de 32 bits considerando um endereçamento em bytes.
 	 */
-	virtual int readData32(long address);
+	virtual int readData32(unsigned long address);
 
 	/**
 	 * Lê um dado de 64 bits considerando um endereçamento em bytes.
 	 */
-	virtual long readData64(long address);
+	virtual long readData64(unsigned long address);
 	
 	/**
 	 * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
 	 */
-	virtual void writeData32(long address, int value);
+	virtual void writeData32(unsigned long address, int value);
 
 	/**
 	 * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
 	 */
-	virtual void writeData64(long address, long value);
+	virtual void writeData64(unsigned long address, long value);
 	
 protected:
 	char* data;        //memory data

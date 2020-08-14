@@ -48,11 +48,11 @@ class MemoryTest : public Memory
 	/*
 	 * Logs dos métodos da superclasse.
 	 */
-	int readInstruction32(long address);
-	int readData32(long address);
-	long readData64(long address);
-	void writeData32(long address, int value);
-	void writeData64(long address, long value);
+	int readInstruction32(unsigned long address);
+	int readData32(unsigned long address);
+	long readData64(unsigned long address);
+	void writeData32(unsigned long address, int value);
+	void writeData64(unsigned long address, long value);
 
 private:
 	ofstream memLogStream;

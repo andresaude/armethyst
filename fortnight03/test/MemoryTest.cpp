@@ -51,7 +51,7 @@ MemoryTest::~MemoryTest()
 /**
  * Log de Memory::readInstruction32(long address)
  */
-int MemoryTest::readInstruction32(long address)
+int MemoryTest::readInstruction32(unsigned long address)
 {
     memLogStream << hex << "ri " << setfill('0') << setw(16) << address << endl;
  	return Memory::readInstruction32(address);
@@ -60,7 +60,7 @@ int MemoryTest::readInstruction32(long address)
 /**
  * Log de Memory::readData32(long address)
  */
-int MemoryTest::readData32(long address)
+int MemoryTest::readData32(unsigned long address)
 {
     memLogStream << hex << "rd " << setfill('0') << setw(16) << address << endl;
  	return Memory::readData32(address);
@@ -69,7 +69,7 @@ int MemoryTest::readData32(long address)
 /**
  * Log de Memory::readData64(long address)
  */
-long MemoryTest::readData64(long address)
+long MemoryTest::readData64(unsigned long address)
 {
     memLogStream << hex << "rd " << setfill('0') << setw(16) << address << endl;
  	return Memory::readData64(address);
@@ -78,7 +78,7 @@ long MemoryTest::readData64(long address)
 /**
  * Log de Memory::writeData32(long address)
  */
-void MemoryTest::writeData32(long address, int value)
+void MemoryTest::writeData32(unsigned long address, int value)
 {
     memLogStream << hex << "wd " << setfill('0') << setw(16) << address << endl;
  	return Memory::writeData32(address, value);
@@ -87,7 +87,7 @@ void MemoryTest::writeData32(long address, int value)
 /**
  * Log de Memory::writeData64(long address)
  */
-void MemoryTest::writeData64(long address, long value)
+void MemoryTest::writeData64(unsigned long address, long value)
 {
     memLogStream << hex << "wd " << setfill('0') << setw(16) << address << endl;
  	return Memory::writeData64(address, value);
