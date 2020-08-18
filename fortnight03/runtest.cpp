@@ -147,7 +147,7 @@ void test(BasicCPUTest* cpu)
 	// Test ADD
 	//
 	cout << "#\n#\n#\n# Testando 'add w1, w1, w0'...\n#\n#\n#\n" << endl;
-	startAddress = 0x74; // endereço de 'add w1, w1, w0'
+	startAddress = 0x68; // endereço de 'add w1, w1, w0'
 	xpctdIR = 0x0B000021;
 	xpctdA = 7; 			// valor arbitrário para w1
 	xpctdB = 16; 		// valor arbitrário para w0
