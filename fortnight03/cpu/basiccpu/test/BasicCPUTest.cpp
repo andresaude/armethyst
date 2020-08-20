@@ -48,10 +48,10 @@ void BasicCPUTest::setSP(long address) {
 }
 
 void BasicCPUTest::resetFlags() {
-	ALUctrlFlag ALUctrl = ALUctrlFlag::ALU_UNDEF;
-	bool fpOP = false;
-	MEMctrlFlag MEMctrl = MEMctrlFlag::MEM_UNDEF;
-	WBctrlFlag WBctrl = WBctrlFlag::WB_UNDEF;
+	ALUctrl = ALUctrlFlag::ALU_UNDEF;
+	fpOP = false;
+	MEMctrl = MEMctrlFlag::MEM_UNDEF;
+	WBctrl = WBctrlFlag::WB_UNDEF;
 }
 	
 /* unsigned long * BasicCPUTest::getSPAddr() {
