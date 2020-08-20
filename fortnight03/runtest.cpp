@@ -45,9 +45,9 @@ using namespace std;
 
 #define STARTSP 0x10000000 // endereço inicial da pilha
 
-#define CALLTEST() test(cpu,startAddress,startSP,xpctdIR,xpctdA,xpctdB,xpctdALUctrl,xpctdMEMctrl,xpctdWBctrl,xpctdALUout,xpctdMDR,xpctdRdAddr,xpctdRd)
+#define CALLTEST() test(cpu,startAddress,startSP,xpctdIR,xpctdA,xpctdB,xpctdALUctrl,xpctdMEMctrl,xpctdWBctrl,xpctdALUout,xpctdMDR,xpctdRd)
 
-#define RESETTEST()	startAddress=-1;xpctdIR=-1;xpctdA=-1;xpctdB=-1;xpctdALUctrl=ALUctrlFlag::ALU_UNDEF;xpctdALUout=-1;xpctdMEMctrl=MEMctrlFlag::MEM_UNDEF;xpctdMDR=-1;xpctdWBctrl=WBctrlFlag::WB_UNDEF;xpctdRd=-1;
+#define RESETTEST()	startAddress=-1;xpctdIR=-1;xpctdA=-1;xpctdB=-1;xpctdALUctrl=ALUctrlFlag::ALU_UNDEF;xpctdALUout=-1;xpctdMEMctrl=MEMctrlFlag::MEM_UNDEF;xpctdMDR=-1;xpctdWBctrl=WBctrlFlag::WB_UNDEF;xpctdRd=-1;cpu->resetFlags();
 
 void test(BasicCPUTest* cpu);
 void test(BasicCPUTest* cpu,
@@ -61,7 +61,6 @@ void test(BasicCPUTest* cpu,
 			WBctrlFlag xpctdWBctrl,
 			long xpctdALUout,
 			long xpctdMDR,
-			unsigned long *xpctdRdAddr,
 			long xpctdRd);
 
 int main()
@@ -115,7 +114,6 @@ void test(BasicCPUTest* cpu)
 
 	long xpctdMDR;
 
-	unsigned long *xpctdRdAddr;
 	long xpctdRd;
 
 	RESETTEST();
@@ -134,7 +132,6 @@ void test(BasicCPUTest* cpu)
 	
 	xpctdALUout = xpctdA - xpctdB;
 	
-	xpctdRdAddr = cpu->getSPAddr();
 	xpctdRd = xpctdALUout;
 	
 	
@@ -157,7 +154,7 @@ void test(BasicCPUTest* cpu)
 	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
 	xpctdWBctrl = WBctrlFlag::RegWrite;
 	xpctdALUout = xpctdA + xpctdB;
-	xpctdRdAddr = cpu->getSPAddr();
+
 	xpctdRd = xpctdALUout;
 
 	CALLTEST();
@@ -329,7 +326,6 @@ void testMEM(MEMctrlFlag xpctdMEMctrl)
  */
 void testWB(BasicCPUTest* cpu,
 		WBctrlFlag xpctdWBctrl,
-		unsigned long *xpctdRdAddr,
 		long xpctdRd)
 {
 	//
@@ -347,14 +343,15 @@ void testWB(BasicCPUTest* cpu,
 	}
 	
 	bool ok = true;
+	unsigned long Rd = cpu->getRd();
 	if(xpctdWBctrl == WBctrlFlag::RegWrite)
 	{
 		cout << "	Rd=0x"
-			<< setfill('0') << setw(8) << *xpctdRdAddr
+			<< setfill('0') << setw(8) << Rd
 			<< "; Esperado xpctdRd=0x"
 			<< setfill('0') << setw(8) << xpctdRd << endl;
 			
-		if (*xpctdRdAddr != xpctdRd)
+		if (Rd != xpctdRd)
 		{
 			cout << "WB() FALHOU!" << endl;
 			cout << "Saindo..." << endl;
@@ -380,7 +377,6 @@ void test(BasicCPUTest* cpu,
 			WBctrlFlag xpctdWBctrl,
 			long xpctdALUout,
 			long xpctdMDR,
-			unsigned long *xpctdRdAddr,
 			long xpctdRd)
 {
 	
@@ -403,7 +399,7 @@ void test(BasicCPUTest* cpu,
 
 	testMEM(xpctdMEMctrl);
 	
-	testWB(cpu, xpctdWBctrl, xpctdRdAddr, xpctdRd);
+	testWB(cpu, xpctdWBctrl, xpctdRd);
 	
 	cout << "SUCESSO!" << endl;
 	

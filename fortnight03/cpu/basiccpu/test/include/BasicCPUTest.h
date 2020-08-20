@@ -49,7 +49,8 @@ class BasicCPUTest: public BasicCPU
 	public:
 		BasicCPUTest(Memory *memory);
 		void setSP(long address);
-		unsigned long *getSPAddr();
+		void resetFlags();
+		//unsigned long *getSPAddr();
 				
 		// IF
 		int getIR();
@@ -74,6 +75,6 @@ class BasicCPUTest: public BasicCPU
 		
 		// WB
 		int runWB();
-		
+		unsigned long getRd();
 		
 };
