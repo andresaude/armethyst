@@ -38,12 +38,17 @@ using namespace std;
 
 class SimpleMemoryTest : public SimpleMemory
 {
-	public:
-		SimpleMemoryTest(int size);
-		~SimpleMemoryTest();
+public:
+	enum MemAccessType {MAT_NONE, MAT_READ32, MAT_WRITE32, MAT_READ64, MAT_WRITE64};
+
+	SimpleMemoryTest(int size);
+	~SimpleMemoryTest();
 		
 	void relocateManual();
 	void writeBinaryAsTextELF (string basename);
+	
+	MemAccessType getLastDataMemAccess();
+	void resetLastDataMemAccess();
 	
 	/*
 	 * Logs dos métodos da superclasse.
@@ -55,6 +60,7 @@ class SimpleMemoryTest : public SimpleMemory
 	void writeData64(unsigned long address, long value);
 
 private:
+	MemAccessType lastDataMemAccess;
 	ofstream memLogStream;
 	
 };

@@ -45,12 +45,13 @@ using namespace std;
 
 #define STARTSP 0x10000000 // endereço inicial da pilha
 
-#define CALLTEST() test(cpu,startAddress,startSP,xpctdIR,xpctdA,xpctdB,xpctdALUctrl,xpctdMEMctrl,xpctdWBctrl,xpctdALUout,xpctdMDR,xpctdRd)
+#define CALLTEST() test(cpu,memory,startAddress,startSP,xpctdIR,xpctdA,xpctdB,xpctdALUctrl,xpctdMEMctrl,xpctdWBctrl,xpctdALUout,xpctdMDR,xpctdRd)
 
-#define RESETTEST()	startAddress=-1;xpctdIR=-1;xpctdA=-1;xpctdB=-1;xpctdALUctrl=ALUctrlFlag::ALU_UNDEF;xpctdALUout=-1;xpctdMEMctrl=MEMctrlFlag::MEM_UNDEF;xpctdMDR=-1;xpctdWBctrl=WBctrlFlag::WB_UNDEF;xpctdRd=-1;cpu->resetFlags();
+#define RESETTEST()	startAddress=-1;xpctdIR=-1;xpctdA=-1;xpctdB=-1;xpctdALUctrl=ALUctrlFlag::ALU_UNDEF;xpctdALUout=-1;xpctdMEMctrl=MEMctrlFlag::MEM_UNDEF;xpctdMDR=-1;xpctdWBctrl=WBctrlFlag::WB_UNDEF;xpctdRd=-1;cpu->resetFlags();memory->resetLastDataMemAccess();
 
-void test(BasicCPUTest* cpu);
+void test(BasicCPUTest* cpu, SimpleMemoryTest* memory);
 void test(BasicCPUTest* cpu,
+			SimpleMemoryTest* memory,
 			long startAddress,
 			long startSP,
 			int xpctdIR,
@@ -88,7 +89,7 @@ int main()
 	
 	// Teste:
 	//		Como não temos o caminho de dados completo, faremos apenas testes.
-	test(cpu);
+	test(cpu, memory);
 	
 	return 0;
 }
@@ -97,7 +98,7 @@ int main()
  * Testa o estágio IF e testa parcialmente os estágios ID e EXI, somente
  * para as instruções 'sub sp, sp, #16' e 'add w1, w1, w0'.
  */
-void test(BasicCPUTest* cpu)
+void test(BasicCPUTest* cpu, SimpleMemoryTest* memory)
 {
 	long startAddress;
 	long startSP = STARTSP;
@@ -309,16 +310,53 @@ void testEXI(BasicCPUTest* cpu, long xpctdALUout)
 /**
  * Testa o estágio MEM - NAO IMPLEMENTADO.
  */
-void testMEM(MEMctrlFlag xpctdMEMctrl)
+void testMEM(MEMctrlFlag xpctdMEMctrl, SimpleMemoryTest* memory)
 {
 	//
 	// Testa MEM (depende do sucesso nos testes de estágios anteriores)
 	//
 	cout << "Testando MEM..." << endl;
 	
-	cout << "MEM() NÃO TESTADO, AGUARDANDO IMPLEMENTAÇÕES DE ACESSO À MEMÓRIA!" << endl;
+	// map MEMctrlFlag to SimpleMemoryTest::MemAccessType
+	SimpleMemoryTest::MemAccessType xpctdLastDataMemAccess;
+	switch (xpctdMEMctrl) {
+		case MEMctrlFlag::MEM_NONE:
+			xpctdLastDataMemAccess = SimpleMemoryTest::MemAccessType::MAT_NONE;
+			break;
+		case MEMctrlFlag::READ32:
+			xpctdLastDataMemAccess = SimpleMemoryTest::MemAccessType::MAT_READ32;
+			break;
+		case MEMctrlFlag::READ64:
+			xpctdLastDataMemAccess = SimpleMemoryTest::MemAccessType::MAT_READ64;
+			break;
+		case MEMctrlFlag::WRITE32:
+			xpctdLastDataMemAccess = SimpleMemoryTest::MemAccessType::MAT_WRITE32;
+			break;
+		case MEMctrlFlag::WRITE64:
+			xpctdLastDataMemAccess = SimpleMemoryTest::MemAccessType::MAT_WRITE64;
+			break;
+	}
+
+	SimpleMemoryTest::MemAccessType lastDataMemAccess =
+			memory->getLastDataMemAccess();
+	cout << "	Testando tipo de acesso..." << endl;
+	cout << "		Tipo de acesso esperado: "
+			<< xpctdLastDataMemAccess << endl;
+	cout << "		Tipo de acesso executado: "
+			<< lastDataMemAccess << endl;
+	if (xpctdLastDataMemAccess != lastDataMemAccess) {
+		// acesso incorreto à memória
+		cout << "MEM() FALHOU!" << endl;
+		cout << "Saindo..." << endl;
+		exit(1);
+	} else {
+		cout << "	MEM() executou o tipo de acesso correto!" << endl;
+		return;
+	}
+
+	cout << "MEM(): conteúdo não testado. Ignorando por enquanto!" << endl;
 	
-	cout << "MEM() IGNORADO!" << endl;
+	cout << "MEM() CONTEÚDO IGNORADO!" << endl;
 }
 
 /**
@@ -367,6 +405,7 @@ void testWB(BasicCPUTest* cpu,
  * para a instrução 'sub sp, sp, #16'.
  */
 void test(BasicCPUTest* cpu,
+			SimpleMemoryTest* memory,
 			long startAddress,
 			long startSP,
 			int xpctdIR,
@@ -397,7 +436,7 @@ void test(BasicCPUTest* cpu,
 	
 	testEXI(cpu, xpctdALUout);
 
-	testMEM(xpctdMEMctrl);
+	testMEM(xpctdMEMctrl, memory);
 	
 	testWB(cpu, xpctdWBctrl, xpctdRd);
 	

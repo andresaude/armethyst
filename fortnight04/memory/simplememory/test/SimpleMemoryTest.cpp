@@ -63,6 +63,7 @@ unsigned int SimpleMemoryTest::readInstruction32(unsigned long address)
 int SimpleMemoryTest::readData32(unsigned long address)
 {
     memLogStream << hex << "rd " << setfill('0') << setw(16) << address << endl;
+	lastDataMemAccess = MemAccessType::MAT_READ32;
  	return SimpleMemory::readData32(address);
 }
 
@@ -72,6 +73,7 @@ int SimpleMemoryTest::readData32(unsigned long address)
 long SimpleMemoryTest::readData64(unsigned long address)
 {
     memLogStream << hex << "rd " << setfill('0') << setw(16) << address << endl;
+	lastDataMemAccess = MemAccessType::MAT_READ64;
  	return SimpleMemory::readData64(address);
 }
 
@@ -81,7 +83,8 @@ long SimpleMemoryTest::readData64(unsigned long address)
 void SimpleMemoryTest::writeData32(unsigned long address, int value)
 {
     memLogStream << hex << "wd " << setfill('0') << setw(16) << address << endl;
- 	return SimpleMemory::writeData32(address, value);
+	lastDataMemAccess = MemAccessType::MAT_WRITE32;
+ 	SimpleMemory::writeData32(address, value);
 }
 
 /**
@@ -90,9 +93,17 @@ void SimpleMemoryTest::writeData32(unsigned long address, int value)
 void SimpleMemoryTest::writeData64(unsigned long address, long value)
 {
     memLogStream << hex << "wd " << setfill('0') << setw(16) << address << endl;
- 	return SimpleMemory::writeData64(address, value);
+	lastDataMemAccess = MemAccessType::MAT_WRITE64;
+ 	SimpleMemory::writeData64(address, value);
 }
 
+SimpleMemoryTest::MemAccessType SimpleMemoryTest::getLastDataMemAccess() {
+	return lastDataMemAccess;
+}
+
+void SimpleMemoryTest::resetLastDataMemAccess() {
+	lastDataMemAccess = MemAccessType::MAT_NONE;
+}
 
 /**
  * Escreve arquivo binario byte a byte
