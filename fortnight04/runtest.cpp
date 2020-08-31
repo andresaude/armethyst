@@ -66,13 +66,6 @@ void test(BasicCPUTest* cpu,
 
 int main()
 {	
-	long B;
-	unsigned int imm26 = 0x03FFFFFF;
-	
-	
-
-
-
 	// (EN) create memory
 	// (PT) cria memória
 	SimpleMemoryTest* memory = new SimpleMemoryTest(MEMORY_SIZE);
