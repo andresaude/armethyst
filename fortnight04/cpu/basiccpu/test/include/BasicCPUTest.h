@@ -52,6 +52,7 @@ class BasicCPUTest: public BasicCPU
 		// registers
 		void setSP(long address);
 		void setW(int n, int value);
+		void setX(int n, long value);
 
 		// flags
 		void resetFlags();
@@ -73,6 +74,7 @@ class BasicCPUTest: public BasicCPU
 		long getALUout();
 		
 		// MEM
+		int runMEM();
  		long getMDR();
 		
 		// WB

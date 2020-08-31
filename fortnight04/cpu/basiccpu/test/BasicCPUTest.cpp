@@ -102,6 +102,10 @@ int BasicCPUTest::runEXI() {
 	return EXI();
 }
 
+int BasicCPUTest::runMEM() {
+	return MEM();
+}
+
 int BasicCPUTest::runWB() {
 	return WB();
 }
