@@ -43,14 +43,15 @@
 
 using namespace std;
 
-#define STARTSP 0x10000000 // endereço inicial da pilha
+#define STARTSP 0x1000 // endereço inicial da pilha: 4096
 
-#define CALLTEST() test(cpu,memory,startAddress,startSP,xpctdIR,xpctdA,xpctdB,xpctdALUctrl,xpctdMEMctrl,xpctdWBctrl,xpctdALUout,xpctdMDR,xpctdRd)
+#define CALLTEST() test(instruction,cpu,memory,startAddress,startSP,xpctdIR,xpctdA,xpctdB,xpctdALUctrl,xpctdMEMctrl,xpctdWBctrl,xpctdALUout,xpctdMDR,xpctdRd)
 
 #define RESETTEST()	startAddress=-1;xpctdIR=-1;xpctdA=-1;xpctdB=-1;xpctdALUctrl=ALUctrlFlag::ALU_UNDEF;xpctdALUout=-1;xpctdMEMctrl=MEMctrlFlag::MEM_UNDEF;xpctdMDR=-1;xpctdWBctrl=WBctrlFlag::WB_UNDEF;xpctdRd=-1;cpu->resetFlags();memory->resetLastDataMemAccess();
 
 void test(BasicCPUTest* cpu, SimpleMemoryTest* memory);
-void test(BasicCPUTest* cpu,
+void test(string instruction,
+			BasicCPUTest* cpu,
 			SimpleMemoryTest* memory,
 			long startAddress,
 			long startSP,
@@ -100,6 +101,8 @@ int main()
  */
 void test(BasicCPUTest* cpu, SimpleMemoryTest* memory)
 {
+	string instruction;
+
 	long startAddress;
 	long startSP = STARTSP;
 
@@ -122,7 +125,7 @@ void test(BasicCPUTest* cpu, SimpleMemoryTest* memory)
 	//
 	// Test SUB
 	//
-	cout << "#\n#\n#\n# Testando 'sub sp, sp, #16'...\n#\n#\n#\n" << endl;
+	instruction = "sub sp, sp, #16";
 	startAddress = 0x40; // endereço de 'sub sp, sp, #16'
 	xpctdIR = 0xD10043FF;
 	xpctdA = STARTSP; // SP deve ser lido para A
@@ -139,12 +142,11 @@ void test(BasicCPUTest* cpu, SimpleMemoryTest* memory)
 	CALLTEST();
 	RESETTEST();
 		
-	cout << "Fim 'sub sp, sp, #16'." << endl << endl << endl;
 
 	//
-	// Test ADD
+	// Test ADD (linha 43)
 	//
-	cout << "#\n#\n#\n# Testando 'add w1, w1, w0'...\n#\n#\n#\n" << endl;
+	instruction = "add w1, w1, w0";
 	startAddress = 0x68; // endereço de 'add w1, w1, w0'
 	xpctdIR = 0x0B000021;
 	xpctdA = 7; 			// valor arbitrário para w1
@@ -161,8 +163,142 @@ void test(BasicCPUTest* cpu, SimpleMemoryTest* memory)
 	CALLTEST();
 	RESETTEST();
 
-	cout << "Fim 'add w1, w1, w0'." << endl << endl << endl;
 
+	//
+	// Test ldrsw x1, [sp, 12] (linha 38)
+	//
+	instruction = "ldrsw x1, [sp, 12]";
+	startAddress = 0x54; 	// endereço de 'ldrsw x1, [sp, 12]'
+	xpctdIR = 0xB9800FE1;
+	xpctdA = STARTSP; 		// SP deve ser lido para A
+	xpctdB = 12;			// valor imediato do offset
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::READ64;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+	
+	xpctdALUout = xpctdA + xpctdB;
+
+	// force data in memory
+	xpctdRd = STARTSP << 2;
+	memory->writeData64(xpctdALUout, STARTSP << 2);
+
+	CALLTEST();
+	RESETTEST();
+	
+	
+	//
+	// Test ldr w0, [sp, 12] (linha 51)
+	//
+	instruction = "ldr w0, [sp, 12]";
+	startAddress = 0x84; 	// endereço da linha
+	xpctdIR = 0xB9400FE0;
+	xpctdA = STARTSP; 		// SP deve ser lido para A
+	xpctdB = 12;			// valor imediato do offset
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::READ32;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+	
+	xpctdALUout = xpctdA + xpctdB;
+
+	// force data in memory
+	xpctdRd = STARTSP << 2;
+	memory->writeData32(xpctdALUout, STARTSP << 2);
+
+	CALLTEST();
+	RESETTEST();
+
+
+
+	//
+	// Test ldr w0, [x0] (linha 42)
+	//
+	instruction = "ldr w0, [x0]";
+	startAddress = 0x64; 	// endereço da linha
+	xpctdIR = 0xB9400000;	
+	xpctdA = 0x800; 		// valor arbitrário para x0
+	xpctdB = 0;
+	cpu->setX(0,xpctdA);	// temos que fazer x0 valer xpctdA
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::READ32;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+	
+	xpctdALUout = xpctdA + xpctdB;
+
+	// force data in memory
+	xpctdRd = STARTSP << 3;
+	memory->writeData32(xpctdALUout, STARTSP << 3);
+
+	CALLTEST();
+	RESETTEST();
+
+
+
+
+	//
+	// Test str w1, [x0] (linha 46)
+	//
+	instruction = "str w1, [x0]";
+	startAddress = 0x74; 	// endereço da instrução
+	xpctdIR = 0xB9000001;
+	xpctdA = 0x800; 		// valor arbitrário para x0
+	xpctdB = 0;
+	cpu->setX(0,xpctdA);	// temos que fazer x0 valer xpctdA
+	cpu->setW(1,0x77);		// valor arbitrário para w1
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::WRITE32;
+	xpctdWBctrl = WBctrlFlag::WB_NONE;
+	
+	xpctdALUout = xpctdA + xpctdB;
+
+	CALLTEST();
+	RESETTEST();
+
+
+	//
+	// Test str w0, [sp, 12] (linha 49)
+	//
+	instruction = "str w0, [sp, 12]";
+	startAddress = 0x80; 	// endereço da instrução
+	xpctdIR = 0xB9000FE0;
+	xpctdA = STARTSP; 		// valor arbitrário para x0
+	xpctdB = 12;
+	cpu->setW(0,0x12345);		// valor arbitrário para w1
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::WRITE32;
+	xpctdWBctrl = WBctrlFlag::WB_NONE;
+
+	xpctdALUout = xpctdA + xpctdB;
+
+	CALLTEST();
+	RESETTEST();
+
+
+	
+	//
+	// Test ldr w1, [x0, x1, lsl 2] (linha 39)
+	//
+	instruction = "ldr w1, [x0, x1, lsl 2]";
+	startAddress = 0x58; 	// endereço da linha
+	xpctdIR = 0xB8617801;	
+	xpctdA = 0x800; 		// valor arbitrário para x0
+	cpu->setX(0,xpctdA);	// temos que fazer x0 valer xpctdA
+	xpctdB = 0x7; 			// valor arbitrário para x1
+	cpu->setX(1,xpctdB);	// temos que fazer x1 valer xpctdA
+	xpctdB = xpctdB << 2; 	// aplicando lsl 2
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::READ32;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+	
+	xpctdALUout = xpctdA + xpctdB;
+
+	// force data in memory
+	xpctdRd = STARTSP >> 2;
+	memory->writeData32(xpctdALUout, STARTSP >> 2);
+
+	CALLTEST();
+	RESETTEST();
+
+	
 
 }
 
@@ -320,6 +456,15 @@ void testMEM(BasicCPUTest* cpu,
 	//
 	cout << "Testing MEM..." << endl;
 	
+	// executa
+	int memerror = cpu->runMEM();
+	if (memerror) {
+		cout << "Controle não implementado: 0x" << cpu->getMEMctrl() << endl;
+		cout << "MEM() FALHOU!" << endl;
+		cout << "Saindo..." << endl;
+		exit(1);
+	}
+		
 	//
 	// Test access type
 	//
@@ -396,6 +541,11 @@ void testMEM(BasicCPUTest* cpu,
 			break;
 	}
 	
+	// memory content verbose
+	cout << "		Expected memory content: 0x"	<< xpctdMemData << endl;
+	cout << "		Effective memory content: 0x"	<< memData << endl;
+	cout << "		Address tested: 0x" << xpctdALUout << endl;
+
 	// finish content test
 	if (memData == xpctdMemData) {
 		cout << "	Memory content OK..." << endl;
@@ -404,9 +554,6 @@ void testMEM(BasicCPUTest* cpu,
 	}
 	
 	// otherwise
-	cout << "		Expected memory content: "	<< xpctdMemData << endl;
-	cout << "		Effective memory content: "	<< memData << endl;
-	cout << "		Address tested: " << xpctdALUout << endl;
 	cout << "	Memory content FAILED..." << endl;
 	cout << "MEM() FAILED!" << endl;
 	exit(1);
@@ -457,7 +604,8 @@ void testWB(BasicCPUTest* cpu,
  * Testa o estágio IF e testa parcialmente os estágios ID e EXI, somente
  * para a instrução 'sub sp, sp, #16'.
  */
-void test(BasicCPUTest* cpu,
+void test(string instruction,
+			BasicCPUTest* cpu,
 			SimpleMemoryTest* memory,
 			long startAddress,
 			long startSP,
@@ -471,6 +619,9 @@ void test(BasicCPUTest* cpu,
 			long xpctdMDR,
 			long xpctdRd)
 {
+	
+	cout << "#\n#\n#\n# Testing '" << instruction << "'...\n#\n#\n#\n" << endl;
+
 	
 	// saídas em hexadecimal
 	cout << hex;	
@@ -494,6 +645,8 @@ void test(BasicCPUTest* cpu,
 	testWB(cpu, xpctdWBctrl, xpctdRd);
 	
 	cout << "SUCESSO!" << endl;
+	
+	cout << "Fim '" << instruction << "'." << endl << endl << endl;
 	
 }
 
