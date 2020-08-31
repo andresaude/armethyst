@@ -44,6 +44,7 @@
 #pragma once
 
 #include "CPU.h"
+#include <cstdint>
 
 // Códigos de controle
 enum ALUctrlFlag {ALU_UNDEF, ALU_NONE, ADD, SUB};
@@ -63,11 +64,11 @@ class BasicCPU: public CPU
 		 */
 		 
 		// Registrador PC
-		long PC;
+		uint64_t PC;
 		
 		// Registrador SP
 		// 		Registrador SP (stack pointer), de 64 bits
-		unsigned long SP;
+		uint64_t SP;
 		
 		// Banco de registradores inteiros
 		//		Declara os registradores Rn descritos no documento
@@ -77,8 +78,8 @@ class BasicCPU: public CPU
 		//		usados como registradores de 64	bits, com nomes X0-X30 ou
 		//		podem ser usados como registradores	de 32 bits, com nomes
 		//		W0-W30.
-		unsigned long R[31];
-		unsigned long *Rd;
+		uint64_t R[31];
+		uint64_t *Rd;
 		
 		/**
 		 * Lê registrador inteiro de 32 bits.
@@ -104,16 +105,16 @@ class BasicCPU: public CPU
 		
 		// IR (instruction register), 32 bits, saída do estágio de busca
 		// da instrução (IF)
-		int IR; 
+		uint32_t IR; 
 		
 		// A, 64 bits, saída 1 do estágio de decodificação da instrução (ID)
 		// (Rn lido do banco de registradores)
-		long A;
+		int64_t A;
 		
 		// B, 64 bits, saída 2 do estágio de decodificação da instrução (ID)
 		// (Rm lido do banco de registradores ou valor imediato lido
 		// diretamente da instrução
-		long B;
+		int64_t B;
 		
 		// ALUctrl, enum, saída 3 do estágio de decodificação da instrução (ID),
 		// armazena o código de controle da ULA.
@@ -141,10 +142,10 @@ class BasicCPU: public CPU
 
 		// ALUout, 64 bits, saída do estágio de execução de operação
 		// inteira (EXI)
-		long ALUout;
+		int64_t ALUout;
 
 		// MDR, 64 bits, saída do estágio de acesso à memória de dados (MEM).
-		long MDR;
+		int64_t MDR;
 
 		/**
 		 * Caminho de dados (Datapath)

@@ -36,7 +36,7 @@
 #include "BasicCPUTest.h"
 
 /**
- * Apenas inicia PC, não executa o ciclos de máquina.
+ * Start PC without executing machine cycles.
  */
 BasicCPUTest::BasicCPUTest(Memory *memory)
 	: BasicCPU(memory)
@@ -54,16 +54,8 @@ void BasicCPUTest::resetFlags() {
 	WBctrl = WBctrlFlag::WB_UNDEF;
 }
 	
-/* unsigned long * BasicCPUTest::getSPAddr() {
-	return &SP;
-}
- */
 int BasicCPUTest::getIR() {
 	return IR;
-}
-
-int BasicCPUTest::getW(int n) {
-	return BasicCPU::getW(n);
 }
 
 void BasicCPUTest::setW(int n, int value) {
@@ -92,6 +84,10 @@ WBctrlFlag BasicCPUTest::getWBctrl() {
 	
 long BasicCPUTest::getALUout() {
 	return ALUout;
+}
+
+long BasicCPUTest::getMDR() {
+	return MDR;
 }
 
 void BasicCPUTest::runIF() {

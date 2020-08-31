@@ -66,6 +66,13 @@ void test(BasicCPUTest* cpu,
 
 int main()
 {	
+	long B;
+	unsigned int imm26 = 0x03FFFFFF;
+	
+	
+
+
+
 	// (EN) create memory
 	// (PT) cria memória
 	SimpleMemoryTest* memory = new SimpleMemoryTest(MEMORY_SIZE);
@@ -310,12 +317,19 @@ void testEXI(BasicCPUTest* cpu, long xpctdALUout)
 /**
  * Testa o estágio MEM - NAO IMPLEMENTADO.
  */
-void testMEM(MEMctrlFlag xpctdMEMctrl, SimpleMemoryTest* memory)
+void testMEM(BasicCPUTest* cpu,
+				SimpleMemoryTest* memory,
+				MEMctrlFlag xpctdMEMctrl,
+				long xpctdALUout)
 {
 	//
-	// Testa MEM (depende do sucesso nos testes de estágios anteriores)
+	// Test MEM (depends on the success of previous stages)
 	//
-	cout << "Testando MEM..." << endl;
+	cout << "Testing MEM..." << endl;
+	
+	//
+	// Test access type
+	//
 	
 	// map MEMctrlFlag to SimpleMemoryTest::MemAccessType
 	SimpleMemoryTest::MemAccessType xpctdLastDataMemAccess;
@@ -339,24 +353,70 @@ void testMEM(MEMctrlFlag xpctdMEMctrl, SimpleMemoryTest* memory)
 
 	SimpleMemoryTest::MemAccessType lastDataMemAccess =
 			memory->getLastDataMemAccess();
-	cout << "	Testando tipo de acesso..." << endl;
-	cout << "		Tipo de acesso esperado: "
+	cout << "	Testing MEM access type..." << endl;
+	cout << "		Expected access type: "
 			<< xpctdLastDataMemAccess << endl;
-	cout << "		Tipo de acesso executado: "
+	cout << "		Executed access type: "
 			<< lastDataMemAccess << endl;
 	if (xpctdLastDataMemAccess != lastDataMemAccess) {
-		// acesso incorreto à memória
-		cout << "MEM() FALHOU!" << endl;
-		cout << "Saindo..." << endl;
+		// incorrect memory access type
+		cout << "MEM() FAILED!" << endl;
+		cout << "Exit..." << endl;
 		exit(1);
 	} else {
-		cout << "	MEM() executou o tipo de acesso correto!" << endl;
-		return;
+		cout << "	MEM() executed the correct access type!" << endl;
 	}
 
-	cout << "MEM(): conteúdo não testado. Ignorando por enquanto!" << endl;
+	//
+	// Test content
+	//
 	
-	cout << "MEM() CONTEÚDO IGNORADO!" << endl;
+	// no memory access -> success
+	if (xpctdMEMctrl == MEMctrlFlag::MEM_NONE) {
+		cout << "	No content to be tested!" << endl;
+		cout << "MEM() test: SUCCESS!" << endl;
+		return;
+	}
+	
+	// get read or written content (access depends on 32 or 64 bit mode)
+	long memData, xpctdMemData;
+	switch (xpctdMEMctrl) {
+		case MEMctrlFlag::READ32:
+			cout << "	READ Mode: testing read content..." << endl;
+			memData = (long)memory->readData32(xpctdALUout);
+			xpctdMemData = cpu->getMDR();
+			break;
+		case MEMctrlFlag::READ64:
+			cout << "	READ Mode: testing read content..." << endl;
+			memData = memory->readData64(xpctdALUout);
+			xpctdMemData = cpu->getMDR();
+			break;
+		case MEMctrlFlag::WRITE32:
+			cout << "	WRITE Mode: testing written content..." << endl;
+			memData = (long)memory->readData32(xpctdALUout);
+			xpctdMemData = cpu->getRd();
+			break;
+		case MEMctrlFlag::WRITE64:
+			cout << "	WRITE Mode: testing written content..." << endl;
+			memData = memory->readData64(xpctdALUout);
+			xpctdMemData = cpu->getRd();
+			break;
+	}
+	
+	// finish content test
+	if (memData == xpctdMemData) {
+		cout << "	Memory content OK..." << endl;
+		cout << "MEM() test: SUCCESS!" << endl;
+		return;
+	}
+	
+	// otherwise
+	cout << "		Expected memory content: "	<< xpctdMemData << endl;
+	cout << "		Effective memory content: "	<< memData << endl;
+	cout << "		Address tested: " << xpctdALUout << endl;
+	cout << "	Memory content FAILED..." << endl;
+	cout << "MEM() FAILED!" << endl;
+	exit(1);
 }
 
 /**
@@ -436,7 +496,7 @@ void test(BasicCPUTest* cpu,
 	
 	testEXI(cpu, xpctdALUout);
 
-	testMEM(xpctdMEMctrl, memory);
+	testMEM(cpu, memory, xpctdMEMctrl, xpctdALUout);
 	
 	testWB(cpu, xpctdWBctrl, xpctdRd);
 	
