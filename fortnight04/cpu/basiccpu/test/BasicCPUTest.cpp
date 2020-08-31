@@ -62,6 +62,10 @@ void BasicCPUTest::setW(int n, int value) {
 	BasicCPU::setW(n,value);
 }
 
+void BasicCPUTest::setX(int n, int value) {
+	BasicCPU::setX(n,value);
+}
+
 long BasicCPUTest::getA() {
 	return A;
 }
