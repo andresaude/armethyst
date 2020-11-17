@@ -10,6 +10,3 @@ Every semester new students are enrolled in the course of Computer Architecture 
 4. The students must organize themselves in teams, and each team will fork this repository and work on its class offer's respective branch.
 
 No pull requests are accepted.
-
-# About the name Armethyst
-A simple ARM simulator for teaching purposes.
