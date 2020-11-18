@@ -1,16 +1,10 @@
 /* ----------------------------------------------------------------------------
-	
-	(EN) Processor - A single core processor with a basic CPU. Part or armethyst
-	project.
-	
-    armethyst - A simple ARM Simulator written in C++ for Computer Architecture
+
+    (EN) armethyst - A simple ARM Simulator written in C++ for Computer Architecture
     teaching purposes. Free software licensed under the MIT License (see license
     below).
 
-	(PT) Processor - Um processador de núcleo único com uma CPU básica. Parte do
-	projeto armethyst.
-	
-    armethyst - Um simulador ARM simples escrito em C++ para o ensino de
+    (PT) armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
     (veja a licença, em inglês, abaixo).
 
@@ -41,16 +35,14 @@
 
 #pragma once
 
+#include "config.h"
 #include "Memory.h"
-#include "CPU.h"
+#include "Processor.h"
 
-class Processor
+class Factory
 {
-	public:
-		virtual int run(uint64_t startAddress) = 0;
-
-	protected:
-		Memory *memory;
-		CPU *cpu;
+	public:		
+		static Memory* createMemory();
+		static Processor* createProcessor(Memory* memory);
 };
 

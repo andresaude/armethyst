@@ -33,33 +33,70 @@
    ----------------------------------------------------------------------------
 */
 
-#include "Memory.h"
+#include "BasicMemory.h"
 
 #include <iostream>
-#include <fstream>
 #include <iomanip>
 
 using namespace std;
 
-Memory::Memory(int size)
+BasicMemory::BasicMemory(int size)
 {
 	data = new char[size];
 }
 
-Memory::~Memory()
+BasicMemory::~BasicMemory()
 {
 	delete[] data;
 }
 
 /**
- * Lê um inteiro de 32 bits considerando um endereçamento em bytes.
+ * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
+ *
+ * BasicMemory.cpp implementa a arquitetura de Von Neumman, com apenas uma
+ * memória, que armazena instruções e dados.
  */
-int Memory::readInt(long address) {
+uint32_t BasicMemory::readInstruction32(uint64_t address)
+{
+	return ((uint32_t*)data)[address >> 2];
+}
+
+/**
+ * Lê um dado de 32 bits considerando um endereçamento em bytes.
+ */
+int BasicMemory::readData32(unsigned long address)
+{
 	return ((int*)data)[address >> 2];
 }
 
-// carrega arquivo binário na memória
-void Memory::loadBinary(string filename)
+/**
+ * Lê um dado de 64 bits considerando um endereçamento em bytes.
+ */
+long BasicMemory::readData64(unsigned long address)
+{
+	return ((long*)data)[address >> 3];
+}
+
+/**
+ * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
+ */
+void BasicMemory::writeData32(unsigned long address, int value)
+{
+	((int*)data)[address >> 2] = value;
+}
+
+/**
+ * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
+ */
+void BasicMemory::writeData64(unsigned long address, long value)
+{
+	((long*)data)[address >> 3] = value;
+}
+
+/**
+ * carrega arquivo binário na memória
+ */
+void BasicMemory::loadBinary(string filename)
 {
     streampos size;
 
@@ -76,12 +113,15 @@ void Memory::loadBinary(string filename)
 		cout << "Aborting... " << endl;
 		exit(1);
     }
+
 }
 
 
-//Escreve arquivo binario em um arquivo legível
+/**
+ * Escreve arquivo binario em um arquivo legível
+ */
 #define LINE_SIZE 4
-void Memory::writeBinaryAsText (string basename) {
+void BasicMemory::writeBinaryAsText (string basename) {
     string filename = "txt_" + basename + ".txt";
     ofstream ofp;
     int i,j;
@@ -110,5 +150,3 @@ void Memory::writeBinaryAsText (string basename) {
     }
     ofp.close();
 }
-
-

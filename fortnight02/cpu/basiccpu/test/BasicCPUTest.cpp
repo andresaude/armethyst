@@ -36,31 +36,34 @@
 #include "BasicCPUTest.h"
 
 /**
- * Apenas inicia PC, não executa o ciclos de máquina.
+ * Start PC without executing machine cycles.
  */
 BasicCPUTest::BasicCPUTest(Memory *memory)
 	: BasicCPU(memory)
 {
-/* 	// inicia PC com o valor de startAddress
-	PC = startAddress;
+}
+	
+void BasicCPUTest::setSP(long address) {
+	SP = address;
+}
 
-	return 0;
- */}
+void BasicCPUTest::resetFlags() {
+	ALUctrl = ALUctrlFlag::ALU_UNDEF;
+	fpOP = false;
+	MEMctrl = MEMctrlFlag::MEM_UNDEF;
+	WBctrl = WBctrlFlag::WB_UNDEF;
+}
 	
 int BasicCPUTest::getIR() {
 	return IR;
 }
 
-void BasicCPUTest::setSP(long address) {
-	SP = address;
-}
-
-int BasicCPUTest::getW(int n) {
-	return BasicCPU::getW(n);
-}
-
 void BasicCPUTest::setW(int n, int value) {
 	BasicCPU::setW(n,value);
+}
+
+void BasicCPUTest::setX(int n, long value) {
+	BasicCPU::setX(n,value);
 }
 
 long BasicCPUTest::getA() {
@@ -75,8 +78,20 @@ ALUctrlFlag BasicCPUTest::getALUctrl() {
 	return ALUctrl;
 }
 	
+MEMctrlFlag BasicCPUTest::getMEMctrl() {
+	return MEMctrl;
+}
+	
+WBctrlFlag BasicCPUTest::getWBctrl() {
+	return WBctrl;
+}
+	
 long BasicCPUTest::getALUout() {
 	return ALUout;
+}
+
+long BasicCPUTest::getMDR() {
+	return MDR;
 }
 
 void BasicCPUTest::runIF() {
@@ -89,4 +104,16 @@ int BasicCPUTest::runID() {
 
 int BasicCPUTest::runEXI() {
 	return EXI();
+}
+
+int BasicCPUTest::runMEM() {
+	return MEM();
+}
+
+int BasicCPUTest::runWB() {
+	return WB();
+}
+
+unsigned long BasicCPUTest::getRd() {
+	return *Rd;
 }

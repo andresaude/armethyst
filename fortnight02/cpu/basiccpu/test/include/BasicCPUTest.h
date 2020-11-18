@@ -1,22 +1,22 @@
 /* ----------------------------------------------------------------------------
-	
-	(EN) Processor - A single core processor with a basic CPU. Part or armethyst
-	project.
-	
-    armethyst - A simple ARM Simulator written in C++ for Computer Architecture
+
+    (EN) BasicCPUTest - test class for BasicCPU. Allows access to registers
+	and protected methods.
+		
+	armethyst - A simple ARM Simulator written in C++ for Computer Architecture
     teaching purposes. Free software licensed under the MIT License (see license
     below).
 
-	(PT) Processor - Um processador de núcleo único com uma CPU básica. Parte do
-	projeto armethyst.
-	
-    armethyst - Um simulador ARM simples escrito em C++ para o ensino de
+    (PT) BasicCPUTest - classe de teste de BasicCPU. Permite acesso aos
+	registradores e mÃ©todos protegidos.
+    
+	armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
-    (veja a licença, em inglês, abaixo).
+    (veja a licenÃ§a, em inglÃªs, abaixo).
 
     (EN) MIT LICENSE:
 
-    Copyright 2020 André Vital Saúde
+    Copyright 2020 AndrÃ© Vital SaÃºde
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -41,16 +41,44 @@
 
 #pragma once
 
+#include "BasicCPU.h"
 #include "Memory.h"
-#include "CPU.h"
 
-class Processor
+class BasicCPUTest: public BasicCPU
 {
 	public:
-		virtual int run(uint64_t startAddress) = 0;
+		BasicCPUTest(Memory *memory);
+		
+		// registers
+		void setSP(long address);
+		void setW(int n, int value);
+		void setX(int n, long value);
 
-	protected:
-		Memory *memory;
-		CPU *cpu;
+		// flags
+		void resetFlags();
+
+		// IF
+		int getIR();
+		void runIF();
+		
+		// ID
+		int runID();
+		ALUctrlFlag getALUctrl();
+		MEMctrlFlag getMEMctrl();
+		WBctrlFlag getWBctrl();
+		long getA();
+		long getB();
+
+		// EXI
+		int runEXI();
+		long getALUout();
+		
+		// MEM
+		int runMEM();
+ 		long getMDR();
+		
+		// WB
+		int runWB();
+		unsigned long getRd();
+		
 };
-
