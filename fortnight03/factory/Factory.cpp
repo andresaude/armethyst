@@ -6,11 +6,11 @@
 
     (PT) armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
-    (veja a licenÃ§a, em inglÃªs, abaixo).
+    (veja a licença, em inglês, abaixo).
 
     (EN) MIT LICENSE:
 
-    Copyright 2020 AndrÃ© Vital SaÃºde
+    Copyright 2020 André Vital Saúde
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -33,87 +33,27 @@
    ----------------------------------------------------------------------------
 */
 
-#include "BasicCPUTest.h"
+#include "Factory.h"
 
-/**
- * Start PC without executing machine cycles.
- */
-BasicCPUTest::BasicCPUTest(Memory *memory)
-	: BasicCPU(memory)
+// Memory implementations
+#include "BasicMemory.h"
+
+// Processor implementations
+#include "BasicProcessor.h"
+
+Memory* Factory::createMemory()
 {
-}
-	
-void BasicCPUTest::setSP(long address) {
-	SP = address;
-}
+	switch (MEM_IMPL) {
+		case MEM_IMPL_BASIC:
+			return new BasicMemory(MEMORY_SIZE);
+	}
+};
 
-void BasicCPUTest::resetFlags() {
-	ALUctrl = ALUctrlFlag::ALU_UNDEF;
-	fpOP = false;
-	MEMctrl = MEMctrlFlag::MEM_UNDEF;
-	WBctrl = WBctrlFlag::WB_UNDEF;
-}
-	
-int BasicCPUTest::getIR() {
-	return IR;
-}
+Processor* Factory::createProcessor(Memory* memory)
+{
+	switch (PROC_IMPL) {
+		case PROC_IMPL_BASIC:
+			return new BasicProcessor(memory);
+	}
+};
 
-void BasicCPUTest::setW(int n, int value) {
-	BasicCPU::setW(n,value);
-}
-
-void BasicCPUTest::setX(int n, long value) {
-	BasicCPU::setX(n,value);
-}
-
-long BasicCPUTest::getA() {
-	return A;
-}
-
-long BasicCPUTest::getB() {
-	return B;
-}
-
-ALUctrlFlag BasicCPUTest::getALUctrl() {
-	return ALUctrl;
-}
-	
-MEMctrlFlag BasicCPUTest::getMEMctrl() {
-	return MEMctrl;
-}
-	
-WBctrlFlag BasicCPUTest::getWBctrl() {
-	return WBctrl;
-}
-	
-long BasicCPUTest::getALUout() {
-	return ALUout;
-}
-
-long BasicCPUTest::getMDR() {
-	return MDR;
-}
-
-void BasicCPUTest::runIF() {
-	IF();
-}
-
-int BasicCPUTest::runID() {
-	return ID();
-}
-
-int BasicCPUTest::runEXI() {
-	return EXI();
-}
-
-int BasicCPUTest::runMEM() {
-	return MEM();
-}
-
-int BasicCPUTest::runWB() {
-	return WB();
-}
-
-unsigned long BasicCPUTest::getRd() {
-	return *Rd;
-}

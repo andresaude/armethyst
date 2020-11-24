@@ -32,29 +32,36 @@
 
    ----------------------------------------------------------------------------
 */
-#include "Memory.h"
+#include "config.h"
+#include "BasicMemory.h"
 
 using namespace std;
 
-class MemoryTest : public Memory
+class BasicMemoryTest : public BasicMemory
 {
-	public:
-		MemoryTest(int size);
-		~MemoryTest();
+public:
+	enum MemAccessType {MAT_NONE, MAT_READ32, MAT_WRITE32, MAT_READ64, MAT_WRITE64};
+
+	BasicMemoryTest(int size);
+	~BasicMemoryTest();
 		
 	void relocateManual();
-	void writeBinaryAsTextELF (std::string basename);
+	void writeBinaryAsTextELF (string basename);
+	
+	MemAccessType getLastDataMemAccess();
+	void resetLastDataMemAccess();
 	
 	/*
 	 * Logs dos métodos da superclasse.
 	 */
-	int readInstruction32(unsigned long address);
+	uint32_t readInstruction32(uint64_t address);
 	int readData32(unsigned long address);
 	long readData64(unsigned long address);
 	void writeData32(unsigned long address, int value);
 	void writeData64(unsigned long address, long value);
 
 private:
+	MemAccessType lastDataMemAccess;
 	ofstream memLogStream;
 	
 };

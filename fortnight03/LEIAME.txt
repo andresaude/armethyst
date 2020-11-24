@@ -1,21 +1,7 @@
 
-Para compilar o código há três opções.
-
-1. Via 'makefile':
+Para compilar o código via 'makefile':
 
 	a) Abrir o arquivo 'makefile' e alterar a primeira linha, dando o nome do seu compilador.
 
-	b) Ir na linha de comando e digitar 'make'. Deve ser criado um executável de nome 'armethyst' ou 'armethyst.exe'.
-
-2. Via seu IDE predileto:
-
-	Crie um projeto no seu IDE contendo todos os arquivos desta pasta.
-
-3. Digitando diretamente o comando completo de compilação:
-
-	Esta opção não é recomendável visto que o projeto irá crescer e o comando de compilação ficará cada vez mais complexo. Para este primeiro trabalho, o comando é
-	
-	g++ -std=c++14 -o runtest runtest.cpp Memory.cpp ./test/MemoryTest.cpp -I././include -I./processor/BasicProcessor/./include -I./cpu/BasicCPU/./include -I././include -I./processor/BasicProcessor/./include -I./cpu/BasicCPU/./include -I././test/./include -I./cpu/BasicCPU/./test/./include ./processor/BasicProcessor/BasicProcessor.cpp ./cpu/BasicCPU/BasicCPU.cpp ./cpu/BasicCPU/./test/BasicCPUTest.cpp
-
-
+	b) Ir na linha de comando e digitar 'make'. Devem ser criados os executáveis de nome 'armethyst' ou 'armethyst.exe' e 'runtest' ou 'runtest.exe'.
 

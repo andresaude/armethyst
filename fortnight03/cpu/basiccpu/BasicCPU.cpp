@@ -45,7 +45,7 @@ BasicCPU::BasicCPU(Memory *memory) {
 /**
  * Métodos herdados de CPU
  */
-int BasicCPU::run(long startAddress)
+int BasicCPU::run(uint64_t startAddress)
 {
 
 	// inicia PC com o valor de startAddress
@@ -100,7 +100,7 @@ int BasicCPU::ID()
 	//		Acrescente os cases no switch já iniciado, para detectar o grupo
 	//		APENAS PARA A INSTRUÇÃO A SEGUIR:
 	//				'add w1, w1, w0'
-	//		que aparece na linha 40 de isummation.S e no endereço 0x74
+	//		que aparece na linha 43 de isummation.S e no endereço 0x68
 	//		de txt_isummation.o.txt.
 	//
 	// 		Deve-se detectar em IR o grupo da qual a instrução faz parte e
@@ -228,7 +228,7 @@ int BasicCPU::decodeDataProcReg() {
 	//		acrescentar um switch no estilo do switch de decodeDataProcImm,
 	//		e implementar APENAS PARA A INSTRUÇÃO A SEGUIR:
 	//				'add w1, w1, w0'
-	//		que aparece na linha 40 de isummation.S e no endereço 0x74
+	//		que aparece na linha 43 de isummation.S e no endereço 0x68
 	//		de txt_isummation.o.txt.
 	
 	
@@ -266,7 +266,7 @@ int BasicCPU::EXI()
 	//		Acrescente os cases no switch já iniciado, para acrescentar a
 	//		execução APENAS PARA A INSTRUÇÃO A SEGUIR:
 	//				'add w1, w1, w0'
-	//		que aparece na linha 40 de isummation.S e no endereço 0x74
+	//		que aparece na linha 43 de isummation.S e no endereço 0x68
 	//		de txt_isummation.o.txt.
 	//
 	// 		Verifique que ALUctrlFlag já tem declarado o tipo de operação
@@ -276,9 +276,6 @@ int BasicCPU::EXI()
 		case ALUctrlFlag::SUB:
 			ALUout = A - B;
 			// ATIVIDADE FUTURA: setar flags NCZF
-			return 0;
-		case ALUctrlFlag::ADD:
-			ALUout = A + B;
 			return 0;
 		default:
 			// Controle não implementado
@@ -351,28 +348,28 @@ int BasicCPU::WB()
 /**
  * Lê registrador inteiro de 32 bits.
  */
-int BasicCPU::getW(int n) {
-	long wn = 0x00000000FFFFFFFF & R[n];
-	return ((int) wn);
+int32_t BasicCPU::getW(int n) {
+	uint32_t wn = 0x00000000FFFFFFFF & R[n];
+	return ((int32_t) wn);
 }
 
 /**
  * Escreve registrador inteiro de 32 bits.
  */
-void BasicCPU::setW(int n, int value) {
-	R[n] = (long)value;
+void BasicCPU::setW(int n, int32_t value) {
+	R[n] = (uint64_t)((uint32_t)value);
 }
 
 /**
  * Lê registrador inteiro de 64 bits.
  */
-int BasicCPU::getX(int n) {
-	return R[n];
+int64_t BasicCPU::getX(int n) {
+	return (int64_t)R[n];
 }
 
 /**
  * Escreve registrador inteiro de 32 bits.
  */
-void BasicCPU::setX(int n, long value) {
-	R[n] = value;
+void BasicCPU::setX(int n, int64_t value) {
+	R[n] = (uint64_t)value;
 }

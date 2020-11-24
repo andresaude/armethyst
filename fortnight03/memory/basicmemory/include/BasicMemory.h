@@ -6,11 +6,11 @@
 
     (PT) armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
-    (veja a licenÃ§a, em inglÃªs, abaixo).
+    (veja a licença, em inglês, abaixo).
 
     (EN) MIT LICENSE:
 
-    Copyright 2020 AndrÃ© Vital SaÃºde
+    Copyright 2020 André Vital Saúde
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -33,87 +33,51 @@
    ----------------------------------------------------------------------------
 */
 
-#include "BasicCPUTest.h"
+#pragma once
 
-/**
- * Start PC without executing machine cycles.
- */
-BasicCPUTest::BasicCPUTest(Memory *memory)
-	: BasicCPU(memory)
+#include "Memory.h"
+#include <string>
+#include <fstream>
+
+using namespace std;
+
+class BasicMemory : public Memory
 {
-}
+public:
+	BasicMemory(int size);
+	~BasicMemory();
+
+	void loadBinary(std::string filename);
+	void writeBinaryAsText (std::string basename);
+
+	/**
+	 * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
+	 */
+	uint32_t readInstruction32(uint64_t address);
+
+	/**
+	 * Lê um dado de 32 bits considerando um endereçamento em bytes.
+	 */
+	int readData32(unsigned long address);
+
+	/**
+	 * Lê um dado de 64 bits considerando um endereçamento em bytes.
+	 */
+	long readData64(unsigned long address);
 	
-void BasicCPUTest::setSP(long address) {
-	SP = address;
-}
+	/**
+	 * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
+	 */
+	void writeData32(unsigned long address, int value);
 
-void BasicCPUTest::resetFlags() {
-	ALUctrl = ALUctrlFlag::ALU_UNDEF;
-	fpOP = false;
-	MEMctrl = MEMctrlFlag::MEM_UNDEF;
-	WBctrl = WBctrlFlag::WB_UNDEF;
-}
-	
-int BasicCPUTest::getIR() {
-	return IR;
-}
+	/**
+	 * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
+	 */
+	void writeData64(unsigned long address, long value);
 
-void BasicCPUTest::setW(int n, int value) {
-	BasicCPU::setW(n,value);
-}
+protected:
+	char* data;        //memory data
+	unsigned short fileSize;    //size of the loaded binary file
 
-void BasicCPUTest::setX(int n, long value) {
-	BasicCPU::setX(n,value);
-}
+};
 
-long BasicCPUTest::getA() {
-	return A;
-}
-
-long BasicCPUTest::getB() {
-	return B;
-}
-
-ALUctrlFlag BasicCPUTest::getALUctrl() {
-	return ALUctrl;
-}
-	
-MEMctrlFlag BasicCPUTest::getMEMctrl() {
-	return MEMctrl;
-}
-	
-WBctrlFlag BasicCPUTest::getWBctrl() {
-	return WBctrl;
-}
-	
-long BasicCPUTest::getALUout() {
-	return ALUout;
-}
-
-long BasicCPUTest::getMDR() {
-	return MDR;
-}
-
-void BasicCPUTest::runIF() {
-	IF();
-}
-
-int BasicCPUTest::runID() {
-	return ID();
-}
-
-int BasicCPUTest::runEXI() {
-	return EXI();
-}
-
-int BasicCPUTest::runMEM() {
-	return MEM();
-}
-
-int BasicCPUTest::runWB() {
-	return WB();
-}
-
-unsigned long BasicCPUTest::getRd() {
-	return *Rd;
-}

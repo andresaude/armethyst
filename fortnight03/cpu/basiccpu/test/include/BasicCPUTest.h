@@ -48,10 +48,15 @@ class BasicCPUTest: public BasicCPU
 {
 	public:
 		BasicCPUTest(Memory *memory);
+		
+		// registers
 		void setSP(long address);
+		void setW(int n, int value);
+		void setX(int n, long value);
+
+		// flags
 		void resetFlags();
-		//unsigned long *getSPAddr();
-				
+
 		// IF
 		int getIR();
 		void runIF();
@@ -69,9 +74,8 @@ class BasicCPUTest: public BasicCPU
 		long getALUout();
 		
 		// MEM
-		
-		int getW(int n);
-		void setW(int n, int value);
+		int runMEM();
+ 		long getMDR();
 		
 		// WB
 		int runWB();
