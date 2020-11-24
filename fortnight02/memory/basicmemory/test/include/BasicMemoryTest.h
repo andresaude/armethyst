@@ -1,16 +1,10 @@
 /* ----------------------------------------------------------------------------
 
-    (EN) BasicCPUTest - test class for BasicCPU. Allows access to registers
-	and protected methods.
-		
-	armethyst - A simple ARM Simulator written in C++ for Computer Architecture
+    (EN) armethyst - A simple ARM Simulator written in C++ for Computer Architecture
     teaching purposes. Free software licensed under the MIT License (see license
     below).
 
-    (PT) BasicCPUTest - classe de teste de BasicCPU. Permite acesso aos
-	registradores e métodos protegidos.
-    
-	armethyst - Um simulador ARM simples escrito em C++ para o ensino de
+    (PT) armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
     (veja a licença, em inglês, abaixo).
 
@@ -38,31 +32,37 @@
 
    ----------------------------------------------------------------------------
 */
+#include "config.h"
+#include "BasicMemory.h"
 
-#pragma once
+using namespace std;
 
-#include "BasicCPU.h"
-#include "Memory.h"
-
-class BasicCPUTest: public BasicCPU
+class BasicMemoryTest : public BasicMemory
 {
-	public:
-		BasicCPUTest(Memory *memory);
+public:
+	enum MemAccessType {MAT_NONE, MAT_READ32, MAT_WRITE32, MAT_READ64, MAT_WRITE64};
+
+	BasicMemoryTest(int size);
+	~BasicMemoryTest();
 		
-		int getIR();
-		
-		void setSP(long address);
-		
-		int getW(int n);
-		void setW(int n, int value);
-		
-		long getA();
-		long getB();
-		ALUctrlFlag getALUctrl();
-		
-		long getALUout();
-		
-		void runIF();
-		int runID();
-		int runEXI();
+	void relocateManual();
+	void writeBinaryAsTextELF (string basename);
+	
+	MemAccessType getLastDataMemAccess();
+	void resetLastDataMemAccess();
+	
+	/*
+	 * Logs dos métodos da superclasse.
+	 */
+	uint32_t readInstruction32(uint64_t address);
+	int readData32(unsigned long address);
+	long readData64(unsigned long address);
+	void writeData32(unsigned long address, int value);
+	void writeData64(unsigned long address, long value);
+
+private:
+	MemAccessType lastDataMemAccess;
+	ofstream memLogStream;
+	
 };
+

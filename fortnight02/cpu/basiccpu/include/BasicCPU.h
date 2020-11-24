@@ -46,18 +46,15 @@
 #include "CPU.h"
 
 // Códigos de controle
-// ATIVIDADE FUTURA:
-//		Declarar todos os códigos de controle necessários no caminho
-//		de dados. Aqui já declaro ALUctrl, que dá o controle para a
-// 		ULA.
-//
-//		Será necessário adicionar novos códigos de controle à medida
-//		que são implementados suportes a novas instruções.
-enum ALUctrlFlag {NONE, ADD, SUB};
+enum ALUctrlFlag {ALU_UNDEF, ALU_NONE, ADD, SUB};
+enum MEMctrlFlag {MEM_UNDEF, MEM_NONE, READ32, WRITE32, READ64, WRITE64};
+enum WBctrlFlag {WB_UNDEF, WB_NONE, RegWrite};
 		
 class BasicCPU: public CPU
 {
 	protected:
+	
+	
 		/**
 		 * Registradores da CPU.
 		 *
@@ -66,11 +63,11 @@ class BasicCPU: public CPU
 		 */
 		 
 		// Registrador PC
-		long PC;
+		uint64_t PC;
 		
 		// Registrador SP
 		// 		Registrador SP (stack pointer), de 64 bits
-		long SP;
+		uint64_t SP;
 		
 		// Banco de registradores inteiros
 		//		Declara os registradores Rn descritos no documento
@@ -80,59 +77,74 @@ class BasicCPU: public CPU
 		//		usados como registradores de 64	bits, com nomes X0-X30 ou
 		//		podem ser usados como registradores	de 32 bits, com nomes
 		//		W0-W30.
-		long R[31];
+		uint64_t R[31];
+		uint64_t *Rd;
 		
 		/**
 		 * Lê registrador inteiro de 32 bits.
 		 */
-		int getW(int n);
+		int32_t getW(int n);
 
 		/**
 		 * Escreve registrador inteiro de 32 bits.
 		 */
-		void setW(int n, int value);
+		void setW(int n, int32_t value);
 
 		/**
 		 * Lê registrador inteiro de 64 bits.
 		 */
-		int getX(int n);
+		int64_t getX(int n);
 
 		/**
 		 * Escreve registrador inteiro de 64 bits.
 		 */
-		void setX(int n, long value);
+		void setX(int n, int64_t value);
 
 		// Registradores auxiliares
-		// ATIVIDADE FUTURA:
-		//		Declarar todos os registradores auxiliares do caminho de
-		//		dados. Aqui já declaro os registradores A, B e ALUout.
-		//		Será necessário adicionar novos registradores em atividade
-		//		futura
 		
 		// IR (instruction register), 32 bits, saída do estágio de busca
 		// da instrução (IF)
-		int IR; 
+		uint32_t IR; 
 		
 		// A, 64 bits, saída 1 do estágio de decodificação da instrução (ID)
 		// (Rn lido do banco de registradores)
-		long A;
+		int64_t A;
 		
 		// B, 64 bits, saída 2 do estágio de decodificação da instrução (ID)
 		// (Rm lido do banco de registradores ou valor imediato lido
 		// diretamente da instrução
-		long B;
+		int64_t B;
 		
 		// ALUctrl, enum, saída 3 do estágio de decodificação da instrução (ID),
 		// armazena o código de controle da ULA.
-		ALUctrlFlag ALUctrl = ALUctrlFlag::NONE;
-		
+		ALUctrlFlag ALUctrl = ALUctrlFlag::ALU_UNDEF;
+
 		// fpOP, bool, saída 4 do estágio de decodificação da instrução (ID),
 		// informa se a operação é inteira ou ponto flutuante.
 		bool fpOP = false;
 
+		// MEMctrl, enum, saída 5 do estágio de decodificação da instrução
+		// (ID), informa se haverá acesso de leitura (READ), escrita (WRITE)
+		// ou nenhum (NONE) acesso à memória de dados no estágio de acesso
+		// à memória de dados (MEM).
+		MEMctrlFlag MEMctrl = MEMctrlFlag::MEM_UNDEF;
+
+		// MEMctrl, enum, saída 6 do estágio de decodificação da instrução
+		// (ID), informa se haverá escrita (WRITE) ou não (NONE) de valor
+		// (proveniente de EXI, EXF ou MEM) em algum registrador de destino. 
+		WBctrlFlag WBctrl = WBctrlFlag::WB_UNDEF;
+
+		// MemtoReg, bool, saída 7 do estágio de decodificação da instrução
+		// (ID), informa se haverá leitura (true) ou não (false) de dados
+		// na memória.
+		bool MemtoReg = false;
+
 		// ALUout, 64 bits, saída do estágio de execução de operação
 		// inteira (EXI)
-		long ALUout;
+		int64_t ALUout;
+
+		// MDR, 64 bits, saída do estágio de acesso à memória de dados (MEM).
+		int64_t MDR;
 
 		/**
 		 * Caminho de dados (Datapath)
@@ -212,7 +224,7 @@ class BasicCPU: public CPU
 		/**
 		 * Métodos herdados de CPU
 		 */
-		int run(long startAddress);
+		int run(uint64_t startAddress);
 		
 	private:
 		/**

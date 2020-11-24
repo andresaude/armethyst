@@ -46,5 +46,5 @@ class BasicProcessor: public Processor
 	public:
 		BasicProcessor(Memory* _memory);
 		
-		int run(int startAddress);
+		int run(uint64_t startAddress);
 };

@@ -35,6 +35,9 @@
 
 #include "BasicCPU.h"
 
+#include <iostream>
+using namespace std;
+
 BasicCPU::BasicCPU(Memory *memory) {
 	this->memory = memory;
 }
@@ -42,7 +45,7 @@ BasicCPU::BasicCPU(Memory *memory) {
 /**
  * Métodos herdados de CPU
  */
-int BasicCPU::run(long startAddress)
+int BasicCPU::run(uint64_t startAddress)
 {
 
 	// inicia PC com o valor de startAddress
@@ -75,7 +78,7 @@ int BasicCPU::run(long startAddress)
  */
 void BasicCPU::IF()
 {
-	IR = memory->readInt(PC);
+	IR = memory->readInstruction32(PC);
 };
 
 /**
@@ -97,7 +100,7 @@ int BasicCPU::ID()
 	//		Acrescente os cases no switch já iniciado, para detectar o grupo
 	//		APENAS PARA A INSTRUÇÃO A SEGUIR:
 	//				'add w1, w1, w0'
-	//		que aparece na linha 40 de isummation.S e no endereço 0x74
+	//		que aparece na linha 43 de isummation.S e no endereço 0x68
 	//		de txt_isummation.o.txt.
 	//
 	// 		Deve-se detectar em IR o grupo da qual a instrução faz parte e
@@ -134,7 +137,8 @@ int BasicCPU::ID()
  *		   1: se a instrução não estiver implementada.
  */
 int BasicCPU::decodeDataProcImm() {
-	int n, d, imm;
+	unsigned int n, d;
+	int imm;
 	
 	/* Add/subtract (immediate) (pp. 233-234)
 		This section describes the encoding of the Add/subtract (immediate)
@@ -157,13 +161,27 @@ int BasicCPU::decodeDataProcImm() {
 			}
 			imm = (IR & 0x003FFC00) >> 10;
 			B = imm;
-
+			
+			// registrador destino
+			d = (IR & 0x0000001F);
+			if (d == 31) {
+				Rd = &SP;
+			} else {
+				Rd = &(R[d]);
+			}
+			
 			// atribuir ALUctrl
 			ALUctrl = ALUctrlFlag::SUB;
 			
-			// ATIVIDADE FUTURA: implementar informações para os estágios
-			// MEM e WB.
-
+			// atribuir MEMctrl
+			MEMctrl = MEMctrlFlag::MEM_NONE;
+			
+			// atribuir WBctrl
+			WBctrl = WBctrlFlag::RegWrite;
+			
+			// atribuir MemtoReg
+			MemtoReg = false;
+			
 			return 0;
 		default:
 			// instrução não implementada
@@ -210,7 +228,7 @@ int BasicCPU::decodeDataProcReg() {
 	//		acrescentar um switch no estilo do switch de decodeDataProcImm,
 	//		e implementar APENAS PARA A INSTRUÇÃO A SEGUIR:
 	//				'add w1, w1, w0'
-	//		que aparece na linha 40 de isummation.S e no endereço 0x74
+	//		que aparece na linha 43 de isummation.S e no endereço 0x68
 	//		de txt_isummation.o.txt.
 	
 	
@@ -248,7 +266,7 @@ int BasicCPU::EXI()
 	//		Acrescente os cases no switch já iniciado, para acrescentar a
 	//		execução APENAS PARA A INSTRUÇÃO A SEGUIR:
 	//				'add w1, w1, w0'
-	//		que aparece na linha 40 de isummation.S e no endereço 0x74
+	//		que aparece na linha 43 de isummation.S e no endereço 0x68
 	//		de txt_isummation.o.txt.
 	//
 	// 		Verifique que ALUctrlFlag já tem declarado o tipo de operação
@@ -294,7 +312,12 @@ int BasicCPU::EXF()
  */
 int BasicCPU::MEM()
 {
+	// TODO
+	// Implementar o switch (MEMctrl) case MEMctrlFlag::XXX com as
+	// chamadas aos métodos corretos que implementam cada caso de
+	// acesso à memória de dados.
 	// não implementado
+
 	return 1;
 }
 
@@ -308,6 +331,11 @@ int BasicCPU::MEM()
  */
 int BasicCPU::WB()
 {
+	// TODO
+	// Implementar o switch (WBctrl) case WBctrlFlag::XXX com as
+	// atribuições corretas do registrador destino, quando houver, ou
+	// return 0 no caso WBctrlFlag::WB_NONE.
+	
 	// não implementado
 	return 1;
 }
@@ -320,28 +348,28 @@ int BasicCPU::WB()
 /**
  * Lê registrador inteiro de 32 bits.
  */
-int BasicCPU::getW(int n) {
-	long wn = 0x00000000FFFFFFFF & R[n];
-	return ((int) wn);
+int32_t BasicCPU::getW(int n) {
+	uint32_t wn = 0x00000000FFFFFFFF & R[n];
+	return ((int32_t) wn);
 }
 
 /**
  * Escreve registrador inteiro de 32 bits.
  */
-void BasicCPU::setW(int n, int value) {
-	R[n] = (long)value;
+void BasicCPU::setW(int n, int32_t value) {
+	R[n] = (uint64_t)((uint32_t)value);
 }
 
 /**
  * Lê registrador inteiro de 64 bits.
  */
-int BasicCPU::getX(int n) {
-	return R[n];
+int64_t BasicCPU::getX(int n) {
+	return (int64_t)R[n];
 }
 
 /**
  * Escreve registrador inteiro de 32 bits.
  */
-void BasicCPU::setX(int n, long value) {
-	R[n] = value;
+void BasicCPU::setX(int n, int64_t value) {
+	R[n] = (uint64_t)value;
 }

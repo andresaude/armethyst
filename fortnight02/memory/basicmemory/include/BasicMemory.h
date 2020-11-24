@@ -1,16 +1,10 @@
 /* ----------------------------------------------------------------------------
-	
-	(EN) Processor - A single core processor with a basic CPU. Part or armethyst
-	project.
-	
-    armethyst - A simple ARM Simulator written in C++ for Computer Architecture
+
+    (EN) armethyst - A simple ARM Simulator written in C++ for Computer Architecture
     teaching purposes. Free software licensed under the MIT License (see license
     below).
 
-	(PT) Processor - Um processador de núcleo único com uma CPU básica. Parte do
-	projeto armethyst.
-	
-    armethyst - Um simulador ARM simples escrito em C++ para o ensino de
+    (PT) armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
     (veja a licença, em inglês, abaixo).
 
@@ -42,15 +36,48 @@
 #pragma once
 
 #include "Memory.h"
-#include "CPU.h"
+#include <string>
+#include <fstream>
 
-class Processor
+using namespace std;
+
+class BasicMemory : public Memory
 {
-	public:
-		virtual int run(uint64_t startAddress) = 0;
+public:
+	BasicMemory(int size);
+	~BasicMemory();
 
-	protected:
-		Memory *memory;
-		CPU *cpu;
+	void loadBinary(std::string filename);
+	void writeBinaryAsText (std::string basename);
+
+	/**
+	 * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
+	 */
+	uint32_t readInstruction32(uint64_t address);
+
+	/**
+	 * Lê um dado de 32 bits considerando um endereçamento em bytes.
+	 */
+	int readData32(unsigned long address);
+
+	/**
+	 * Lê um dado de 64 bits considerando um endereçamento em bytes.
+	 */
+	long readData64(unsigned long address);
+	
+	/**
+	 * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
+	 */
+	void writeData32(unsigned long address, int value);
+
+	/**
+	 * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
+	 */
+	void writeData64(unsigned long address, long value);
+
+protected:
+	char* data;        //memory data
+	unsigned short fileSize;    //size of the loaded binary file
+
 };
 
