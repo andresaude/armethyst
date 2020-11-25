@@ -38,13 +38,7 @@
 class Util
 {
 	public:
-		/**
-		 * Look at a 32-bit floating point value as a 32-bit unsigned
-		 * integer without conversion (the binary code remains unchanged).
-		 */
-	//	uint32_t floatAsUint32(float value);
-	//	float uint32AsFloat(uint32_t value);
-	
+
 		/**
 		 * Look at a 32-bit floating point value as a 64-bit unsigned
 		 * integer without conversion (the binary code remains unchanged

@@ -34,20 +34,6 @@
 */
 
 #include "Util.h"
-#include <cstdint>
-
-using namespace std;
-
-/* 
-uint32_t Util::floatAsUint32(float value);
-float Util::uint32AsFloat(uint32_t value);
-
-uint64_t Util::floatAsUint64Low(float value);	
-float Util::uint64LowAsFloat(uint64_t value);
-
-uint64_t Util::doubleAsUint64(double value);
-double Util::uint64AsDouble(uint64_t value);
- */
 
 uint64_t Util::floatAsUint64Low(float value)
 {

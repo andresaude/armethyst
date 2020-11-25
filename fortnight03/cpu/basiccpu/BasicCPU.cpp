@@ -122,15 +122,19 @@ int BasicCPU::ID()
 		case 0x1A000000:
 			return decodeDataProcReg();
 			break;
-		// TODO: implementar os TRÊS GRUPOS A SEGUIR
+		
+		// TODO
+		// implementar o GRUPO A SEGUIR
+		//
+		// x111 Data Processing -- Scalar Floating-Point and Advanced SIMD on page C4-288
+
+		
+		// ATIVIDADE FUTURA
+		// implementar os DOIS GRUPOS A SEGUIR
+		//
 		// 101x Loads and Stores on page C4-237
 		// 101x Branches, Exception Generating and System instructions on page C4-237
 		
-		// x111 Data Processing -- Scalar Floating-Point and Advanced SIMD on page C4-288
-		case 0x0E000000: 
-		case 0x1E000000:
-			return decodeDataProcFloat();
-			break;
 		default:
 			return 1; // instrução não implementada
 	}
@@ -288,18 +292,26 @@ int BasicCPU::decodeDataProcReg() {
 }
 
 /**
- * ATIVIDADE FUTURA: Decodifica instruções do grupo
+ * Decodifica instruções do grupo
  * 		x111 Data Processing -- Scalar Floating-Point and Advanced SIMD
  * 				on page C4-288
  *
  * Retorna 0: se executou corretamente e
  *		   1: se a instrução não estiver implementada.
  */
- #include <iostream>
- using namespace std;
 int BasicCPU::decodeDataProcFloat() {
 	unsigned int n,m,d;
 
+	// TODO
+	// Acrescente os cases no switch já iniciado, para implementar a
+	// decodificação das instruções a seguir:
+	//		1. Em fpops.S
+	//			1.1 'fadd s0, s0, s0'
+	//				linha 42 de fpops.S, endereço 0x80 de txt_fpops.o.txt
+	//				Seção C7.2.43 FADD (scalar), p. 1346 do manual.
+	//
+	// Verifique que ALUctrlFlag já tem declarados os tipos de
+	// operação executadas pelas instruções acima.
 	switch (IR & 0xFF20FC00)
 	{
 		case 0x1E203800:
@@ -317,12 +329,6 @@ int BasicCPU::decodeDataProcFloat() {
 			m = (IR & 0x001F0000) >> 16;
 			B = getSasInt(m);
 
-			cout << "n=" << n << "; m=" << m << ";\n\n";
-			cout << "V[n]=" << V[n] << "; V[m]=" << V[m] << ";\n\n";
-			cout << "A=" << A << "; B=" << B << ";\n\n";
-			cout << "fA=" << getS(n) << "; fB=" << getS(m) << ";\n\n";
-			cout << "fAconv=" << Util::uint64LowAsFloat(A) << "; fBconv=" << Util::uint64LowAsFloat(B) << ";\n\n";
-			
 			// registrador destino
 			d = (IR & 0x0000001F);
 			Rd = &(V[d]);
@@ -340,6 +346,7 @@ int BasicCPU::decodeDataProcFloat() {
 			MemtoReg = false;
 			
 			return 0;
+
 		default:
 			// instrução não implementada
 			return 1;
@@ -372,9 +379,6 @@ int BasicCPU::EXI()
 	// operação executadas pelas instruções acima.
 	switch (ALUctrl)
 	{
-		case ALUctrlFlag::ADD:
-			ALUout = A + B;
-			return 0;
 		case ALUctrlFlag::SUB:
 			ALUout = A - B;
 			return 0;
@@ -404,22 +408,17 @@ int BasicCPU::EXF()
 	// Acrescente os cases no switch já iniciado, para implementar a
 	// execução das instruções a seguir:
 	//		1. Em fpops.S:
-	//			'fsub	s0, s1, s0' (linha 45 do .S endereço 0x8C)
-	//			'fadd	s0, s0, s0' (linha 45 do .S endereço 0x80)
+	//			'fadd	s0, s0, s0' (linha 42 do .S endereço 0x80)
 	//
 	// Verifique que ALUctrlFlag já tem declarados os tipos de
 	// operação executadas pelas instruções acima.
-	cout << "#### EXF ####\n\n";
+
 	if (fpOp == FPOpFlag::FP_REG_32) {
+		// 32-bit implementation
 		float fA = Util::uint64LowAsFloat(A);
 		float fB = Util::uint64LowAsFloat(B);
-		cout << "#### EXF ####\n\n";
-		cout << "fAconv=" << fA << "; fBconv=" << fB << ";\n\n";
 		switch (ALUctrl)
 		{
-			case ALUctrlFlag::ADD:
-				ALUout = Util::floatAsUint64Low(fA + fB);
-				return 0;
 			case ALUctrlFlag::SUB:
 				ALUout = Util::floatAsUint64Low(fA - fB);
 				return 0;

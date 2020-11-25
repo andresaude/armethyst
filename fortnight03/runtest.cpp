@@ -79,30 +79,6 @@ int main()
 #define TEST_FILE_02 "fpops.o"
 #define TEST_FILE_03 "isummation.o"
 
-/* 	int64_t i = -5;
-	uint64_t ui = i;
-	int64_t ii = 7;
-	uint64_t uii = ii;
-	cout << "i=" <<i<<"; ui="<<ui<<"; ii="<<ii<<"; uii="<<uii<<"; i-ii="<<i-ii<<"; ui-uii="<<ui-uii<<"; (int64_t)(ui-uii)="<<(int64_t)(ui-uii)<<";\n\n";
-	exit(1); */
-
-	double dA = -0.7;
-	uint64_t udA = Util::doubleAsUint64(dA);
-	double dB = 0.5;
-	uint64_t udB = Util::doubleAsUint64(dB);
-	double ddA = Util::uint64AsDouble(udA);
-	double ddB = Util::uint64AsDouble(udB);
-	cout << "dA=" <<dA<<"; udA="<<udA<<"; dB="<<dB<<"; udB="<<udB<<"; ddA="<<ddA<<"; ddB="<<ddB<<"; ddA-ddB="<<ddA-ddB<<";\n\n";
-
-	float fA = -0.7;
-	uint64_t ufA = Util::floatAsUint64Low(fA);
-	double fB = 0.5;
-	uint64_t ufB = Util::floatAsUint64Low(fB);
-	double ffA = Util::uint64LowAsFloat(ufA);
-	double ffB = Util::uint64LowAsFloat(ufB);
-	cout << "fA=" <<fA<<"; ufA="<<ufA<<"; fB="<<fB<<"; ufB="<<ufB<<"; ffA="<<ffA<<"; ffB="<<ffB<<"; ffA-ffB="<<ffA-ffB<<";\n\n";
-
-
 	// create memory
 	BasicMemoryTest* memory = new BasicMemoryTest(MEMORY_SIZE);
 
@@ -113,7 +89,9 @@ int main()
 	//	Como não temos o caminho de dados completo, faremos apenas testes.
 	test01(cpu, memory, TEST_FILE_01);
 	test02(cpu, memory, TEST_FILE_02);
-	test03(cpu, memory, TEST_FILE_03);
+	
+	// ATIVIDADE FUTURA
+	//test03(cpu, memory, TEST_FILE_03);
 	
 	return 0;
 }
