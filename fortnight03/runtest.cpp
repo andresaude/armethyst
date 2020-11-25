@@ -237,6 +237,7 @@ void test02(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	xpctdB = Util::floatAsUint64Low(fB); // valor arbitrário para s0
 	cpu->setS(1,fA); // temos que fazer s1 valer xpctdA
 	cpu->setS(0,fB); // temos que fazer s0 valer xpctdB
+	//cout << "A=" << cpu->getS(1) << "; B=" << cpu->getS(0) << ";\n\n";	
 	xpctdALUctrl = ALUctrlFlag::SUB;
 	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
 	xpctdWBctrl = WBctrlFlag::RegWrite;
