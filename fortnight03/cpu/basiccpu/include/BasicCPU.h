@@ -80,26 +80,57 @@ class BasicCPU: public CPU
 		uint64_t R[31];
 		uint64_t *Rd;
 		
+		// Banco de registradores ponto flutuante
+		//	Declara os registradores Vn descritos no documento
+		// 	armV8ppB181-B182_registradores.pdf. Veja que o documento
+		// 	explica que o ARMv8 tem o conjunto de registradores
+		//	V0-V31 (portanto 32 registradores) de 128 bits, que
+		//  podem ser usados de diversas formas. Nesta versão do
+		//	armethyst o tamanho máximo suportado é de 64 bits, e
+		//	são suportados apenas as nomenclaturas D0-D31, de 64
+		//	bits, e S0-S31, de 32 bits.
+		uint64_t V[32];
+
 		/**
 		 * Lê registrador inteiro de 32 bits.
 		 */
-		int32_t getW(int n);
+		uint32_t getW(int n);
 
 		/**
 		 * Escreve registrador inteiro de 32 bits.
 		 */
-		void setW(int n, int32_t value);
+		void setW(int n, uint32_t value);
 
 		/**
 		 * Lê registrador inteiro de 64 bits.
 		 */
-		int64_t getX(int n);
+		uint64_t getX(int n);
 
 		/**
 		 * Escreve registrador inteiro de 64 bits.
 		 */
-		void setX(int n, int64_t value);
+		void setX(int n, uint64_t value);
 
+		/**
+		 * Lê registrador ponto flutuante de 32 bits.
+		 */
+		float getS(int n);
+
+		/**
+		 * Escreve registrador ponto flutuante de 32 bits.
+		 */
+		void setS(int n, float value);
+
+		/**
+		 * Lê registrador ponto flutuante de 64 bits.
+		 */
+		double getD(int n);
+
+		/**
+		 * Escreve registrador ponto flutuante de 64 bits.
+		 */
+		void setD(int n, double value);
+		
 		// Registradores auxiliares
 		
 		// IR (instruction register), 32 bits, saída do estágio de busca
@@ -108,12 +139,12 @@ class BasicCPU: public CPU
 		
 		// A, 64 bits, saída 1 do estágio de decodificação da instrução (ID)
 		// (Rn lido do banco de registradores)
-		int64_t A;
+		uint64_t A;
 		
 		// B, 64 bits, saída 2 do estágio de decodificação da instrução (ID)
 		// (Rm lido do banco de registradores ou valor imediato lido
 		// diretamente da instrução
-		int64_t B;
+		uint64_t B;
 		
 		// ALUctrl, enum, saída 3 do estágio de decodificação da instrução (ID),
 		// armazena o código de controle da ULA.
@@ -141,10 +172,10 @@ class BasicCPU: public CPU
 
 		// ALUout, 64 bits, saída do estágio de execução de operação
 		// inteira (EXI)
-		int64_t ALUout;
+		uint64_t ALUout;
 
 		// MDR, 64 bits, saída do estágio de acesso à memória de dados (MEM).
-		int64_t MDR;
+		uint64_t MDR;
 
 		/**
 		 * Caminho de dados (Datapath)

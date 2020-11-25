@@ -34,9 +34,7 @@
 */
 
 #include "BasicCPU.h"
-
-#include <iostream>
-using namespace std;
+#include "Util.h"
 
 BasicCPU::BasicCPU(Memory *memory) {
 	this->memory = memory;
@@ -97,16 +95,16 @@ void BasicCPU::IF()
 int BasicCPU::ID()
 {
 	// TODO
-	//		Acrescente os cases no switch já iniciado, para detectar o grupo
-	//		APENAS PARA A INSTRUÇÃO A SEGUIR:
-	//				'add w1, w1, w0'
-	//		que aparece na linha 43 de isummation.S e no endereço 0x68
-	//		de txt_isummation.o.txt.
+	// Acrescente os cases no switch já iniciado, para detectar o grupo
 	//
-	// 		Deve-se detectar em IR o grupo da qual a instrução faz parte e
-	//		chamar a função 'decodeGROUP()' para	o grupo detectado, onde GROUP
-	//		é o sufixo do nome da função que decodifica as instruções daquele
-	//		grupo. Para 'add w1, w1, w0' deve-se chamar 'decodeDataProcReg()'.
+	// Deve-se detectar em IR o grupo da qual a instrução faz parte e
+	//		chamar a função 'decodeGROUP()' para o grupo detectado,
+	// 		onde GROUP é o sufixo do nome da função que decodifica as
+	//		instruções daquele grupo.
+	//
+	// Exemplos:
+	//		1. Para 'sub sp, sp, #32', chamar 'decodeDataProcImm()',
+	//		2. Para 'add w1, w1, w0', chamar 'decodeDataProcReg()',
 	
 	int group = IR & 0x1E000000; // bits 28-25
 	
@@ -118,8 +116,16 @@ int BasicCPU::ID()
 			fpOP = false;
 			return decodeDataProcImm();
 			break;
-		// case TODO
 		// x101 Data Processing -- Register on page C4-278
+		case 0x0A000000: 
+		case 0x1A000000:
+			fpOP = false;
+			return decodeDataProcReg();
+			break;
+		// TODO: implementar os TRÊS GRUPOS A SEGUIR
+		// 101x Loads and Stores on page C4-237
+		// 101x Branches, Exception Generating and System instructions on page C4-237
+		// x111 Data Processing -- Scalar Floating-Point and Advanced SIMD on page C4-288
 		default:
 			return 1; // instrução não implementada
 	}
@@ -225,13 +231,53 @@ int BasicCPU::decodeLoadStore() {
  */
 int BasicCPU::decodeDataProcReg() {
 	// TODO
-	//		acrescentar um switch no estilo do switch de decodeDataProcImm,
-	//		e implementar APENAS PARA A INSTRUÇÃO A SEGUIR:
-	//				'add w1, w1, w0'
-	//		que aparece na linha 43 de isummation.S e no endereço 0x68
-	//		de txt_isummation.o.txt.
+	// acrescentar switches e cases à medida em que forem sendo
+	// adicionadas implementações de instruções de processamento
+	// de dados por registrador.
+
+	unsigned int n,m,shift,imm6;
 	
-	
+	switch (IR & 0xFF200000)
+	{
+		
+		// C6.2.5 ADD (shifted register) p. C6-688
+		case 0x8B000000:
+		case 0x0B000000:
+			// sf == 1 not implemented (64 bits)
+			if (IR & 0x80000000) return 1;
+		
+			n=(IR & 0x000003E0) >> 5;
+			A=getW(n);
+		
+			m=(IR & 0x001F0000) >> 16;
+			int BW=getW(m);
+		
+			shift=(IR & 0x00C00000) >> 22;
+			imm6=(IR & 0x0000FC00) >> 10;
+		
+			switch(shift){
+				case 0://LSL
+					B= BW << imm6;
+					break;
+				case 1://LSR
+					B=((unsigned long)BW) >> imm6;
+					break;
+				case 2://ASR
+					B=((signed long)BW) >> imm6;
+					break;
+				default:
+					return 1;
+			}
+
+			// atribuir ALUctrl
+			ALUctrl = ALUctrlFlag::ADD;
+			
+			// ATIVIDADE FUTURA:
+			// implementar informações para os estágios MEM e WB.
+
+			return 0;
+	}
+		
 	// instrução não implementada
 	return 1;
 }
@@ -263,19 +309,20 @@ int BasicCPU::decodeDataProcFloat() {
 int BasicCPU::EXI()
 {
 	// TODO
-	//		Acrescente os cases no switch já iniciado, para acrescentar a
-	//		execução APENAS PARA A INSTRUÇÃO A SEGUIR:
-	//				'add w1, w1, w0'
-	//		que aparece na linha 43 de isummation.S e no endereço 0x68
-	//		de txt_isummation.o.txt.
+	// Acrescente os cases no switch já iniciado, para implementar a
+	// execução das instruções a seguir:
+	//		1. Em isummation.S:
+	//			'add w1, w1, w0' (linha 43 do .S endereço 0x68)
 	//
-	// 		Verifique que ALUctrlFlag já tem declarado o tipo de operação
-	//		executada por 'add w1, w1, w0'.
+	// Verifique que ALUctrlFlag já tem declarados os tipos de
+	// operação executadas pelas instruções acima.
 	switch (ALUctrl)
 	{
+		case ALUctrlFlag::ADD:
+			ALUout = A + B;
+			return 0;
 		case ALUctrlFlag::SUB:
 			ALUout = A - B;
-			// ATIVIDADE FUTURA: setar flags NCZF
 			return 0;
 		default:
 			// Controle não implementado
@@ -290,9 +337,9 @@ int BasicCPU::EXI()
 /**
  * Execução lógico aritmética em ponto flutuante.
  * 
- * Executa a operação lógico aritmética em ponto flutuant com base
- * nos valores dos registradores auxiliares AF, BF e ALUctrl, e coloca o
- * resultado no registrador auxiliar ALUoutF.
+ * Executa a operação lógico aritmética em ponto flutuante com base
+ * nos valores dos registradores auxiliares A, B e ALUctrl, e coloca
+ * o resultado no registrador auxiliar ALUout.
  *
  * Retorna 0: se executou corretamente e
  *		   1: se o controle presente em ALUctrl não estiver implementado.
@@ -348,28 +395,56 @@ int BasicCPU::WB()
 /**
  * Lê registrador inteiro de 32 bits.
  */
-int32_t BasicCPU::getW(int n) {
-	uint32_t wn = 0x00000000FFFFFFFF & R[n];
-	return ((int32_t) wn);
+uint32_t BasicCPU::getW(int n) {
+	return (uint32_t)(0x00000000FFFFFFFF & R[n]);
 }
 
 /**
  * Escreve registrador inteiro de 32 bits.
  */
-void BasicCPU::setW(int n, int32_t value) {
-	R[n] = (uint64_t)((uint32_t)value);
+void BasicCPU::setW(int n, uint32_t value) {
+	R[n] = (uint64_t)value;
 }
 
 /**
  * Lê registrador inteiro de 64 bits.
  */
-int64_t BasicCPU::getX(int n) {
-	return (int64_t)R[n];
+uint64_t BasicCPU::getX(int n) {
+	return R[n];
 }
 
 /**
- * Escreve registrador inteiro de 32 bits.
+ * Escreve registrador inteiro de 64 bits.
  */
-void BasicCPU::setX(int n, int64_t value) {
-	R[n] = (uint64_t)value;
+void BasicCPU::setX(int n, uint64_t value) {
+	R[n] = value;
+}
+
+
+/**
+ * Lê registrador ponto flutuante de 32 bits.
+ */
+float BasicCPU::getS(int n) {
+	return Util::uint64LowAsFloat(V[n]);
+}
+
+/**
+ * Escreve registrador ponto flutuante de 32 bits.
+ */
+void BasicCPU::setS(int n, float value) {
+	V[n] = Util::floatAsUint64Low(value);
+}
+
+/**
+ * Lê registrador ponto flutuante de 64 bits.
+ */
+double BasicCPU::getD(int n) {
+	return Util::uint64AsDouble(V[n]);
+}
+
+/**
+ * Escreve registrador ponto flutuante de 64 bits.
+ */
+void BasicCPU::setD(int n, double value) {
+	V[n] = Util::doubleAsUint64(value);
 }

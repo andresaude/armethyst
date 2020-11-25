@@ -6,11 +6,11 @@
 
     (PT) armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
-    (veja a licença, em inglês, abaixo).
+    (veja a licenÃ§a, em inglÃªs, abaixo).
 
     (EN) MIT LICENSE:
 
-    Copyright 2020 André Vital Saúde
+    Copyright 2020 AndrÃ© Vital SaÃºde
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -33,49 +33,41 @@
    ----------------------------------------------------------------------------
 */
 
-#include "Memory.h"
-#include <string>
-#include <fstream>
+#include "Util.h"
+#include <cstdint>
 
 using namespace std;
 
-class BasicMemory : public Memory
+/* 
+uint32_t Util::floatAsUint32(float value);
+float Util::uint32AsFloat(uint32_t value);
+
+uint64_t Util::floatAsUint64Low(float value);	
+float Util::uint64LowAsFloat(uint64_t value);
+
+uint64_t Util::doubleAsUint64(double value);
+double Util::uint64AsDouble(uint64_t value);
+ */
+
+uint64_t Util::floatAsUint64Low(float value)
 {
-public:
-	BasicMemory(int size);
-	~BasicMemory();
+	return (uint64_t)(*((uint32_t *)(&value)));
+}
 
-	void loadBinary(std::string filename);
-	void writeBinaryAsText (std::string basename);
+float Util::uint64LowAsFloat(uint64_t value)
+{
+	uint32_t low_uint = 0x00000000FFFFFFFF & value;
+	float *low_fp = (float *)(&low_uint);
+	return (*low_fp);
+}
 
-	/**
-	 * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
-	 */
-	uint32_t readInstruction32(uint64_t address);
+uint64_t Util::doubleAsUint64(double value)
+{
+	uint64_t *ui_point = (uint64_t *)(&value);
+	return *ui_point;
+}
 
-	/**
-	 * Lê um dado de 32 bits considerando um endereçamento em bytes.
-	 */
-	int readData32(unsigned long address);
-
-	/**
-	 * Lê um dado de 64 bits considerando um endereçamento em bytes.
-	 */
-	long readData64(unsigned long address);
-	
-	/**
-	 * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
-	 */
-	void writeData32(unsigned long address, int value);
-
-	/**
-	 * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
-	 */
-	void writeData64(unsigned long address, long value);
-
-protected:
-	char* data;        //memory data
-	unsigned short fileSize;    //size of the loaded binary file
-
-};
-
+double Util::uint64AsDouble(uint64_t value) {
+	double *fp = (double *)(&value);
+	return *fp;
+}
