@@ -70,7 +70,8 @@ class BasicCPUTest: public BasicCPU
 		uint64_t getA();
 		uint64_t getB();
 
-		// EXI
+		// EX
+		int runEXF();
 		int runEXI();
 		uint64_t getALUout();
 		

@@ -50,14 +50,15 @@ using namespace std;
 /*
  * Macros
  */
-#define CALLTEST() test(instruction,cpu,memory,startAddress,startSP,xpctdIR,xpctdA,xpctdB,xpctdALUctrl,xpctdMEMctrl,xpctdWBctrl,xpctdALUout,xpctdMDR,xpctdRd)
+#define CALLTEST() test(fpOp,instruction,cpu,memory,startAddress,startSP,xpctdIR,xpctdA,xpctdB,xpctdALUctrl,xpctdMEMctrl,xpctdWBctrl,xpctdALUout,xpctdMDR,xpctdRd)
 
-#define RESETTEST()	startAddress=-1;xpctdIR=-1;xpctdA=-1;xpctdB=-1;xpctdALUctrl=ALUctrlFlag::ALU_UNDEF;xpctdALUout=-1;xpctdMEMctrl=MEMctrlFlag::MEM_UNDEF;xpctdMDR=-1;xpctdWBctrl=WBctrlFlag::WB_UNDEF;xpctdRd=-1;cpu->resetFlags();memory->resetLastDataMemAccess();
+#define RESETTEST()	fpOp=false;startAddress=-1;xpctdIR=-1;xpctdA=-1;xpctdB=-1;xpctdALUctrl=ALUctrlFlag::ALU_UNDEF;xpctdALUout=-1;xpctdMEMctrl=MEMctrlFlag::MEM_UNDEF;xpctdMDR=-1;xpctdWBctrl=WBctrlFlag::WB_UNDEF;xpctdRd=-1;cpu->resetFlags();memory->resetLastDataMemAccess();
 
 void test01(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname);
 void test02(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname);
 void test03(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname);
-void test(string instruction,
+void test(bool fpOp,
+			string instruction,
 			BasicCPUTest* cpu,
 			BasicMemoryTest* memory,
 			long startAddress,
@@ -130,7 +131,8 @@ void loadBinary (BasicMemoryTest* memory, string fname)
 	memory->writeBinaryAsTextELF(fname);
 }
 
-#define TEST_HEADER string instruction;\
+#define TEST_HEADER bool fpOp;\
+		string instruction;\
 		uint64_t startAddress;\
 		uint64_t startSP = STARTSP;\
 		uint32_t xpctdIR;\
@@ -230,6 +232,7 @@ void test02(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	//
 	// Test FSUB (linha 45)
 	//
+	fpOp = true;
 	instruction = "fsub	s0, s1, s0";
 	startAddress = 0x8C; // endereço de 'fsub	s0, s1, s0'
 	xpctdIR = 0x1E203820;
@@ -237,12 +240,11 @@ void test02(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	xpctdB = Util::floatAsUint64Low(fB); // valor arbitrário para s0
 	cpu->setS(1,fA); // temos que fazer s1 valer xpctdA
 	cpu->setS(0,fB); // temos que fazer s0 valer xpctdB
-	//cout << "A=" << cpu->getS(1) << "; B=" << cpu->getS(0) << ";\n\n";	
 	xpctdALUctrl = ALUctrlFlag::SUB;
 	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
 	xpctdWBctrl = WBctrlFlag::RegWrite;
 	
-	xpctdALUout = Util::doubleAsUint64(fA-fB);
+	xpctdALUout = Util::floatAsUint64Low(fA-fB);
 	
 	xpctdRd = xpctdALUout;
 	
@@ -253,6 +255,7 @@ void test02(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	//
 	// Test FADD (linha 42)
 	//
+	fpOp = true;
 	instruction = "fadd s0, s0, s0";
 	startAddress = 0x80; // endereço de 'fadd s0, s0, s0'
 	xpctdIR = 0x1E202800;
@@ -538,20 +541,27 @@ void testID(BasicCPUTest* cpu,
 }
 
 /**
- * Testa o estágio EXI.
+ * Testa o estágio EX.
  */
-void testEXI(BasicCPUTest* cpu, long xpctdALUout)
+void testEX(BasicCPUTest* cpu, bool fpOp, long xpctdALUout)
 {
 	//
 	// Testa EXI (depende do sucesso no teste de ID)
 	//
-	cout << "Testing EXI..." << endl;
+	cout << "Testing EX..." << endl;
 	
 	// executa
-	int exierror = cpu->runEXI();
-	if (exierror) {
+	int exerror;
+	if (fpOp) {
+		cout << "\tfloat: testing EXF..." << endl;
+		exerror = cpu->runEXF();
+	} else {
+		cout << "\tinteger: testing EXI..." << endl;
+		exerror = cpu->runEXI();
+	}
+	if (exerror) {
 		cout << "Control not implemented: 0x" << cpu->getALUctrl() << endl;
-		cout << "EXI() FAILED!" << endl;
+		cout << "EX() FAILED!" << endl;
 		cout << "Exit..." << endl;
 		exit(1);
 	}
@@ -564,12 +574,12 @@ void testEXI(BasicCPUTest* cpu, long xpctdALUout)
 			<< setfill('0') << setw(8) << xpctdALUout << endl;
 	if (ALUout != xpctdALUout)
 	{
-		cout << "EXI() FAILED!" << endl;
+		cout << "EX() FAILED!" << endl;
 		cout << "Exit..." << endl;
 		exit(1);
 	}
 	
-	cout << "EXI() SUCCESS!" << endl;
+	cout << "EX() SUCCESS!" << endl;
 }
 
 /**
@@ -733,7 +743,8 @@ void testWB(BasicCPUTest* cpu,
  * Testa o estágio IF e testa parcialmente os estágios ID e EXI, somente
  * para a instrução 'sub sp, sp, #16'.
  */
-void test(string instruction,
+void test(bool fpOp,
+			string instruction,
 			BasicCPUTest* cpu,
 			BasicMemoryTest* memory,
 			long startAddress,
@@ -776,7 +787,7 @@ void test(string instruction,
 			if (TEST_LEVEL > TEST_LEVEL_ID)
 			{
 				cout << "\n\nTEST_LEVEL: EX\n\n" << endl;
-				testEXI(cpu, xpctdALUout);
+				testEX(cpu, fpOp, xpctdALUout);
 
 				if (TEST_LEVEL > TEST_LEVEL_EX)
 				{

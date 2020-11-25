@@ -53,10 +53,10 @@ int BasicCPU::run(uint64_t startAddress)
 	while ((cpuError != CPUerrorCode::NONE) && !processFinished) {
 		IF();
 		ID();
-		if (fpOP) {
-			EXF();
-		} else {
+		if (fpOp == FPOpFlag::FP_UNDEF) {
 			EXI();
+		} else {
+			EXF();
 		}
 		MEM();
 		WB();
@@ -105,21 +105,21 @@ int BasicCPU::ID()
 	// Exemplos:
 	//		1. Para 'sub sp, sp, #32', chamar 'decodeDataProcImm()',
 	//		2. Para 'add w1, w1, w0', chamar 'decodeDataProcReg()',
-	
-	int group = IR & 0x1E000000; // bits 28-25
-	
+
+	// operação inteira como padrão
+	fpOp = FPOpFlag::FP_UNDEF;
+
+	int group = IR & 0x1E000000; // bits 28-25	
 	switch (group)
 	{
 		//100x Data Processing -- Immediate
 		case 0x10000000: // x = 0
 		case 0x12000000: // x = 1
-			fpOP = false;
 			return decodeDataProcImm();
 			break;
 		// x101 Data Processing -- Register on page C4-278
 		case 0x0A000000: 
 		case 0x1A000000:
-			fpOP = false;
 			return decodeDataProcReg();
 			break;
 		// TODO: implementar os TRÊS GRUPOS A SEGUIR
@@ -129,7 +129,6 @@ int BasicCPU::ID()
 		// x111 Data Processing -- Scalar Floating-Point and Advanced SIMD on page C4-288
 		case 0x0E000000: 
 		case 0x1E000000:
-			fpOP = true;
 			return decodeDataProcFloat();
 			break;
 		default:
@@ -308,17 +307,21 @@ int BasicCPU::decodeDataProcFloat() {
 			
 			// implementado apenas ftype='00'
 			if (IR & 0x00C00000) return 1;
+
+			fpOp = FPOpFlag::FP_REG_32;
 			
 			// ler A e B
 			n = (IR & 0x000003E0) >> 5;
-			A = getW(n); // 32-bit variant
+			A = getSasInt(n); // 32-bit variant
 
 			m = (IR & 0x001F0000) >> 16;
-			B = getW(m);
+			B = getSasInt(m);
 
 			cout << "n=" << n << "; m=" << m << ";\n\n";
 			cout << "V[n]=" << V[n] << "; V[m]=" << V[m] << ";\n\n";
 			cout << "A=" << A << "; B=" << B << ";\n\n";
+			cout << "fA=" << getS(n) << "; fB=" << getS(m) << ";\n\n";
+			cout << "fAconv=" << Util::uint64LowAsFloat(A) << "; fBconv=" << Util::uint64LowAsFloat(B) << ";\n\n";
 			
 			// registrador destino
 			d = (IR & 0x0000001F);
@@ -397,6 +400,34 @@ int BasicCPU::EXI()
  */
 int BasicCPU::EXF()
 {
+	// TODO
+	// Acrescente os cases no switch já iniciado, para implementar a
+	// execução das instruções a seguir:
+	//		1. Em fpops.S:
+	//			'fsub	s0, s1, s0' (linha 45 do .S endereço 0x8C)
+	//			'fadd	s0, s0, s0' (linha 45 do .S endereço 0x80)
+	//
+	// Verifique que ALUctrlFlag já tem declarados os tipos de
+	// operação executadas pelas instruções acima.
+	cout << "#### EXF ####\n\n";
+	if (fpOp == FPOpFlag::FP_REG_32) {
+		float fA = Util::uint64LowAsFloat(A);
+		float fB = Util::uint64LowAsFloat(B);
+		cout << "#### EXF ####\n\n";
+		cout << "fAconv=" << fA << "; fBconv=" << fB << ";\n\n";
+		switch (ALUctrl)
+		{
+			case ALUctrlFlag::ADD:
+				ALUout = Util::floatAsUint64Low(fA + fB);
+				return 0;
+			case ALUctrlFlag::SUB:
+				ALUout = Util::floatAsUint64Low(fA - fB);
+				return 0;
+			default:
+				// Controle não implementado
+				return 1;
+		}
+	}
 	// não implementado
 	return 1;
 }
@@ -482,7 +513,7 @@ float BasicCPU::getS(int n) {
 /**
  * Lê registrador ponto flutuante de 32 bits, sem conversão.
  */
-uint32_t getSasInt(int n)
+uint32_t BasicCPU::getSasInt(int n)
 {
 	return (uint32_t)(0x00000000FFFFFFFF & V[n]);
 }

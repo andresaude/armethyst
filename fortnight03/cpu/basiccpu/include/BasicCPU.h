@@ -46,6 +46,7 @@
 #include "CPU.h"
 
 // Códigos de controle
+enum FPOpFlag {FP_UNDEF,FP_REG_128,FP_REG_64,FP_REG_32,FP_REG_16,FP_REG_8,FP_VEC_128,FP_VEC_64};
 enum ALUctrlFlag {ALU_UNDEF, ALU_NONE, ADD, SUB};
 enum MEMctrlFlag {MEM_UNDEF, MEM_NONE, READ32, WRITE32, READ64, WRITE64};
 enum WBctrlFlag {WB_UNDEF, WB_NONE, RegWrite};
@@ -155,9 +156,10 @@ class BasicCPU: public CPU
 		// armazena o código de controle da ULA.
 		ALUctrlFlag ALUctrl = ALUctrlFlag::ALU_UNDEF;
 
-		// fpOP, bool, saída 4 do estágio de decodificação da instrução (ID),
-		// informa se a operação é inteira ou ponto flutuante.
-		bool fpOP = false;
+		// fpOp, enum, saída 4 do estágio de decodificação da
+		// instrução (ID), informa o modo de operação em ponto flutuante
+		// ou FP_UNDEF, se a operação é inteira.
+		FPOpFlag fpOp = FPOpFlag::FP_UNDEF;
 
 		// MEMctrl, enum, saída 5 do estágio de decodificação da instrução
 		// (ID), informa se haverá acesso de leitura (READ), escrita (WRITE)

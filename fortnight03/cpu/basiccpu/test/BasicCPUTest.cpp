@@ -49,7 +49,7 @@ void BasicCPUTest::setSP(uint64_t address) {
 
 void BasicCPUTest::resetFlags() {
 	ALUctrl = ALUctrlFlag::ALU_UNDEF;
-	fpOP = false;
+	fpOp = FPOpFlag::FP_UNDEF;
 	MEMctrl = MEMctrlFlag::MEM_UNDEF;
 	WBctrl = WBctrlFlag::WB_UNDEF;
 }
@@ -104,6 +104,10 @@ void BasicCPUTest::runIF() {
 
 int BasicCPUTest::runID() {
 	return ID();
+}
+
+int BasicCPUTest::runEXF() {
+	return EXF();
 }
 
 int BasicCPUTest::runEXI() {
