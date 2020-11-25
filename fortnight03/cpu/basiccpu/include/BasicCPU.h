@@ -117,6 +117,11 @@ class BasicCPU: public CPU
 		float getS(int n);
 
 		/**
+		 * Lê registrador ponto flutuante de 32 bits, sem conversão.
+		 */
+		uint32_t getSasInt(int n);
+
+		/**
 		 * Escreve registrador ponto flutuante de 32 bits.
 		 */
 		void setS(int n, float value);

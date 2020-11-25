@@ -429,6 +429,14 @@ float BasicCPU::getS(int n) {
 }
 
 /**
+ * Lê registrador ponto flutuante de 32 bits, sem conversão.
+ */
+uint32_t getSasInt(int n)
+{
+	return (uint32_t)(0x00000000FFFFFFFF & V[n]);
+}
+
+/**
  * Escreve registrador ponto flutuante de 32 bits.
  */
 void BasicCPU::setS(int n, float value) {
