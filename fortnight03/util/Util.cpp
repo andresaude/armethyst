@@ -54,10 +54,13 @@ uint64_t Util::floatAsUint64Low(float value)
 	return (uint64_t)(*((uint32_t *)(&value)));
 }
 
+#include <iostream>
+using namespace std;
 float Util::uint64LowAsFloat(uint64_t value)
 {
 	uint32_t low_uint = 0x00000000FFFFFFFF & value;
 	float *low_fp = (float *)(&low_uint);
+	cout << "value=" << value << "; low_uint=" << low_uint << "; *low_fp=" << *low_fp << "; \n\n";
 	return (*low_fp);
 }
 

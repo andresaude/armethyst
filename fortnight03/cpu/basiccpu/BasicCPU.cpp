@@ -125,7 +125,13 @@ int BasicCPU::ID()
 		// TODO: implementar os TRÊS GRUPOS A SEGUIR
 		// 101x Loads and Stores on page C4-237
 		// 101x Branches, Exception Generating and System instructions on page C4-237
+		
 		// x111 Data Processing -- Scalar Floating-Point and Advanced SIMD on page C4-288
+		case 0x0E000000: 
+		case 0x1E000000:
+			fpOP = true;
+			return decodeDataProcFloat();
+			break;
 		default:
 			return 1; // instrução não implementada
 	}
@@ -290,7 +296,52 @@ int BasicCPU::decodeDataProcReg() {
  * Retorna 0: se executou corretamente e
  *		   1: se a instrução não estiver implementada.
  */
+ #include <iostream>
+ using namespace std;
 int BasicCPU::decodeDataProcFloat() {
+	unsigned int n,m,d;
+
+	switch (IR & 0xFF20FC00)
+	{
+		case 0x1E203800:
+			//C7.2.159 FSUB (scalar) on page C7-1615
+			
+			// implementado apenas ftype='00'
+			if (IR & 0x00C00000) return 1;
+			
+			// ler A e B
+			n = (IR & 0x000003E0) >> 5;
+			A = getW(n); // 32-bit variant
+
+			m = (IR & 0x001F0000) >> 16;
+			B = getW(m);
+
+			cout << "n=" << n << "; m=" << m << ";\n\n";
+			cout << "V[n]=" << V[n] << "; V[m]=" << V[m] << ";\n\n";
+			cout << "A=" << A << "; B=" << B << ";\n\n";
+			
+			// registrador destino
+			d = (IR & 0x0000001F);
+			Rd = &(V[d]);
+			
+			// atribuir ALUctrl
+			ALUctrl = ALUctrlFlag::SUB;
+			
+			// atribuir MEMctrl
+			MEMctrl = MEMctrlFlag::MEM_NONE;
+			
+			// atribuir WBctrl
+			WBctrl = WBctrlFlag::RegWrite;
+			
+			// atribuir MemtoReg
+			MemtoReg = false;
+			
+			return 0;
+		default:
+			// instrução não implementada
+			return 1;
+	}
+
 	// instrução não implementada
 	return 1;
 }
