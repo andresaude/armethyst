@@ -237,15 +237,14 @@ void test02(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	instruction = "fadd s0, s0, s0";
 	startAddress = 0x80; // endereço de 'fadd s0, s0, s0'
 	xpctdIR = 0x1E202800;
-	xpctdA = Util::floatAsUint64Low(fA);	// valor arbitrário para s1
-	xpctdB = Util::floatAsUint64Low(fB); // valor arbitrário para s0
-	cpu->setS(1,fA); // temos que fazer s1 valer xpctdA
-	cpu->setS(0,fB); // temos que fazer s0 valer xpctdB
+	xpctdA = Util::floatAsUint64Low(fA); // valor arbitrário para s0
+	xpctdB = xpctdA; // s0 + s0
+	cpu->setS(0,fA); // temos que fazer s0 valer xpctdA
 	xpctdALUctrl = ALUctrlFlag::ADD;
 	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
 	xpctdWBctrl = WBctrlFlag::RegWrite;
 	
-	xpctdALUout = Util::doubleAsUint64(fA+fB);
+	xpctdALUout = Util::doubleAsUint64(fA+fA);
 	
 	xpctdRd = xpctdALUout;
 	
