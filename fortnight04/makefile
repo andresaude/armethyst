@@ -9,13 +9,13 @@ testcmd:
 CC=g++
 CFLAGS=-std=c++14
 
-IDIR=./include
+IDIR=include
 ODIR=./obj
 
 # ###################
 # # armethyst
 # ###################
-IFLAGS=-I./$(IDIR) -I$(PROC_IDIR) -I$(CPU_IDIR) -I$(MEM_IDIR)
+IFLAGS=-I./$(IDIR) -I./util/$(IDIR) -I$(PROC_IDIR) -I$(CPU_IDIR) -I$(MEM_IDIR)
 
 #
 # Processor config (selecionar a implementação de Processador desejada)
@@ -25,7 +25,6 @@ IFLAGS=-I./$(IDIR) -I$(PROC_IDIR) -I$(CPU_IDIR) -I$(MEM_IDIR)
 #
 ProcImpl=BasicProcessor
 ProcImplDir=basicprocessor
-#ProcessorImpl=OutroProcessador
 
 #
 # CPU config (selecionar a implementação de CPU desejada)
@@ -37,19 +36,25 @@ ProcImplDir=basicprocessor
 #
 CPUImpl=BasicCPU
 CPUImplDir=basiccpu
-#CPUImpl=OutraCPU
 
 #
-# CPU config (selecionar a implementação de CPU desejada)
-#	CPUs disponíveis:
-#		- BasicCPU: a basic CPU with the following characteristics:
-#			- AArch64 ISA (limited), from ARMv8
-#			- MIPS datapath
-#		- OutraCPU: se houver outra implementação de CPU
+# Memory config (selecionar a implementação de Memória desejada)
+#	Memórias disponíveis:
+#		- BasicMemory - A single Von Neumann memory.
+#		- OutraMemoria: se houver outra implementação de Memória
 #
-MemImpl=SimpleMemory
-MemImplDir=simplememory
-#MemImpl=OtherMemory
+MemImpl=BasicMemory
+MemImplDir=basicmemory
+
+#
+# Factory
+#
+# fábrica de componentes.
+$(ODIR)/Factory.o: factory/Factory.cpp $(IDIR)/Factory.h $(IDIR)/config.h
+	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
+
+$(ODIR)/Util.o: util/Util.cpp util/$(IDIR)/Util.h $(IDIR)/config.h
+	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 
 #
 # Processor
@@ -78,22 +83,22 @@ $(ODIR)/CPUImpl.o: $(CPU_CFILES) $(CPU_DEPS)
 MEM_DIR=./memory/$(MemImplDir)
 MEM_IDIR=$(MEM_DIR)/$(IDIR)
 MEM_DEPS = $(MEM_IDIR)/$(MemImpl).h
-#MEM_DEPS = $(IDIR)/$(MemImpl).h
 MEM_CFILES = $(MEM_DIR)/$(MemImpl).cpp
 $(ODIR)/MemImpl.o: $(MEM_CFILES) $(MEM_DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 
+
 #
 # general
 #
-_OBJ = CPUImpl.o ProcessorImpl.o MemImpl.o
+_OBJ = CPUImpl.o ProcessorImpl.o MemImpl.o Factory.o Util.o
 $(ODIR)/%.o: %.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 
 #
 # armethyst
 #
-_DEPS = config.h CPU.h Memory.h Processor.h
+_DEPS = config.h CPU.h Memory.h Processor.h Factory.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 _MAINOBJ = armethyst.o $(_OBJ)
@@ -114,7 +119,6 @@ TEST_IFLAGS=$(IFLAGS) -I./$(TEST_IDIR) -I$(CPU_DIR)/$(TEST_IDIR) -I$(MEM_DIR)/$(
 # Memory test
 #
 MEM_TEST_CFILES = $(MEM_DIR)/$(TEST_DIR)/$(MemImpl)Test.cpp
-#$(ODIR)/MemoryTest.o: $(TEST_DIR)/MemoryTest.cpp $(TEST_IDIR)/MemoryTest.h 
 $(ODIR)/MemoryTest.o: $(MEM_TEST_CFILES) $(MEM_DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(TEST_IFLAGS)
 

@@ -34,25 +34,33 @@
 */
 
 #include "config.h"
+#include "Util.h"
 
-#include "SimpleMemoryTest.h"
+#include "BasicMemoryTest.h"
 #include "BasicCPUTest.h"
 
 #include <iostream>
 #include <iomanip>
+#include <string>
 
 using namespace std;
 
 #define STARTSP 0x1000 // endereço inicial da pilha: 4096
 
-#define CALLTEST() test(instruction,cpu,memory,startAddress,startSP,xpctdIR,xpctdA,xpctdB,xpctdALUctrl,xpctdMEMctrl,xpctdWBctrl,xpctdALUout,xpctdMDR,xpctdRd)
+/*
+ * Macros
+ */
+#define CALLTEST() test(fpOp,instruction,cpu,memory,startAddress,startSP,xpctdIR,xpctdA,xpctdB,xpctdALUctrl,xpctdMEMctrl,xpctdWBctrl,xpctdALUout,xpctdMDR,xpctdRd)
 
-#define RESETTEST()	startAddress=-1;xpctdIR=-1;xpctdA=-1;xpctdB=-1;xpctdALUctrl=ALUctrlFlag::ALU_UNDEF;xpctdALUout=-1;xpctdMEMctrl=MEMctrlFlag::MEM_UNDEF;xpctdMDR=-1;xpctdWBctrl=WBctrlFlag::WB_UNDEF;xpctdRd=-1;cpu->resetFlags();memory->resetLastDataMemAccess();
+#define RESETTEST()	fpOp=false;startAddress=-1;xpctdIR=-1;xpctdA=-1;xpctdB=-1;xpctdALUctrl=ALUctrlFlag::ALU_UNDEF;xpctdALUout=-1;xpctdMEMctrl=MEMctrlFlag::MEM_UNDEF;xpctdMDR=-1;xpctdWBctrl=WBctrlFlag::WB_UNDEF;xpctdRd=-1;cpu->resetFlags();memory->resetLastDataMemAccess();
 
-void test(BasicCPUTest* cpu, SimpleMemoryTest* memory);
-void test(string instruction,
+void test01(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname);
+void test02(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname);
+void test03(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname);
+void test(bool fpOp,
+			string instruction,
 			BasicCPUTest* cpu,
-			SimpleMemoryTest* memory,
+			BasicMemoryTest* memory,
 			long startAddress,
 			long startSP,
 			int xpctdIR,
@@ -66,61 +74,66 @@ void test(string instruction,
 			long xpctdRd);
 
 int main()
-{	
-	// (EN) create memory
-	// (PT) cria memória
-	SimpleMemoryTest* memory = new SimpleMemoryTest(MEMORY_SIZE);
-	
-	// (EN) create CPU
-	// (PT) cria CPU
-	BasicCPUTest *cpu = new BasicCPUTest(memory);
-		
-	// (EN) load executable binary
-	// (PT) carrega binário executável
-	memory->loadBinary(FILENAME);
-	memory->relocateManual();
-	
-	// (EN) create human readable representation of the binary file
-	// (PT) cria representação legível do arquivo binário
-	memory->writeBinaryAsText(FILENAME);
+{
+#define TEST_FILE_01 "isummation.o"
+#define TEST_FILE_02 "fpops.o"
+#define TEST_FILE_03 "isummation.o"
 
-	// (EN) create human readable representation of the binary file
-	// (PT) cria representação legível do arquivo binário
-	memory->writeBinaryAsTextELF(FILENAME);
+	// create memory
+	BasicMemoryTest* memory = new BasicMemoryTest(MEMORY_SIZE);
+
+	// create CPU
+	BasicCPUTest *cpu = new BasicCPUTest(memory);
 	
 	// Teste:
-	//		Como não temos o caminho de dados completo, faremos apenas testes.
-	test(cpu, memory);
+	//	Como não temos o caminho de dados completo, faremos apenas testes.
+	test01(cpu, memory, TEST_FILE_01);
+	test02(cpu, memory, TEST_FILE_02);
+	
+	// ATIVIDADE FUTURA
+	//test03(cpu, memory, TEST_FILE_03);
 	
 	return 0;
 }
 
-/**
- * Testa o estágio IF e testa parcialmente os estágios ID e EXI, somente
- * para as instruções 'sub sp, sp, #16' e 'add w1, w1, w0'.
- */
-void test(BasicCPUTest* cpu, SimpleMemoryTest* memory)
+void loadBinary (BasicMemoryTest* memory, string fname)
 {
-	string instruction;
+	// load executable binary
+	memory->loadBinary(fname);
+	memory->relocateManual();
+	
+	// create human readable representation of the binary file
+	memory->writeBinaryAsText(fname);
 
-	long startAddress;
-	long startSP = STARTSP;
+	// create human readable representation of the binary file
+	memory->writeBinaryAsTextELF(fname);
+}
 
-	int xpctdIR;
+#define TEST_HEADER bool fpOp;\
+		string instruction;\
+		uint64_t startAddress;\
+		uint64_t startSP = STARTSP;\
+		uint32_t xpctdIR;\
+		uint64_t xpctdA;\
+		uint64_t xpctdB;\
+		ALUctrlFlag xpctdALUctrl;\
+		MEMctrlFlag xpctdMEMctrl;\
+		WBctrlFlag xpctdWBctrl;\
+		uint64_t xpctdALUout;\
+		uint64_t xpctdMDR;\
+		uint64_t xpctdRd;\
+		RESETTEST();\
+		loadBinary(memory,fname);\
+		cout << "##################\n# " + fname + "\n##################\n\n\n";
 
-	long xpctdA;
-	long xpctdB;
-	ALUctrlFlag xpctdALUctrl;
-	MEMctrlFlag xpctdMEMctrl;
-	WBctrlFlag xpctdWBctrl;
+/**
+ * Testa as instruções 'sub sp, sp, #16' e 'add w1, w1, w0' do
+ * arquivo isummation.S.
+ */
+void test01(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
+{
 
-	long xpctdALUout;
-
-	long xpctdMDR;
-
-	long xpctdRd;
-
-	RESETTEST();
+	TEST_HEADER
 	
 	//
 	// Test SUB
@@ -152,7 +165,7 @@ void test(BasicCPUTest* cpu, SimpleMemoryTest* memory)
 	xpctdA = 7; 			// valor arbitrário para w1
 	xpctdB = 16; 		// valor arbitrário para w0
 	cpu->setW(1,xpctdA); // temos que fazer w1 valer xpctdA
-	cpu->setW(0,xpctdB); // temos que fazer w1 valer xpctdB
+	cpu->setW(0,xpctdB); // temos que fazer w0 valer xpctdB
 	xpctdALUctrl = ALUctrlFlag::ADD;
 	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
 	xpctdWBctrl = WBctrlFlag::RegWrite;
@@ -162,7 +175,90 @@ void test(BasicCPUTest* cpu, SimpleMemoryTest* memory)
 
 	CALLTEST();
 	RESETTEST();
+}
 
+/**
+ * Testa as instruções fadd e fsub do arquivo fpops.S.
+ */
+void test02(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
+{
+	float fA = -0.7;
+	float fB = 0.5;
+
+	TEST_HEADER
+
+	//
+	// Test SUB
+	//
+	instruction = "sub sp, sp, #32";
+	startAddress = 0x40; // endereço de 'sub sp, sp, #32'
+	xpctdIR = 0xD10083FF;
+	xpctdA = STARTSP; // SP deve ser lido para A
+	xpctdB = 32; 	 // valor imediato da instrução sub
+	xpctdALUctrl = ALUctrlFlag::SUB;
+	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+	
+	xpctdALUout = xpctdA - xpctdB;
+	
+	xpctdRd = xpctdALUout;
+	
+	CALLTEST();
+	RESETTEST();
+		
+
+	//
+	// Test FSUB (linha 45)
+	//
+	fpOp = true;
+	instruction = "fsub	s0, s1, s0";
+	startAddress = 0x8C; // endereço de 'fsub	s0, s1, s0'
+	xpctdIR = 0x1E203820;
+	xpctdA = Util::floatAsUint64Low(fA);	// valor arbitrário para s1
+	xpctdB = Util::floatAsUint64Low(fB); // valor arbitrário para s0
+	cpu->setS(1,fA); // temos que fazer s1 valer xpctdA
+	cpu->setS(0,fB); // temos que fazer s0 valer xpctdB
+	xpctdALUctrl = ALUctrlFlag::SUB;
+	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+	
+	xpctdALUout = Util::floatAsUint64Low(fA-fB);
+	
+	xpctdRd = xpctdALUout;
+	
+	CALLTEST();
+	RESETTEST();
+		
+
+	//
+	// Test FADD (linha 58)
+	//
+	fpOp = true;
+	instruction = "fadd	s1, s1, s0";
+	startAddress = 0xBC; // endereço de 'fadd	s1, s1, s0'
+	xpctdIR = 0x1E202821;
+	xpctdA = Util::floatAsUint64Low(fA);	// valor arbitrário para s1
+	xpctdB = Util::floatAsUint64Low(fB); // valor arbitrário para s0
+	cpu->setS(1,fA); // temos que fazer s1 valer xpctdA
+	cpu->setS(0,fB); // temos que fazer s0 valer xpctdB
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+	
+	xpctdALUout = Util::floatAsUint64Low(fA+fB);
+	
+	xpctdRd = xpctdALUout;
+	
+	CALLTEST();
+	RESETTEST();
+}
+
+/**
+ * Testa as instruções de load e store do arquivo isummation.S.
+ */
+void test03(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
+{
+	TEST_HEADER
 
 	//
 	// Test ldrsw x1, [sp, 12] (linha 38)
@@ -297,9 +393,6 @@ void test(BasicCPUTest* cpu, SimpleMemoryTest* memory)
 
 	CALLTEST();
 	RESETTEST();
-
-	
-
 }
 
 /**
@@ -310,21 +403,21 @@ void testIF(BasicCPUTest* cpu, int xpctdIR)
 	//
 	// Testa IF
 	//
-	cout << "Testando IF..." << endl;
+	cout << "Testing IF..." << endl;
 	
 	// executa
 	cpu->runIF();
 	cout << "	IR=0x" << cpu->getIR()
-			<< ";  Esperado IR=0x" << xpctdIR << endl;
+			<< ";  Expected IR=0x" << xpctdIR << endl;
 	
 	// verifica
 	if (cpu->getIR() != xpctdIR) {
-		cout << "IF() FALHOU!" << endl;
-		cout << "Saindo..." << endl;
+		cout << "IF() FAILED!" << endl;
+		cout << "Exit..." << endl;
 		exit(1);
 	}
 
-	cout << "IF() passou no teste!" << endl << endl;
+	cout << "IF() SUCCESS!" << endl << endl;
 }
 
 /**
@@ -341,89 +434,113 @@ void testID(BasicCPUTest* cpu,
 	//
 	// Testa ID (depende do sucesso no teste de IF)
 	//
-	cout << "Testando ID..." << endl;
+	cout << "Testing ID..." << endl;
 	
 	// executa
 	int iderror = cpu->runID();
 	
 	// verifica se a instrução está implementada
 	if (iderror) {
-		cout << "Instrução não implementada: 0x" << xpctdIR << endl;
-		cout << "Saindo..." << endl;
+		cout << "Instruction not implemented: 0x" << xpctdIR << endl;
+		cout << "Exit..." << endl;
 		exit(1);
 	}
 
 	// verifica leitura de registradores
+	cout << "ID() testing registers reading..." << endl << endl;
 	long A = cpu->getA();
 	long B = cpu->getB();
 	cout << "	A=0x" << A << "; B=0x" << B << endl;
-	cout << "Esperados: A=0x" << xpctdA << "; B=0x" << xpctdB << endl;
+	cout << "Expected: A=0x" << xpctdA << "; B=0x" << xpctdB << endl;
 	if ((A != xpctdA) || (B != xpctdB)){
-		cout << "ID() FALHOU na leitura de registradores!" << endl;
-		cout << "Saindo..." << endl;
+		cout << "ID() FAILED on registers reading!" << endl;
+		cout << "Exit..." << endl;
 		exit(1);
 	}
 
-	cout << "ID() passou no teste de leitura de registradores!" << endl << endl;
+	cout << "ID() succeeded on registers reading!" << endl << endl;
 
-	// verifica ALUctrl
-	ALUctrlFlag ALUctrl = cpu->getALUctrl();
-	cout << "	ALUctrl=0x" << ALUctrl << "; Esperado ALUctrl=0x"
-			<< xpctdALUctrl << endl;
-	if (ALUctrl != xpctdALUctrl)
+	if (TEST_LEVEL > TEST_LEVEL_ID)
 	{
-		cout << "ID() FALHOU no set do controle da ULA!" << endl;
-		cout << "Saindo..." << endl;
-		exit(1);
+
+		cout << "ID() testing ALU control set..." << endl << endl;
+		
+		// verifica ALUctrl
+		ALUctrlFlag ALUctrl = cpu->getALUctrl();
+		cout << "	ALUctrl=0x" << ALUctrl << "; Expected ALUctrl=0x"
+				<< xpctdALUctrl << endl;
+		if (ALUctrl != xpctdALUctrl)
+		{
+			cout << "ID() FAILED on ALU control set!" << endl;
+			cout << "Exit..." << endl;
+			exit(1);
+		}
+
+		cout << "ID() succeeded on ALU control set!" << endl << endl;
+
+		if (TEST_LEVEL > TEST_LEVEL_EX)
+		{
+			cout << "ID() testing MEM control set..." << endl << endl;
+		
+			// verifica MEMctrl
+			MEMctrlFlag MEMctrl = cpu->getMEMctrl();
+			cout << "	MEMctrl=0x" << MEMctrl << "; Expected MEMctrl=0x"
+					<< xpctdMEMctrl << endl;
+			if (MEMctrl != xpctdMEMctrl)
+			{
+				cout << "ID() FAILED on MEM control set!" << endl;
+				cout << "Exit..." << endl;
+				exit(1);
+			}
+
+			cout << "ID() succeeded on MEM control set!" << endl << endl;
+
+			if (TEST_LEVEL > TEST_LEVEL_MEM)
+			{
+				cout << "ID() testing WB control set..." << endl << endl;
+
+				// verifica WBctrl
+				WBctrlFlag WBctrl = cpu->getWBctrl();
+				cout << "	WBctrl=0x" << WBctrl << "; Expected WBctrl=0x"
+						<< xpctdWBctrl << endl;
+				if (WBctrl != xpctdWBctrl)
+				{
+					cout << "ID() FAILED on WB control set!" << endl;
+					cout << "Exit..." << endl;
+					exit(1);
+				}
+
+				cout << "ID() succeeded on WB control set!" << endl << endl;
+			}
+		}
 	}
 
-	cout << "ID() passou no teste de set do controle da ULA!" << endl << endl;
-
-	// verifica MEMctrl
-	MEMctrlFlag MEMctrl = cpu->getMEMctrl();
-	cout << "	MEMctrl=0x" << MEMctrl << "; Esperado MEMctrl=0x"
-			<< xpctdMEMctrl << endl;
-	if (MEMctrl != xpctdMEMctrl)
-	{
-		cout << "ID() FALHOU no set do controle de MEM!" << endl;
-		cout << "Saindo..." << endl;
-		exit(1);
-	}
-
-	cout << "ID() passou no teste de set do controle de MEM!" << endl << endl;
-
-	// verifica WBctrl
-	WBctrlFlag WBctrl = cpu->getWBctrl();
-	cout << "	WBctrl=0x" << WBctrl << "; Esperado WBctrl=0x"
-			<< xpctdWBctrl << endl;
-	if (WBctrl != xpctdWBctrl)
-	{
-		cout << "ID() FALHOU no set do controle de WB!" << endl;
-		cout << "Saindo..." << endl;
-		exit(1);
-	}
-
-	cout << "ID() passou no teste de set do controle de WB!" << endl << endl;
-
-	cout << "ID() passou nos testes de set dos controles da ULA, MEM e WB!" << endl << endl;
+	cout << "ID() SUCCESS!" << endl << endl;
 }
 
 /**
- * Testa o estágio EXI.
+ * Testa o estágio EX.
  */
-void testEXI(BasicCPUTest* cpu, long xpctdALUout)
+void testEX(BasicCPUTest* cpu, bool fpOp, long xpctdALUout)
 {
 	//
 	// Testa EXI (depende do sucesso no teste de ID)
 	//
-	cout << "Testando EXI..." << endl;
+	cout << "Testing EX..." << endl;
 	
 	// executa
-	int exierror = cpu->runEXI();
-	if (exierror) {
-		cout << "Controle não implementado: 0x" << cpu->getALUctrl() << endl;
-		cout << "EXI() FALHOU!" << endl;
-		cout << "Saindo..." << endl;
+	int exerror;
+	if (fpOp) {
+		cout << "\tfloat: testing EXF..." << endl;
+		exerror = cpu->runEXF();
+	} else {
+		cout << "\tinteger: testing EXI..." << endl;
+		exerror = cpu->runEXI();
+	}
+	if (exerror) {
+		cout << "Control not implemented: 0x" << cpu->getALUctrl() << endl;
+		cout << "EX() FAILED!" << endl;
+		cout << "Exit..." << endl;
 		exit(1);
 	}
 	
@@ -431,23 +548,23 @@ void testEXI(BasicCPUTest* cpu, long xpctdALUout)
 	long ALUout = cpu->getALUout();
 	cout << "	ALUout=0x"
 			<< setfill('0') << setw(8) << ALUout
-			<< "; Esperado ALUout=0x"
+			<< "; Expected ALUout=0x"
 			<< setfill('0') << setw(8) << xpctdALUout << endl;
 	if (ALUout != xpctdALUout)
 	{
-		cout << "EXI() FALHOU!" << endl;
-		cout << "Saindo..." << endl;
+		cout << "EX() FAILED!" << endl;
+		cout << "Exit..." << endl;
 		exit(1);
 	}
 	
-	cout << "EXI() passou no teste!" << endl;
+	cout << "EX() SUCCESS!" << endl;
 }
 
 /**
  * Testa o estágio MEM - NAO IMPLEMENTADO.
  */
 void testMEM(BasicCPUTest* cpu,
-				SimpleMemoryTest* memory,
+				BasicMemoryTest* memory,
 				MEMctrlFlag xpctdMEMctrl,
 				long xpctdALUout)
 {
@@ -459,9 +576,9 @@ void testMEM(BasicCPUTest* cpu,
 	// executa
 	int memerror = cpu->runMEM();
 	if (memerror) {
-		cout << "Controle não implementado: 0x" << cpu->getMEMctrl() << endl;
-		cout << "MEM() FALHOU!" << endl;
-		cout << "Saindo..." << endl;
+		cout << "Control not implemented: 0x" << cpu->getMEMctrl() << endl;
+		cout << "MEM() FAILED!" << endl;
+		cout << "Exit..." << endl;
 		exit(1);
 	}
 		
@@ -469,27 +586,27 @@ void testMEM(BasicCPUTest* cpu,
 	// Test access type
 	//
 	
-	// map MEMctrlFlag to SimpleMemoryTest::MemAccessType
-	SimpleMemoryTest::MemAccessType xpctdLastDataMemAccess;
+	// map MEMctrlFlag to BasicMemoryTest::MemAccessType
+	BasicMemoryTest::MemAccessType xpctdLastDataMemAccess;
 	switch (xpctdMEMctrl) {
 		case MEMctrlFlag::MEM_NONE:
-			xpctdLastDataMemAccess = SimpleMemoryTest::MemAccessType::MAT_NONE;
+			xpctdLastDataMemAccess = BasicMemoryTest::MemAccessType::MAT_NONE;
 			break;
 		case MEMctrlFlag::READ32:
-			xpctdLastDataMemAccess = SimpleMemoryTest::MemAccessType::MAT_READ32;
+			xpctdLastDataMemAccess = BasicMemoryTest::MemAccessType::MAT_READ32;
 			break;
 		case MEMctrlFlag::READ64:
-			xpctdLastDataMemAccess = SimpleMemoryTest::MemAccessType::MAT_READ64;
+			xpctdLastDataMemAccess = BasicMemoryTest::MemAccessType::MAT_READ64;
 			break;
 		case MEMctrlFlag::WRITE32:
-			xpctdLastDataMemAccess = SimpleMemoryTest::MemAccessType::MAT_WRITE32;
+			xpctdLastDataMemAccess = BasicMemoryTest::MemAccessType::MAT_WRITE32;
 			break;
 		case MEMctrlFlag::WRITE64:
-			xpctdLastDataMemAccess = SimpleMemoryTest::MemAccessType::MAT_WRITE64;
+			xpctdLastDataMemAccess = BasicMemoryTest::MemAccessType::MAT_WRITE64;
 			break;
 	}
 
-	SimpleMemoryTest::MemAccessType lastDataMemAccess =
+	BasicMemoryTest::MemAccessType lastDataMemAccess =
 			memory->getLastDataMemAccess();
 	cout << "	Testing MEM access type..." << endl;
 	cout << "		Expected access type: "
@@ -569,14 +686,14 @@ void testWB(BasicCPUTest* cpu,
 	//
 	// Testa WB (depende do sucesso nos testes de estágios anteriores)
 	//
-	cout << "Testando WB..." << endl;
+	cout << "Testing WB..." << endl;
 	
 	// executa
 	int wberror = cpu->runWB();
 	if (wberror) {
-		cout << "Controle não implementado: 0x" << cpu->getWBctrl() << endl;
-		cout << "WB() FALHOU!" << endl;
-		cout << "Saindo..." << endl;
+		cout << "Control not implemented: 0x" << cpu->getWBctrl() << endl;
+		cout << "WB() FAILED!" << endl;
+		cout << "Exit..." << endl;
 		exit(1);
 	}
 	
@@ -586,27 +703,28 @@ void testWB(BasicCPUTest* cpu,
 	{
 		cout << "	Rd=0x"
 			<< setfill('0') << setw(8) << Rd
-			<< "; Esperado xpctdRd=0x"
+			<< "; Expected xpctdRd=0x"
 			<< setfill('0') << setw(8) << xpctdRd << endl;
 			
 		if (Rd != xpctdRd)
 		{
-			cout << "WB() FALHOU!" << endl;
-			cout << "Saindo..." << endl;
+			cout << "WB() FAILED!" << endl;
+			cout << "Exit..." << endl;
 			exit(1);
 		}
 	}
 	
-	cout << "WB() passou no teste!" << endl;
+	cout << "WB() SUCCESS!" << endl;
 }
 
 /**
  * Testa o estágio IF e testa parcialmente os estágios ID e EXI, somente
  * para a instrução 'sub sp, sp, #16'.
  */
-void test(string instruction,
+void test(bool fpOp,
+			string instruction,
 			BasicCPUTest* cpu,
-			SimpleMemoryTest* memory,
+			BasicMemoryTest* memory,
 			long startAddress,
 			long startSP,
 			int xpctdIR,
@@ -619,34 +737,52 @@ void test(string instruction,
 			long xpctdMDR,
 			long xpctdRd)
 {
-	
 	cout << "#\n#\n#\n# Testing '" << instruction << "'...\n#\n#\n#\n" << endl;
 
+	cout << "\n\nTEST_LEVEL: Starting processor...\n\n" << endl;
 	
 	// saídas em hexadecimal
-	cout << hex;	
+	cout << hex;
 	
-	cout << "Iniciando processador..." << endl;
+	cout << "Starting processor..." << endl;
 	cout << "	PC: 0x" << startAddress << endl;
 	cout << "	SP: 0x" << startSP << endl;
 	cpu->run(startAddress);
 	cpu->setSP(startSP);
-	cout << "processor iniciado." << endl << endl;
-	
-	testIF(cpu, xpctdIR);
+	cout << "processor started!." << endl << endl;
 
-	testID(cpu, xpctdIR, xpctdA, xpctdB, xpctdALUctrl,
-			xpctdMEMctrl, xpctdWBctrl);
-	
-	testEXI(cpu, xpctdALUout);
+	if (TEST_LEVEL > TEST_LEVEL_START)
+	{
+		cout << "\n\nTEST_LEVEL: IF\n\n" << endl;
+		testIF(cpu, xpctdIR);
+		
+		if (TEST_LEVEL > TEST_LEVEL_IF)
+		{
+			cout << "\n\nTEST_LEVEL: ID\n\n" << endl;
+			testID(cpu, xpctdIR, xpctdA, xpctdB, xpctdALUctrl,
+					xpctdMEMctrl, xpctdWBctrl);
 
-	testMEM(cpu, memory, xpctdMEMctrl, xpctdALUout);
+			if (TEST_LEVEL > TEST_LEVEL_ID)
+			{
+				cout << "\n\nTEST_LEVEL: EX\n\n" << endl;
+				testEX(cpu, fpOp, xpctdALUout);
+
+				if (TEST_LEVEL > TEST_LEVEL_EX)
+				{
+					cout << "\n\nTEST_LEVEL: MEM\n\n" << endl;
+					testMEM(cpu, memory, xpctdMEMctrl, xpctdALUout);
+					if (TEST_LEVEL > TEST_LEVEL_MEM)
+					{
+						cout << "\n\nTEST_LEVEL: WB\n\n" << endl;
+						testWB(cpu, xpctdWBctrl, xpctdRd);
+					}
+				}
+			}
+		}
+	}
+	cout << "SUCCESS!" << endl;
 	
-	testWB(cpu, xpctdWBctrl, xpctdRd);
-	
-	cout << "SUCESSO!" << endl;
-	
-	cout << "Fim '" << instruction << "'." << endl << endl << endl;
+	cout << "End '" << instruction << "'." << endl << endl << endl;
 	
 }
 
