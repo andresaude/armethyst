@@ -48,7 +48,7 @@ BasicProcessor::BasicProcessor(Memory* _memory)
 	cpu = new BasicCPU(memory);
 }
 
-int BasicProcessor::run(int startAddress)
+int BasicProcessor::run(uint64_t startAddress)
 {
 	return cpu->run(startAddress);
 }

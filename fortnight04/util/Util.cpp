@@ -1,22 +1,16 @@
 /* ----------------------------------------------------------------------------
-	
-	(EN) BasicProcessor - A single core processor with a basic CPU. Part of
-	armethyst project.
-	
-    armethyst - A simple ARM Simulator written in C++ for Computer Architecture
+
+    (EN) armethyst - A simple ARM Simulator written in C++ for Computer Architecture
     teaching purposes. Free software licensed under the MIT License (see license
     below).
 
-	(PT) BasicProcessor - Um processador de núcleo único com uma CPU básica.
-	Parte do projeto armethyst.
-	
-    armethyst - Um simulador ARM simples escrito em C++ para o ensino de
+    (PT) armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
-    (veja a licença, em inglês, abaixo).
+    (veja a licenÃ§a, em inglÃªs, abaixo).
 
     (EN) MIT LICENSE:
 
-    Copyright 2020 André Vital Saúde
+    Copyright 2020 AndrÃ© Vital SaÃºde
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -39,12 +33,27 @@
    ----------------------------------------------------------------------------
 */
 
-#include "Processor.h"
+#include "Util.h"
 
-class BasicProcessor: public Processor
+uint64_t Util::floatAsUint64Low(float value)
 {
-	public:
-		BasicProcessor(Memory* _memory);
-		
-		int run(uint64_t startAddress);
-};
+	return (uint64_t)(*((uint32_t *)(&value)));
+}
+
+float Util::uint64LowAsFloat(uint64_t value)
+{
+	uint32_t low_uint = 0x00000000FFFFFFFF & value;
+	float *low_fp = (float *)(&low_uint);
+	return (*low_fp);
+}
+
+uint64_t Util::doubleAsUint64(double value)
+{
+	uint64_t *ui_point = (uint64_t *)(&value);
+	return *ui_point;
+}
+
+double Util::uint64AsDouble(uint64_t value) {
+	double *fp = (double *)(&value);
+	return *fp;
+}

@@ -1,22 +1,16 @@
 /* ----------------------------------------------------------------------------
-	
-	(EN) BasicProcessor - A single core processor with a basic CPU. Part of
-	armethyst project.
-	
-    armethyst - A simple ARM Simulator written in C++ for Computer Architecture
+
+    (EN) armethyst - A simple ARM Simulator written in C++ for Computer Architecture
     teaching purposes. Free software licensed under the MIT License (see license
     below).
 
-	(PT) BasicProcessor - Um processador de núcleo único com uma CPU básica.
-	Parte do projeto armethyst.
-	
-    armethyst - Um simulador ARM simples escrito em C++ para o ensino de
+    (PT) armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
-    (veja a licença, em inglês, abaixo).
+    (veja a licenÃ§a, em inglÃªs, abaixo).
 
     (EN) MIT LICENSE:
 
-    Copyright 2020 André Vital Saúde
+    Copyright 2020 AndrÃ© Vital SaÃºde
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -39,12 +33,35 @@
    ----------------------------------------------------------------------------
 */
 
-#include "Processor.h"
+#include <cstdint>
 
-class BasicProcessor: public Processor
+class Util
 {
 	public:
-		BasicProcessor(Memory* _memory);
+
+		/**
+		 * Look at a 32-bit floating point value as a 64-bit unsigned
+		 * integer without conversion (the binary code remains unchanged
+		 * and the number is extended to 64 bits with 32 zeros left).
+		 */
+		static uint64_t floatAsUint64Low(float value);
 		
-		int run(uint64_t startAddress);
+		/**
+		 * Look at the lower 32 bits of a 64-bit unsigned integer as a
+		 * 32-bit floating point value without conversion (the binary
+		 * code remains unchanged).
+		 */
+		static float uint64LowAsFloat(uint64_t value);
+	
+		/**
+		 * Look at a 64-bit floating point value as a 64-bit unsigned
+		 * integer without conversion (the binary code remains unchanged).
+		 */
+		static uint64_t doubleAsUint64(double value);
+		
+		/**
+		 * Look at a 64-bit unsigned integer value as a 64-bit floating
+		 * point without conversion (the binary code remains unchanged).
+		 */
+		static double uint64AsDouble(uint64_t value);
 };
