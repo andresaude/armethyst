@@ -35,44 +35,18 @@
 
 #pragma once
 
-#include "config.h"
-
 #include <string>
-#include <fstream>
-
-using namespace std;
 
 class Memory
 {
-public:
+	public:
+		virtual void loadBinary(std::string filename) = 0;
+		virtual void writeBinaryAsText (std::string basename) = 0;
 
-	virtual void loadBinary(string filename) = 0;
-	virtual void writeBinaryAsText (string basename) = 0;
-	
-	/**
-	 * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
-	 */
-	virtual unsigned int readInstruction32(unsigned long address) = 0;
+		/**
+		 * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
+		 */
+		virtual uint32_t readInstruction32(uint64_t address) = 0;
 
-	/**
-	 * Lê um dado de 32 bits considerando um endereçamento em bytes.
-	 */
-	virtual int readData32(unsigned long address) = 0;
-
-	/**
-	 * Lê um dado de 64 bits considerando um endereçamento em bytes.
-	 */
-	virtual long readData64(unsigned long address) = 0;
-	
-	/**
-	 * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
-	 */
-	virtual void writeData32(unsigned long address, int value) = 0;
-
-	/**
-	 * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
-	 */
-	virtual void writeData64(unsigned long address, long value) = 0;
-	
 };
 

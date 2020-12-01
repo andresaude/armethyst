@@ -43,34 +43,38 @@ BasicCPUTest::BasicCPUTest(Memory *memory)
 {
 }
 	
-void BasicCPUTest::setSP(long address) {
+void BasicCPUTest::setSP(uint64_t address) {
 	SP = address;
 }
 
 void BasicCPUTest::resetFlags() {
 	ALUctrl = ALUctrlFlag::ALU_UNDEF;
-	fpOP = false;
+	fpOp = FPOpFlag::FP_UNDEF;
 	MEMctrl = MEMctrlFlag::MEM_UNDEF;
 	WBctrl = WBctrlFlag::WB_UNDEF;
 }
 	
-int BasicCPUTest::getIR() {
+uint32_t BasicCPUTest::getIR() {
 	return IR;
 }
 
-void BasicCPUTest::setW(int n, int value) {
+void BasicCPUTest::setW(int n, uint32_t value) {
 	BasicCPU::setW(n,value);
 }
 
-void BasicCPUTest::setX(int n, long value) {
+void BasicCPUTest::setX(int n, uint64_t value) {
 	BasicCPU::setX(n,value);
 }
 
-long BasicCPUTest::getA() {
+void BasicCPUTest::setS(int n, float value) {
+	BasicCPU::setS(n,value);
+}
+
+uint64_t BasicCPUTest::getA() {
 	return A;
 }
 
-long BasicCPUTest::getB() {
+uint64_t BasicCPUTest::getB() {
 	return B;
 }
 
@@ -86,11 +90,11 @@ WBctrlFlag BasicCPUTest::getWBctrl() {
 	return WBctrl;
 }
 	
-long BasicCPUTest::getALUout() {
+uint64_t BasicCPUTest::getALUout() {
 	return ALUout;
 }
 
-long BasicCPUTest::getMDR() {
+uint64_t BasicCPUTest::getMDR() {
 	return MDR;
 }
 
@@ -100,6 +104,10 @@ void BasicCPUTest::runIF() {
 
 int BasicCPUTest::runID() {
 	return ID();
+}
+
+int BasicCPUTest::runEXF() {
+	return EXF();
 }
 
 int BasicCPUTest::runEXI() {
@@ -114,6 +122,6 @@ int BasicCPUTest::runWB() {
 	return WB();
 }
 
-unsigned long BasicCPUTest::getRd() {
+uint64_t BasicCPUTest::getRd() {
 	return *Rd;
 }

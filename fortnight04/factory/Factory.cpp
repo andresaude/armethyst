@@ -1,22 +1,16 @@
 /* ----------------------------------------------------------------------------
 
-    (EN) BasicCPUTest - test class for BasicCPU. Allows access to registers
-	and protected methods.
-		
-	armethyst - A simple ARM Simulator written in C++ for Computer Architecture
+    (EN) armethyst - A simple ARM Simulator written in C++ for Computer Architecture
     teaching purposes. Free software licensed under the MIT License (see license
     below).
 
-    (PT) BasicCPUTest - classe de teste de BasicCPU. Permite acesso aos
-	registradores e mÃ©todos protegidos.
-    
-	armethyst - Um simulador ARM simples escrito em C++ para o ensino de
+    (PT) armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
-    (veja a licenÃ§a, em inglÃªs, abaixo).
+    (veja a licença, em inglês, abaixo).
 
     (EN) MIT LICENSE:
 
-    Copyright 2020 AndrÃ© Vital SaÃºde
+    Copyright 2020 André Vital Saúde
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -39,48 +33,27 @@
    ----------------------------------------------------------------------------
 */
 
-#pragma once
+#include "Factory.h"
 
-#include "BasicCPU.h"
-#include "Memory.h"
+// Memory implementations
+#include "BasicMemory.h"
 
-class BasicCPUTest: public BasicCPU
+// Processor implementations
+#include "BasicProcessor.h"
+
+Memory* Factory::createMemory()
 {
-	public:
-		BasicCPUTest(Memory *memory);
-		
-		// registers
-		void setSP(uint64_t address);
-		void setW(int n, uint32_t value);
-		void setX(int n, uint64_t value);
-		void setS(int n, float value);
-
-		// flags
-		void resetFlags();
-
-		// IF
-		uint32_t getIR();
-		void runIF();
-		
-		// ID
-		int runID();
-		ALUctrlFlag getALUctrl();
-		MEMctrlFlag getMEMctrl();
-		WBctrlFlag getWBctrl();
-		uint64_t getA();
-		uint64_t getB();
-
-		// EX
-		int runEXF();
-		int runEXI();
-		uint64_t getALUout();
-		
-		// MEM
-		int runMEM();
- 		uint64_t getMDR();
-		
-		// WB
-		int runWB();
-		uint64_t getRd();
-		
+	switch (MEM_IMPL) {
+		case MEM_IMPL_BASIC:
+			return new BasicMemory(MEMORY_SIZE);
+	}
 };
+
+Processor* Factory::createProcessor(Memory* memory)
+{
+	switch (PROC_IMPL) {
+		case PROC_IMPL_BASIC:
+			return new BasicProcessor(memory);
+	}
+};
+

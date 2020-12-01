@@ -48,7 +48,7 @@ class CPU
 {
 public:
 	enum CPUerrorCode {NONE}; // ATIVIDADE FUTURA: acrescentar erros
-	virtual int run(long startAddress) = 0;
+	virtual int run(uint64_t startAddress) = 0;
 	
 protected:
 	Memory *memory;

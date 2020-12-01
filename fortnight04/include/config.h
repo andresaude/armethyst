@@ -35,7 +35,44 @@
 
 #pragma once
 
-#define MEMORY_SIZE 65536
+// Files
 #define FILENAME "isummation.o"
 #define STARTADDRESS 0x40
+
+/*
+ * Memory
+ */
+
+// Available Memory implementations
+#define MEM_IMPL_BASIC 0 // BasicMemory
+
+// Memory implementation
+#define MEM_IMPL MEM_IMPL_BASIC
+
+// Memory whole size
+#define MEMORY_SIZE 65536
+
+// Memory log output file
 #define MEMORY_LOG_FILE "saida.txt"
+
+/*
+ * Processor
+ */
+
+// Available Processor implementations
+#define PROC_IMPL_BASIC 0 // BasicProcessor
+
+// Processor implementation
+#define PROC_IMPL PROC_IMPL_BASIC
+
+/*
+ * Test levels
+ */
+#define TEST_LEVEL_START 0
+#define TEST_LEVEL_IF 1
+#define TEST_LEVEL_ID 2
+#define TEST_LEVEL_EX 3
+#define TEST_LEVEL_MEM 4
+#define TEST_LEVEL TEST_LEVEL_EX
+ 
+

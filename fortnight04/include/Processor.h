@@ -47,7 +47,7 @@
 class Processor
 {
 	public:
-		virtual int run(int startAddress) = 0;
+		virtual int run(uint64_t startAddress) = 0;
 
 	protected:
 		Memory *memory;
