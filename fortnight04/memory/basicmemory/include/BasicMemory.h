@@ -6,11 +6,11 @@
 
     (PT) armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
-    (veja a licenÃ§a, em inglÃªs, abaixo).
+    (veja a licença, em inglês, abaixo).
 
     (EN) MIT LICENSE:
 
-    Copyright 2020 AndrÃ© Vital SaÃºde
+    Copyright 2020 André Vital Saúde
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -32,36 +32,50 @@
 
    ----------------------------------------------------------------------------
 */
-#include "SimpleMemory.h"
+
+#include "Memory.h"
+#include <string>
+#include <fstream>
 
 using namespace std;
 
-class SimpleMemoryTest : public SimpleMemory
+class BasicMemory : public Memory
 {
 public:
-	enum MemAccessType {MAT_NONE, MAT_READ32, MAT_WRITE32, MAT_READ64, MAT_WRITE64};
+	BasicMemory(int size);
+	~BasicMemory();
 
-	SimpleMemoryTest(int size);
-	~SimpleMemoryTest();
-		
-	void relocateManual();
-	void writeBinaryAsTextELF (string basename);
-	
-	MemAccessType getLastDataMemAccess();
-	void resetLastDataMemAccess();
-	
-	/*
-	 * Logs dos mÃ©todos da superclasse.
+	void loadBinary(std::string filename);
+	void writeBinaryAsText (std::string basename);
+
+	/**
+	 * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
 	 */
-	unsigned int readInstruction32(unsigned long address);
+	uint32_t readInstruction32(uint64_t address);
+
+	/**
+	 * Lê um dado de 32 bits considerando um endereçamento em bytes.
+	 */
 	int readData32(unsigned long address);
+
+	/**
+	 * Lê um dado de 64 bits considerando um endereçamento em bytes.
+	 */
 	long readData64(unsigned long address);
+	
+	/**
+	 * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
+	 */
 	void writeData32(unsigned long address, int value);
+
+	/**
+	 * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
+	 */
 	void writeData64(unsigned long address, long value);
 
-private:
-	MemAccessType lastDataMemAccess;
-	ofstream memLogStream;
-	
+protected:
+	char* data;        //memory data
+	unsigned short fileSize;    //size of the loaded binary file
+
 };
 

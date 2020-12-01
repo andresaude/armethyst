@@ -6,11 +6,11 @@
 
     (PT) armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
-    (veja a licença, em inglês, abaixo).
+    (veja a licenÃ§a, em inglÃªs, abaixo).
 
     (EN) MIT LICENSE:
 
-    Copyright 2020 André Vital Saúde
+    Copyright 2020 AndrÃ© Vital SaÃºde
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -32,52 +32,37 @@
 
    ----------------------------------------------------------------------------
 */
-
-#pragma once
-
-#include "Memory.h"
-#include <string>
-#include <fstream>
+#include "config.h"
+#include "BasicMemory.h"
 
 using namespace std;
 
-class SimpleMemory : public Memory
+class BasicMemoryTest : public BasicMemory
 {
 public:
-	SimpleMemory(int size);
-	~SimpleMemory();
+	enum MemAccessType {MAT_NONE, MAT_READ32, MAT_WRITE32, MAT_READ64, MAT_WRITE64};
 
-	void loadBinary(std::string filename);
-	void writeBinaryAsText (std::string basename);
-
-	/**
-	 * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
-	 */
-	unsigned int readInstruction32(unsigned long address);
-
-	/**
-	 * Lê um dado de 32 bits considerando um endereçamento em bytes.
-	 */
-	int readData32(unsigned long address);
-
-	/**
-	 * Lê um dado de 64 bits considerando um endereçamento em bytes.
-	 */
-	long readData64(unsigned long address);
+	BasicMemoryTest(int size);
+	~BasicMemoryTest();
+		
+	void relocateManual();
+	void writeBinaryAsTextELF (string basename);
 	
-	/**
-	 * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
+	MemAccessType getLastDataMemAccess();
+	void resetLastDataMemAccess();
+	
+	/*
+	 * Logs dos mÃ©todos da superclasse.
 	 */
+	uint32_t readInstruction32(uint64_t address);
+	int readData32(unsigned long address);
+	long readData64(unsigned long address);
 	void writeData32(unsigned long address, int value);
-
-	/**
-	 * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
-	 */
 	void writeData64(unsigned long address, long value);
 
-protected:
-	char* data;        //memory data
-	unsigned short fileSize;    //size of the loaded binary file
-
+private:
+	MemAccessType lastDataMemAccess;
+	ofstream memLogStream;
+	
 };
 
