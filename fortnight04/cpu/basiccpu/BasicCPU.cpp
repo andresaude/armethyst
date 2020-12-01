@@ -306,8 +306,8 @@ int BasicCPU::decodeDataProcFloat() {
 	// Acrescente os cases no switch já iniciado, para implementar a
 	// decodificação das instruções a seguir:
 	//		1. Em fpops.S
-	//			1.1 'fadd s0, s0, s0'
-	//				linha 42 de fpops.S, endereço 0x80 de txt_fpops.o.txt
+	//			1.1 'fadd s1, s1, s0'
+	//				linha 58 de fpops.S, endereço 0xBC de txt_fpops.o.txt
 	//				Seção C7.2.43 FADD (scalar), p. 1346 do manual.
 	//
 	// Verifique que ALUctrlFlag já tem declarados os tipos de
