@@ -64,33 +64,33 @@ uint32_t BasicMemory::readInstruction32(uint64_t address)
 /**
  * Lê um dado de 32 bits considerando um endereçamento em bytes.
  */
-int BasicMemory::readData32(unsigned long address)
+uint32_t BasicMemory::readData32(uint64_t address)
 {
-	return ((int*)data)[address >> 2];
+	return ((uint32_t*)data)[address >> 2];
 }
 
 /**
  * Lê um dado de 64 bits considerando um endereçamento em bytes.
  */
-long BasicMemory::readData64(unsigned long address)
+uint64_t BasicMemory::readData64(uint64_t address)
 {
-	return ((long*)data)[address >> 3];
+	return ((uint64_t*)data)[address >> 3];
 }
 
 /**
  * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
  */
-void BasicMemory::writeData32(unsigned long address, int value)
+void BasicMemory::writeData32(uint64_t address, uint32_t value)
 {
-	((int*)data)[address >> 2] = value;
+	((uint32_t*)data)[address >> 2] = value;
 }
 
 /**
  * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
  */
-void BasicMemory::writeData64(unsigned long address, long value)
+void BasicMemory::writeData64(uint64_t address, uint64_t value)
 {
-	((long*)data)[address >> 3] = value;
+	((uint64_t*)data)[address >> 3] = value;
 }
 
 /**

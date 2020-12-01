@@ -56,22 +56,22 @@ public:
 	/**
 	 * Lê um dado de 32 bits considerando um endereçamento em bytes.
 	 */
-	int readData32(unsigned long address);
+	uint32_t readData32(uint64_t address);
 
 	/**
 	 * Lê um dado de 64 bits considerando um endereçamento em bytes.
 	 */
-	long readData64(unsigned long address);
+	uint64_t readData64(uint64_t address);
 	
 	/**
 	 * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
 	 */
-	void writeData32(unsigned long address, int value);
+	void writeData32(uint64_t address, uint32_t value);
 
 	/**
 	 * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
 	 */
-	void writeData64(unsigned long address, long value);
+	void writeData64(uint64_t address, uint64_t value);
 
 protected:
 	char* data;        //memory data

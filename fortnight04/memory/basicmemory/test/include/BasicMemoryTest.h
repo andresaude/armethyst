@@ -55,10 +55,10 @@ public:
 	 * Logs dos métodos da superclasse.
 	 */
 	uint32_t readInstruction32(uint64_t address);
-	int readData32(unsigned long address);
-	long readData64(unsigned long address);
-	void writeData32(unsigned long address, int value);
-	void writeData64(unsigned long address, long value);
+	uint32_t readData32(uint64_t address);
+	uint64_t readData64(uint64_t address);
+	void writeData32(uint64_t address, uint32_t value);
+	void writeData64(uint64_t address, uint64_t value);
 
 private:
 	MemAccessType lastDataMemAccess;
