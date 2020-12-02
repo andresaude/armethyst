@@ -91,9 +91,6 @@ int main()
 	test02(cpu, memory, TEST_FILE_02);
 	test03(cpu, memory, TEST_FILE_03);
 	
-	// ATIVIDADE FUTURA
-	//test03(cpu, memory, TEST_FILE_03);
-	
 	return 0;
 }
 
