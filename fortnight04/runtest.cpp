@@ -89,6 +89,7 @@ int main()
 	//	Como não temos o caminho de dados completo, faremos apenas testes.
 	test01(cpu, memory, TEST_FILE_01);
 	test02(cpu, memory, TEST_FILE_02);
+	test03(cpu, memory, TEST_FILE_03);
 	
 	// ATIVIDADE FUTURA
 	//test03(cpu, memory, TEST_FILE_03);
