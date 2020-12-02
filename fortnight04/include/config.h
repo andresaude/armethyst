@@ -73,6 +73,7 @@
 #define TEST_LEVEL_ID 2
 #define TEST_LEVEL_EX 3
 #define TEST_LEVEL_MEM 4
-#define TEST_LEVEL TEST_LEVEL_EX
+#define TEST_LEVEL_WB 5
+#define TEST_LEVEL TEST_LEVEL_WB
  
 
