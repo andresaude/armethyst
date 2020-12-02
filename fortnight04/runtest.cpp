@@ -61,17 +61,17 @@ void test(bool fpOp,
 			string instruction,
 			BasicCPUTest* cpu,
 			BasicMemoryTest* memory,
-			long startAddress,
-			long startSP,
-			int xpctdIR,
-			int xpctdA,
-			int xpctdB,
+			uint64_t startAddress,
+			uint64_t startSP,
+			uint32_t xpctdIR,
+			uint32_t xpctdA,
+			uint32_t xpctdB,
 			ALUctrlFlag xpctdALUctrl,
 			MEMctrlFlag xpctdMEMctrl,
 			WBctrlFlag xpctdWBctrl,
-			long xpctdALUout,
-			long xpctdMDR,
-			long xpctdRd);
+			uint64_t xpctdALUout,
+			uint64_t xpctdMDR,
+			uint64_t xpctdRd);
 
 int main()
 {
@@ -398,7 +398,7 @@ void test03(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 /**
  * Testa o estágio IF.
  */
-void testIF(BasicCPUTest* cpu, int xpctdIR)
+void testIF(BasicCPUTest* cpu, uint32_t xpctdIR)
 {
 	//
 	// Testa IF
@@ -424,9 +424,9 @@ void testIF(BasicCPUTest* cpu, int xpctdIR)
  * Testa o estágio ID.
  */
 void testID(BasicCPUTest* cpu,
-			int xpctdIR,
-			int xpctdA,
-			int xpctdB,
+			uint32_t xpctdIR,
+			uint32_t xpctdA,
+			uint32_t xpctdB,
 			ALUctrlFlag xpctdALUctrl,
 			MEMctrlFlag xpctdMEMctrl,
 			WBctrlFlag xpctdWBctrl)
@@ -448,8 +448,8 @@ void testID(BasicCPUTest* cpu,
 
 	// verifica leitura de registradores
 	cout << "ID() testing registers reading..." << endl << endl;
-	long A = cpu->getA();
-	long B = cpu->getB();
+	uint64_t A = cpu->getA();
+	uint64_t B = cpu->getB();
 	cout << "	A=0x" << A << "; B=0x" << B << endl;
 	cout << "Expected: A=0x" << xpctdA << "; B=0x" << xpctdB << endl;
 	if ((A != xpctdA) || (B != xpctdB)){
@@ -521,7 +521,7 @@ void testID(BasicCPUTest* cpu,
 /**
  * Testa o estágio EX.
  */
-void testEX(BasicCPUTest* cpu, bool fpOp, long xpctdALUout)
+void testEX(BasicCPUTest* cpu, bool fpOp, uint64_t xpctdALUout)
 {
 	//
 	// Testa EXI (depende do sucesso no teste de ID)
@@ -545,7 +545,7 @@ void testEX(BasicCPUTest* cpu, bool fpOp, long xpctdALUout)
 	}
 	
 	// verifica ALUout
-	long ALUout = cpu->getALUout();
+	uint64_t ALUout = cpu->getALUout();
 	cout << "	ALUout=0x"
 			<< setfill('0') << setw(8) << ALUout
 			<< "; Expected ALUout=0x"
@@ -566,7 +566,7 @@ void testEX(BasicCPUTest* cpu, bool fpOp, long xpctdALUout)
 void testMEM(BasicCPUTest* cpu,
 				BasicMemoryTest* memory,
 				MEMctrlFlag xpctdMEMctrl,
-				long xpctdALUout)
+				uint64_t xpctdALUout)
 {
 	//
 	// Test MEM (depends on the success of previous stages)
@@ -634,11 +634,11 @@ void testMEM(BasicCPUTest* cpu,
 	}
 	
 	// get read or written content (access depends on 32 or 64 bit mode)
-	long memData, xpctdMemData;
+	uint64_t memData, xpctdMemData;
 	switch (xpctdMEMctrl) {
 		case MEMctrlFlag::READ32:
 			cout << "	READ Mode: testing read content..." << endl;
-			memData = (long)memory->readData32(xpctdALUout);
+			memData = (uint64_t)memory->readData32(xpctdALUout);
 			xpctdMemData = cpu->getMDR();
 			break;
 		case MEMctrlFlag::READ64:
@@ -648,7 +648,7 @@ void testMEM(BasicCPUTest* cpu,
 			break;
 		case MEMctrlFlag::WRITE32:
 			cout << "	WRITE Mode: testing written content..." << endl;
-			memData = (long)memory->readData32(xpctdALUout);
+			memData = (uint64_t)memory->readData32(xpctdALUout);
 			xpctdMemData = cpu->getRd();
 			break;
 		case MEMctrlFlag::WRITE64:
@@ -681,7 +681,7 @@ void testMEM(BasicCPUTest* cpu,
  */
 void testWB(BasicCPUTest* cpu,
 		WBctrlFlag xpctdWBctrl,
-		long xpctdRd)
+		uint64_t xpctdRd)
 {
 	//
 	// Testa WB (depende do sucesso nos testes de estágios anteriores)
@@ -698,7 +698,7 @@ void testWB(BasicCPUTest* cpu,
 	}
 	
 	bool ok = true;
-	unsigned long Rd = cpu->getRd();
+	uint64_t Rd = cpu->getRd();
 	if(xpctdWBctrl == WBctrlFlag::RegWrite)
 	{
 		cout << "	Rd=0x"
@@ -725,17 +725,17 @@ void test(bool fpOp,
 			string instruction,
 			BasicCPUTest* cpu,
 			BasicMemoryTest* memory,
-			long startAddress,
-			long startSP,
-			int xpctdIR,
-			int xpctdA,
-			int xpctdB,
+			uint64_t startAddress,
+			uint64_t startSP,
+			uint32_t xpctdIR,
+			uint32_t xpctdA,
+			uint32_t xpctdB,
 			ALUctrlFlag xpctdALUctrl,
 			MEMctrlFlag xpctdMEMctrl,
 			WBctrlFlag xpctdWBctrl,
-			long xpctdALUout,
-			long xpctdMDR,
-			long xpctdRd)
+			uint64_t xpctdALUout,
+			uint64_t xpctdMDR,
+			uint64_t xpctdRd)
 {
 	cout << "#\n#\n#\n# Testing '" << instruction << "'...\n#\n#\n#\n" << endl;
 

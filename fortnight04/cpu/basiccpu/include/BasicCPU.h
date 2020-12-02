@@ -167,7 +167,7 @@ class BasicCPU: public CPU
 		// à memória de dados (MEM).
 		MEMctrlFlag MEMctrl = MEMctrlFlag::MEM_UNDEF;
 
-		// MEMctrl, enum, saída 6 do estágio de decodificação da instrução
+		// WBctrl, enum, saída 6 do estágio de decodificação da instrução
 		// (ID), informa se haverá escrita (WRITE) ou não (NONE) de valor
 		// (proveniente de EXI, EXF ou MEM) em algum registrador de destino. 
 		WBctrlFlag WBctrl = WBctrlFlag::WB_UNDEF;
