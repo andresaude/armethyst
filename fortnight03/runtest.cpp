@@ -698,7 +698,7 @@ void testWB(BasicCPUTest* cpu,
 	}
 	
 	bool ok = true;
-	unsigned uint64_t Rd = cpu->getRd();
+	uint64_t Rd = cpu->getRd();
 	if(xpctdWBctrl == WBctrlFlag::RegWrite)
 	{
 		cout << "	Rd=0x"
