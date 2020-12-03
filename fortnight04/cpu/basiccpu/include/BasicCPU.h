@@ -47,10 +47,12 @@
 
 // Códigos de controle
 enum FPOpFlag {FP_UNDEF,FP_REG_128,FP_REG_64,FP_REG_32,FP_REG_16,FP_REG_8,FP_VEC_128,FP_VEC_64};
-enum ALUctrlFlag {ALU_UNDEF, ALU_NONE, ADD, SUB};
+enum ALUctrlFlag {ALU_UNDEF, ALU_NONE, ADD, SUB, DIV, MUL};
 enum MEMctrlFlag {MEM_UNDEF, MEM_NONE, READ32, WRITE32, READ64, WRITE64};
 enum WBctrlFlag {WB_UNDEF, WB_NONE, RegWrite};
-		
+
+// Flags aritméticas
+
 class BasicCPU: public CPU
 {
 	protected:
@@ -180,6 +182,12 @@ class BasicCPU: public CPU
 		// ALUout, 64 bits, saída do estágio de execução de operação
 		// inteira (EXI)
 		uint64_t ALUout;
+		
+		// flags NZCV, saída do estágio de execução de algumas operações
+		// inteiras. Indicam que o resultado é negativo (N) ou zero (Z)
+		// e indica se a operação resultou em um carry (C) ou
+		// overflow (V). 
+		bool N_flag, Z_flag, C_flag, V_flag;
 
 		// MDR, 64 bits, saída do estágio de acesso à memória de dados (MEM).
 		uint64_t MDR;

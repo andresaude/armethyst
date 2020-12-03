@@ -57,6 +57,9 @@ using namespace std;
 void test01(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname);
 void test02(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname);
 void test03(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname);
+void test04(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname);
+void test05(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname);
+void test06(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname);
 void test(bool fpOp,
 			string instruction,
 			BasicCPUTest* cpu,
@@ -78,6 +81,9 @@ int main()
 #define TEST_FILE_01 "isummation.o"
 #define TEST_FILE_02 "fpops.o"
 #define TEST_FILE_03 "isummation.o"
+#define TEST_FILE_04 "fpops.o"
+#define TEST_FILE_05 "isummation.o"
+#define TEST_FILE_06 "fpops.o"
 
 	// create memory
 	BasicMemoryTest* memory = new BasicMemoryTest(MEMORY_SIZE);
@@ -86,10 +92,13 @@ int main()
 	BasicCPUTest *cpu = new BasicCPUTest(memory);
 	
 	// Teste:
-	//	Como não temos o caminho de dados completo, faremos apenas testes.
+	//	Como não temos todas as instruções implementadas, faremos apenas testes.
 	test01(cpu, memory, TEST_FILE_01);
 	test02(cpu, memory, TEST_FILE_02);
 	test03(cpu, memory, TEST_FILE_03);
+	test04(cpu, memory, TEST_FILE_04);
+	test05(cpu, memory, TEST_FILE_05);
+	test06(cpu, memory, TEST_FILE_06);
 	
 	return 0;
 }
@@ -391,6 +400,83 @@ void test03(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 
 	CALLTEST();
 	RESETTEST();
+}
+
+/**
+ * Testa as instruções de load e store do arquivo fpops.S.
+ */
+void test04(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
+{
+	TEST_HEADER
+
+	// TODO 
+	// str s0, [x0, x1, lsl 2] (linha 64)
+	// Test ldrsw x1, [sp, 12] (linha 38)
+	//
+/* 	instruction = "ldrsw x1, [sp, 12]";
+	startAddress = 0x54; 	// endereço de 'ldrsw x1, [sp, 12]'
+	xpctdIR = 0xB9800FE1;
+	xpctdA = STARTSP; 		// SP deve ser lido para A
+	xpctdB = 12;			// valor imediato do offset
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::READ64;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+	
+	xpctdALUout = xpctdA + xpctdB;
+
+	// force data in memory
+	xpctdRd = STARTSP << 2;
+	memory->writeData64(xpctdALUout, STARTSP << 2);
+
+	CALLTEST();
+	RESETTEST(); */
+	
+}
+
+/**
+ * Testa as instruções de branch do arquivo isummation.S.
+ */
+void test05(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
+{
+	TEST_HEADER
+	
+
+	//
+	// Test b .L2 (linha 34)
+	//
+	instruction = "b .L2";
+	startAddress = 0x48; 	// endereço da instrução
+	xpctdIR = 0x1400000F;
+	xpctdA = startAddress; 		// valor arbitrário para x0
+	xpctdB = 60;
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+
+	xpctdALUout = xpctdA + xpctdB;
+
+	xpctdRd = 0x84;
+
+	CALLTEST();
+	RESETTEST();
+
+	// TODO
+	// cmp w0, 9 (linha 52)
+	// ble .L3 (linha 53)
+	// ret (linha 56)
+
+}
+
+/**
+ * Testa as instruções aritméticas de float fdiv e fmul de fpops.S.
+ */
+void test06(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
+{
+	TEST_HEADER
+	// TODO
+	// fdiv s1, s1, s0 (linha 43)
+	// fmul s1, s1, s0 (linha 52)
+
 }
 
 /**
