@@ -263,6 +263,8 @@ void test02(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 void test03(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 {
 	TEST_HEADER
+	
+	int64_t signedAux;
 
 	//
 	// Test ldrsw x1, [sp, 12] (linha 38)
@@ -457,8 +459,8 @@ void test03(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	memory->writeInstruction32(startAddress, xpctdIR);
 	memory->resetLastDataMemAccess();
 	xpctdA = startAddress; 		// valor arbitrário para x0
-	int64_t aux = -4;
-	xpctdB = aux;
+	signedAux = -4;
+	xpctdB = signedAux;
 	xpctdALUctrl = ALUctrlFlag::ADD;
 	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
 	xpctdWBctrl = WBctrlFlag::RegWrite;
@@ -470,23 +472,144 @@ void test03(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	CALLTEST();
 	RESETTEST();
 	
-	// TODO
-	// cmp w0, 9 (linha 52)
-	// ble .L3 (linha 53)
-	// ret (linha 56)	
+	
+	//
+	// Test CMP
+	//
+	instruction = "cmp w0, 9";
+	startAddress = 0x88; // endereço da instrução
+	xpctdIR = 0x7100241F;
+	xpctdA = 7; 	// valor 7 < 9, para que o branch de BLE seja tomado
+	xpctdB = 9; 	 // valor imediato da instrução
+	xpctdALUctrl = ALUctrlFlag::SUB;
+	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
+	xpctdWBctrl = WBctrlFlag::WB_NONE;
+	
+	xpctdALUout = xpctdA - xpctdB;
+	
+	CALLTEST();
+	RESETTEST();
+
+	//
+	// Test ble .L3 (linha 53)
+	//
+	instruction = "ble .L3";
+	startAddress = 0x8C; 	// endereço da instrução
+	xpctdIR = 0x54FFFE0D;
+	xpctdA = startAddress; 		// valor arbitrário para x0
+	signedAux = -64;
+	xpctdB = signedAux;
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+
+	xpctdALUout = xpctdA + xpctdB;
+
+	xpctdRd = 0x4C;
+
+	CALLTEST();
+	RESETTEST();
+
+
+	//
+	// Test ret (linha 56)
+	// Implementado como PC <- Xn + 0
+	//
+	instruction = "ret";
+	startAddress = 0x98; 	// endereço da instrução
+	xpctdIR = 0xD65F03C0;
+	xpctdA = 0x40; 		    // valor arbitrário para x30
+	cpu->setX(30,xpctdA);	// temos que fazer x30 valer xpctdA
+	xpctdB = 0;
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+
+	xpctdALUout = 0x40;
+
+	xpctdRd = 0x40;
+
+	CALLTEST();
+	RESETTEST();
 	
 }
 
 /**
- * Testa as instruções aritméticas de float fdiv e fmul de fpops.S.
+ * Testa as instruções aritméticas de float de fpops.S.
  */
 void test04(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 {
 	TEST_HEADER
 	
-	// TODO
-	// fdiv s1, s1, s0 (linha 43)
-	// fmul s1, s1, s0 (linha 52)
+	float fA = -0.7;
+	float fB = 0.5;
+
+	//
+	// Test fneg s1, s0 (linha 40)
+	// implementado como s1 = 0 - s0
+	//
+	fpOp = true;
+	instruction = "fneg s1, s0";
+	startAddress = 0x78; // endereço da instrução
+	xpctdIR = 0x1E214001;
+	xpctdA = 0;
+	xpctdB = Util::floatAsUint64Low(fB); // valor arbitrário para s0
+	cpu->setS(0,fB); // temos que fazer s0 valer xpctdB
+	xpctdALUctrl = ALUctrlFlag::SUB;
+	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+	
+	xpctdALUout = Util::floatAsUint64Low(-fB);
+	
+	xpctdRd = xpctdALUout;
+	
+	CALLTEST();
+	RESETTEST();
+	
+	
+	//
+	// Test fdiv s1, s1, s0 (linha 43)
+	//
+	fpOp = true;
+	instruction = "fdiv s1, s1, s0";
+	startAddress = 0x84; // endereço da instrução
+	xpctdIR = 0x1E201821;
+	xpctdA = Util::floatAsUint64Low(fA); // valor arbitrário para s1
+	xpctdB = Util::floatAsUint64Low(fB); // valor arbitrário para s0
+	cpu->setS(1,fA); // temos que fazer s1 valer xpctdA
+	cpu->setS(0,fB); // temos que fazer s0 valer xpctdB
+	xpctdALUctrl = ALUctrlFlag::DIV;
+	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+	
+	xpctdALUout = Util::floatAsUint64Low(fA/fB);
+	
+	xpctdRd = xpctdALUout;
+	
+	CALLTEST();
+	RESETTEST();
+	
+	//
+	// Test fmul s1, s1, s0 (linha 52)
+	//
+	fpOp = true;
+	instruction = "fmul s1, s1, s0";
+	startAddress = 0xA4; // endereço da instrução
+	xpctdIR = 0x1E200821;
+	xpctdA = Util::floatAsUint64Low(fA); // valor arbitrário para s1
+	xpctdB = Util::floatAsUint64Low(fB); // valor arbitrário para s0
+	cpu->setS(1,fA); // temos que fazer s1 valer xpctdA
+	cpu->setS(0,fB); // temos que fazer s0 valer xpctdB
+	xpctdALUctrl = ALUctrlFlag::MUL;
+	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+	
+	xpctdALUout = Util::floatAsUint64Low(fA*fB);
+	
+	xpctdRd = xpctdALUout;
+	
+	CALLTEST();
+	RESETTEST();
 
 }
 
