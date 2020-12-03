@@ -67,8 +67,8 @@ void test(bool fpOp,
 			uint64_t startAddress,
 			uint64_t startSP,
 			uint32_t xpctdIR,
-			uint32_t xpctdA,
-			uint32_t xpctdB,
+			uint64_t xpctdA,
+			uint64_t xpctdB,
 			ALUctrlFlag xpctdALUctrl,
 			MEMctrlFlag xpctdMEMctrl,
 			WBctrlFlag xpctdWBctrl,
@@ -467,8 +467,10 @@ void test05(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	startAddress = 0x48; 	// endereço da instrução
 	xpctdIR = 0x17FFFFFF;  // deslocamento de -4
 	memory->writeInstruction32(startAddress, xpctdIR);
+	memory->resetLastDataMemAccess();
 	xpctdA = startAddress; 		// valor arbitrário para x0
-	xpctdB = -4;
+	int64_t aux = -4;
+	xpctdB = aux;
 	xpctdALUctrl = ALUctrlFlag::ADD;
 	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
 	xpctdWBctrl = WBctrlFlag::RegWrite;
@@ -529,8 +531,8 @@ void testIF(BasicCPUTest* cpu, uint32_t xpctdIR)
  */
 void testID(BasicCPUTest* cpu,
 			uint32_t xpctdIR,
-			uint32_t xpctdA,
-			uint32_t xpctdB,
+			uint64_t xpctdA,
+			uint64_t xpctdB,
 			ALUctrlFlag xpctdALUctrl,
 			MEMctrlFlag xpctdMEMctrl,
 			WBctrlFlag xpctdWBctrl)
@@ -554,8 +556,8 @@ void testID(BasicCPUTest* cpu,
 	cout << "ID() testing registers reading..." << endl << endl;
 	uint64_t A = cpu->getA();
 	uint64_t B = cpu->getB();
-	cout << "	A=0x" << A << "; B=0x" << B << endl;
-	cout << "Expected: A=0x" << xpctdA << "; B=0x" << xpctdB << endl;
+	cout << "	A=0x" << setw(16) << A << "; B=0x" << setw(16) << B << endl;
+	cout << "Expected: A=0x" << setw(16) << xpctdA << "; B=0x" << setw(16) << xpctdB << endl;
 	if ((A != xpctdA) || (B != xpctdB)){
 		cout << "ID() FAILED on registers reading!" << endl;
 		cout << "Exit..." << endl;
@@ -651,9 +653,9 @@ void testEX(BasicCPUTest* cpu, bool fpOp, uint64_t xpctdALUout)
 	// verifica ALUout
 	uint64_t ALUout = cpu->getALUout();
 	cout << "	ALUout=0x"
-			<< setfill('0') << setw(8) << ALUout
+			<< setfill('0') << setw(16) << ALUout
 			<< "; Expected ALUout=0x"
-			<< setfill('0') << setw(8) << xpctdALUout << endl;
+			<< setfill('0') << setw(16) << xpctdALUout << endl;
 	if (ALUout != xpctdALUout)
 	{
 		cout << "EX() FAILED!" << endl;
@@ -832,8 +834,8 @@ void test(bool fpOp,
 			uint64_t startAddress,
 			uint64_t startSP,
 			uint32_t xpctdIR,
-			uint32_t xpctdA,
-			uint32_t xpctdB,
+			uint64_t xpctdA,
+			uint64_t xpctdB,
 			ALUctrlFlag xpctdALUctrl,
 			MEMctrlFlag xpctdMEMctrl,
 			WBctrlFlag xpctdWBctrl,
