@@ -350,6 +350,10 @@ void test03(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	
 	xpctdALUout = xpctdA + xpctdB;
 
+	// force arbitrary data in memory different from xpctdRd
+	xpctdRd = 0x77;	
+	memory->writeData32(xpctdALUout, 0x54321);
+
 	CALLTEST();
 	RESETTEST();
 
@@ -360,7 +364,7 @@ void test03(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	instruction = "str w0, [sp, 12]";
 	startAddress = 0x80; 	// endereço da instrução
 	xpctdIR = 0xB9000FE0;
-	xpctdA = STARTSP; 		// valor arbitrário para x0
+	xpctdA = STARTSP;
 	xpctdB = 12;
 	cpu->setW(0,0x12345);		// valor arbitrário para w1
 	xpctdALUctrl = ALUctrlFlag::ADD;
@@ -368,6 +372,10 @@ void test03(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	xpctdWBctrl = WBctrlFlag::WB_NONE;
 
 	xpctdALUout = xpctdA + xpctdB;
+
+	// force arbitrary data in memory different from xpctdRd
+	xpctdRd = 0x12345;	
+	memory->writeData32(xpctdALUout, 0x54321);
 
 	CALLTEST();
 	RESETTEST();
@@ -397,6 +405,29 @@ void test03(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 
 	CALLTEST();
 	RESETTEST();
+
+
+	//
+	// Test str wzr, [sp, 12] (linha 33)
+	//
+	instruction = "str wzr, [sp, 12]";
+	startAddress = 0x44; 	// endereço da instrução
+	xpctdIR = 0xB9000FFF;
+	xpctdA = STARTSP; 
+	xpctdB = 12;
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::WRITE32;
+	xpctdWBctrl = WBctrlFlag::WB_NONE;
+
+	xpctdALUout = xpctdA + xpctdB;
+	
+	// force arbitrary data in memory different from xpctdRd
+	xpctdRd = 0;	
+	memory->writeData32(xpctdALUout, 0x12345);
+
+	CALLTEST();
+	RESETTEST();
+
 
 	//
 	// Test b .L2 (linha 34)
@@ -631,7 +662,8 @@ void testEX(BasicCPUTest* cpu, bool fpOp, uint64_t xpctdALUout)
 void testMEM(BasicCPUTest* cpu,
 				BasicMemoryTest* memory,
 				MEMctrlFlag xpctdMEMctrl,
-				uint64_t xpctdALUout)
+				uint64_t xpctdALUout,
+				uint64_t xpctdRd)
 {
 	//
 	// Test MEM (depends on the success of previous stages)
@@ -714,7 +746,7 @@ void testMEM(BasicCPUTest* cpu,
 		case MEMctrlFlag::WRITE32:
 			cout << "	WRITE Mode: testing written content..." << endl;
 			memData = (uint64_t)memory->readData32(xpctdALUout);
-			xpctdMemData = cpu->getRd();
+			xpctdMemData = xpctdRd;//cpu->getRd();
 			break;
 		case MEMctrlFlag::WRITE64:
 			cout << "	WRITE Mode: testing written content..." << endl;
@@ -835,7 +867,8 @@ void test(bool fpOp,
 				if (TEST_LEVEL > TEST_LEVEL_EX)
 				{
 					cout << "\n\nTEST_LEVEL: MEM\n\n" << endl;
-					testMEM(cpu, memory, xpctdMEMctrl, xpctdALUout);
+					testMEM(cpu, memory, xpctdMEMctrl,
+							xpctdALUout, xpctdRd);
 					if (TEST_LEVEL > TEST_LEVEL_MEM)
 					{
 						cout << "\n\nTEST_LEVEL: WB\n\n" << endl;
