@@ -76,12 +76,13 @@ class BasicCPU: public CPU
 		//		Declara os registradores Rn descritos no documento
 		// 		armV8ppB181-B182_registradores.pdf. Veja que o documento
 		// 		explica que o ARMv8 tem o conjunto de registradores
-		//		R0-R30 (portanto 31 registradores) de 64 bits, que podem ser
-		//		usados como registradores de 64	bits, com nomes X0-X30 ou
-		//		podem ser usados como registradores	de 32 bits, com nomes
-		//		W0-W30.
+		//		R0-R30 (portanto 31 registradores) de 64 bits, que
+		// 		podem ser usados como registradores de 64	bits, com
+		//		nomes X0-X30 ou podem ser usados como registradores
+		//		de 32 bits, com nomes W0-W30.
 		uint64_t R[31];
 		uint64_t *Rd;
+		const uint64_t ZR = 0;
 		
 		// Banco de registradores ponto flutuante
 		//	Declara os registradores Vn descritos no documento
@@ -164,14 +165,15 @@ class BasicCPU: public CPU
 		FPOpFlag fpOp = FPOpFlag::FP_UNDEF;
 
 		// MEMctrl, enum, saída 5 do estágio de decodificação da instrução
-		// (ID), informa se haverá acesso de leitura (READ), escrita (WRITE)
-		// ou nenhum (NONE) acesso à memória de dados no estágio de acesso
-		// à memória de dados (MEM).
+		// (ID), informa se haverá acesso de leitura (READ),
+		// escrita (WRITE) ou nenhum (NONE) acesso à memória de dados
+		// no estágio de acesso à memória de dados (MEM).
 		MEMctrlFlag MEMctrl = MEMctrlFlag::MEM_UNDEF;
 
 		// WBctrl, enum, saída 6 do estágio de decodificação da instrução
 		// (ID), informa se haverá escrita (WRITE) ou não (NONE) de valor
-		// (proveniente de EXI, EXF ou MEM) em algum registrador de destino. 
+		// (proveniente de EXI, EXF ou MEM) em algum registrador de
+		// destino. 
 		WBctrlFlag WBctrl = WBctrlFlag::WB_UNDEF;
 
 		// MemtoReg, bool, saída 7 do estágio de decodificação da instrução
@@ -189,7 +191,8 @@ class BasicCPU: public CPU
 		// overflow (V). 
 		bool N_flag, Z_flag, C_flag, V_flag;
 
-		// MDR, 64 bits, saída do estágio de acesso à memória de dados (MEM).
+		// MDR, 64 bits, saída do estágio de acesso à memória de
+		// dados (MEM).
 		uint64_t MDR;
 
 		/**
