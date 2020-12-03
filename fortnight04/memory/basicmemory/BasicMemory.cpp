@@ -78,6 +78,15 @@ uint64_t BasicMemory::readData64(uint64_t address)
 }
 
 /**
+ * Escreve uma instrução de 32 bits considerando um
+ * endereçamento em bytes.
+ */
+void BasicMemory::writeInstruction32(uint64_t address, uint32_t value)
+{
+	((uint32_t*)data)[address >> 2] = value;
+}
+
+/**
  * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
  */
 void BasicMemory::writeData32(uint64_t address, uint32_t value)

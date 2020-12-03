@@ -64,6 +64,12 @@ public:
 	uint64_t readData64(uint64_t address);
 	
 	/**
+	 * Escreve uma instrução de 32 bits considerando um
+	 * endereçamento em bytes.
+	 */
+	void writeInstruction32(uint64_t address, uint32_t value);
+
+	/**
 	 * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
 	 */
 	void writeData32(uint64_t address, uint32_t value);

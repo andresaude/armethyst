@@ -78,6 +78,16 @@ uint64_t BasicMemoryTest::readData64(uint64_t address)
 }
 
 /**
+ * Log de BasicMemory::writeInstruction32(uint64_t address)
+ */
+void BasicMemoryTest::writeInstruction32(uint64_t address, uint32_t value)
+{
+    memLogStream << hex << "wi " << setfill('0') << setw(16) << address << endl;
+	lastDataMemAccess = MemAccessType::MAT_WRITE32;
+ 	BasicMemory::writeInstruction32(address, value);
+}
+
+/**
  * Log de BasicMemory::writeData32(uint64_t address)
  */
 void BasicMemoryTest::writeData32(uint64_t address, uint32_t value)

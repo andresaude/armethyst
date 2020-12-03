@@ -57,6 +57,7 @@ public:
 	uint32_t readInstruction32(uint64_t address);
 	uint32_t readData32(uint64_t address);
 	uint64_t readData64(uint64_t address);
+	void writeInstruction32(uint64_t address, uint32_t value);
 	void writeData32(uint64_t address, uint32_t value);
 	void writeData64(uint64_t address, uint64_t value);
 

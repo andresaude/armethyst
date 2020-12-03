@@ -44,7 +44,8 @@ class Memory
 		virtual void writeBinaryAsText (std::string basename) = 0;
 
 		/**
-		 * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
+		 * Lê uma instrução de 32 bits considerando um endereçamento
+		 * em bytes.
 		 */
 		virtual uint32_t readInstruction32(uint64_t address) = 0;
 
@@ -58,6 +59,12 @@ class Memory
 		 */
 		virtual uint64_t readData64(uint64_t address) = 0;
 		
+		/**
+		 * Escreve uma instrução de 32 bits considerando um
+		 * endereçamento em bytes.
+		 */
+		virtual void writeInstruction32(uint64_t address, uint32_t value) = 0;
+
 		/**
 		 * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
 		 */

@@ -460,6 +460,26 @@ void test05(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	CALLTEST();
 	RESETTEST();
 
+	//
+	// Test b .L2 (linha 34)  (alterado, com offset < 0)
+	//
+	instruction = "b .L2 (alterado, com offset < 0)";
+	startAddress = 0x48; 	// endereço da instrução
+	xpctdIR = 0x17FFFFFF;  // deslocamento de -4
+	memory->writeInstruction32(startAddress, xpctdIR);
+	xpctdA = startAddress; 		// valor arbitrário para x0
+	xpctdB = -4;
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+
+	xpctdALUout = xpctdA + xpctdB;
+
+	xpctdRd = 0x44;
+
+	CALLTEST();
+	RESETTEST();
+
 	// TODO
 	// cmp w0, 9 (linha 52)
 	// ble .L3 (linha 53)
