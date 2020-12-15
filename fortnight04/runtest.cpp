@@ -480,6 +480,7 @@ void test03(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	startAddress = 0x88; // endereço da instrução
 	xpctdIR = 0x7100241F;
 	xpctdA = 7; 	// valor 7 < 9, para que o branch de BLE seja tomado
+	cpu->setW(0,xpctdA);	// temos que fazer w0 valer xpctdA
 	xpctdB = 9; 	 // valor imediato da instrução
 	xpctdALUctrl = ALUctrlFlag::SUB;
 	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
