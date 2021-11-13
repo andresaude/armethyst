@@ -1,0 +1,4 @@
+
+Pasta para arquivos .o temporários. O make clean apaga todos os
+arquivos desta pasta.
+
