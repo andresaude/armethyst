@@ -1,0 +1,7 @@
+
+Para compilar o código via 'makefile':
+
+	a) Abrir o arquivo 'makefile' e alterar a primeira linha, dando o nome do seu compilador.
+
+	b) Ir na linha de comando e digitar 'make'. Devem ser criados os executáveis de nome 'armethyst' ou 'armethyst.exe' e 'runtest' ou 'runtest.exe'.
+
