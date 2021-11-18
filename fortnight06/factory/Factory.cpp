@@ -37,6 +37,7 @@
 
 // Memory implementations
 #include "BasicMemory.h"
+#include "Corei7Memory.h"
 
 // Processor implementations
 #include "BasicProcessor.h"
@@ -46,6 +47,8 @@ Memory* Factory::createMemory()
 	switch (MEM_IMPL) {
 		case MEM_IMPL_BASIC:
 			return new BasicMemory(MEMORY_SIZE);
+		case MEM_IMPL_COREI7:
+			return new Corei7Memory(MEMORY_SIZE);
 	}
 	throw "Memory implementation not available. Check coherence between \"config.h\" and \"Factory.cpp\".";
 };
