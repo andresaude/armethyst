@@ -38,15 +38,6 @@ CPUImpl=BasicCPU
 CPUImplDir=basiccpu
 
 #
-# Memory config (selecionar a implementação de Memória desejada)
-#	Memórias disponíveis:
-#		- BasicMemory - A single Von Neumann memory.
-#		- OutraMemoria: se houver outra implementação de Memória
-#
-MemImpl=BasicMemory
-MemImplDir=basicmemory
-
-#
 # Factory
 #
 # fábrica de componentes.
@@ -77,23 +68,33 @@ CPU_CFILES = $(CPU_DIR)/$(CPUImpl).cpp
 $(ODIR)/CPUImpl.o: $(CPU_CFILES) $(CPU_DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 
+
 #
 # Memory
 #
-MEM_DIR=./memory/$(MemImplDir)
+MEM_DIR=./memory
 MEM_IDIR=$(MEM_DIR)/$(IDIR)
-MEM_DEPS = $(MEM_IDIR)/$(MemImpl).h
-MEM_CFILES = $(MEM_DIR)/$(MemImpl).cpp
-$(ODIR)/MemImpl.o: $(MEM_CFILES) $(MEM_DEPS)
+vpath %.cpp $(MEM_DIR)
+vpath %.h $(MEM_IDIR)
+
+$(ODIR)/BasicMemory.o: BasicMemory.cpp BasicMemory.h
+	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS) 
+
+$(ODIR)/Corei7Memory.o: Corei7Memory.cpp Corei7Memory.h
 	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
+
+$(ODIR)/libmem.a: $(ODIR)/BasicMemory.o $(ODIR)/Corei7Memory.o
+	ar rcs $(ODIR)/libmem.a $(ODIR)/BasicMemory.o $(ODIR)/Corei7Memory.o
+
 
 
 #
 # general
 #
-_OBJ = CPUImpl.o ProcessorImpl.o MemImpl.o Factory.o Util.o
-$(ODIR)/%.o: %.cpp $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
+#_OBJ = libmem.a CPUImpl.o ProcessorImpl.o Factory.o Util.o
+_OBJ = Corei7Memory.o BasicMemory.o CPUImpl.o ProcessorImpl.o Factory.o Util.o
+#$(ODIR)/%.o: %.cpp $(DEPS)
+#	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 
 #
 # armethyst
@@ -103,6 +104,9 @@ DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 _MAINOBJ = armethyst.o $(_OBJ)
 MAINOBJ = $(patsubst %,$(ODIR)/%,$(_MAINOBJ))
+
+$(ODIR)/armethyst.o: armethyst.cpp $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 
 armethyst: $(MAINOBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(IFLAGS)
@@ -118,7 +122,7 @@ TEST_IFLAGS=$(IFLAGS) -I./$(TEST_IDIR) -I$(CPU_DIR)/$(TEST_IDIR) -I$(MEM_DIR)/$(
 #
 # Memory test
 #
-MEM_TEST_CFILES = $(MEM_DIR)/$(TEST_DIR)/$(MemImpl)Test.cpp
+MEM_TEST_CFILES = $(MEM_DIR)/$(TEST_DIR)/BasicMemoryTest.cpp
 $(ODIR)/MemoryTest.o: $(MEM_TEST_CFILES) $(MEM_DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(TEST_IFLAGS)
 
