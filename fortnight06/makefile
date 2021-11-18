@@ -38,6 +38,8 @@ CPUImpl=BasicCPU
 CPUImplDir=basiccpu
 
 #
+<<<<<<< HEAD
+=======
 # Memory config (selecionar a implementação de Memória desejada)
 #	Memórias disponíveis:
 #		- BasicMemory - A single Von Neumann memory.
@@ -47,6 +49,7 @@ MemImpl=BasicMemory
 MemImplDir=basicmemory
 
 #
+>>>>>>> turma20211_10A-2
 # Factory
 #
 # fábrica de componentes.
@@ -78,15 +81,41 @@ $(ODIR)/CPUImpl.o: $(CPU_CFILES) $(CPU_DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 
 #
+<<<<<<< HEAD
+# Memory Implementations
+#
+#	Available memory implementations:
+#		- BasicMemory - A single Von Neumann memory.
+#		- Corei7Memory - A memory hierarchy based on the Core i7 architecture.
+#
+MemImpl=BasicMemory
+MemImplDir=basicmemory
+MEM_DIR=./memory/$(MemImplDir)
+MEM_IDIR=$(MEM_DIR)/$(IDIR)
+BASIC_MEM_DEPS = $(MEM_IDIR)/$(MemImpl).h
+MEM_CFILES = $(MEM_DIR)/$(MemImpl).cpp
+$(ODIR)/$(MemImpl).o: $(MEM_CFILES) $(BASIC_MEM_DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
+
+MemImpl=Corei7Memory
+MemImplDir=corei7memory
+=======
 # Memory
 #
+>>>>>>> turma20211_10A-2
 MEM_DIR=./memory/$(MemImplDir)
 MEM_IDIR=$(MEM_DIR)/$(IDIR)
 MEM_DEPS = $(MEM_IDIR)/$(MemImpl).h
 MEM_CFILES = $(MEM_DIR)/$(MemImpl).cpp
+<<<<<<< HEAD
+$(ODIR)/$(MemImpl).o: $(MEM_CFILES) $(BASIC_MEM_DEPS) $(MEM_DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
+	
+=======
 $(ODIR)/MemImpl.o: $(MEM_CFILES) $(MEM_DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 
+>>>>>>> turma20211_10A-2
 
 #
 # general
