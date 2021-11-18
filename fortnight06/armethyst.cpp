@@ -39,10 +39,43 @@
 #include "Memory.h"
 #include "Processor.h"
 
+<<<<<<< HEAD
+#include <iostream>
+
+=======
+>>>>>>> turma20211_10A-2
 using namespace std;
 
 int main()
 {	
+<<<<<<< HEAD
+	try {
+		// (EN) create memory
+		// (PT) cria memória
+		Memory* memory = Factory::createMemory();
+		
+		// (EN) create processor
+		// (PT) cria processador
+		Processor* processor = Factory::createProcessor(memory);
+			
+		// (EN) load executable binary
+		// (PT) carrega binário executável
+		memory->loadBinary(FILENAME);
+		
+		// (EN) create human readable representation of the binary file
+		// (PT) cria representação legível do arquivo binário
+		memory->writeBinaryAsText(FILENAME);
+
+		// (EN) start processor
+		// (PT) inicia processador
+		int result = processor->run(STARTADDRESS);
+	
+		return result;
+	} catch (const char *ex) {
+		cout << "Exception caught:\n\n\t" << ex << "\n" << endl;
+		return 1;
+	}
+=======
 	// (EN) create memory
 	// (PT) cria memória
 	Memory* memory = Factory::createMemory();
@@ -64,4 +97,5 @@ int main()
 	int result = processor->run(STARTADDRESS);	
 	
 	return result;
+>>>>>>> turma20211_10A-2
 }

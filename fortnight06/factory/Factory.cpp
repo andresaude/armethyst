@@ -47,6 +47,10 @@ Memory* Factory::createMemory()
 		case MEM_IMPL_BASIC:
 			return new BasicMemory(MEMORY_SIZE);
 	}
+<<<<<<< HEAD
+	throw "Memory implementation not available. Check coherence between \"config.h\" and \"Factory.cpp\".";
+=======
+>>>>>>> turma20211_10A-2
 };
 
 Processor* Factory::createProcessor(Memory* memory)
