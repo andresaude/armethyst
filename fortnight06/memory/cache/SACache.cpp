@@ -32,18 +32,34 @@
 
    ----------------------------------------------------------------------------
 */
-#pragma once
 
-#include "Cache.h"
+#include "SACache.h"
 
 using namespace std;
 
-class SACache : public Cache
-{
-public:
-	SACache(int size, int lineSize, int associativity);
-	~SACache();
-};
+
+SACache::SACache(int size, int lineSize, int associativity) : Cache::Cache(size,lineSize,associativity) {
+
+	// TODO
+	// 1. Validar os argumentos:
+	//		associativity, lineSize e size são potencia de 2?
+	//		size = múltiplo de lineSize * associativity?
+	bool validArgs = false;
+	if (!validArgs) {
+		throw "Bad FACache initialization. Invalid arguments.";
+	}
+
+	// TODO
+	// 2. Calcular e inicializar atributo numSets
+	// 3. Calcular e inicializar atributo numLines
+	// 4. Alocar numSets FACache(size,lineSize) e colocar em um vetor
+}
+
+SACache::~SACache() {
+	// TODO
+	// 1. Fazer 'delete' para toda a memória alocada	
+}
+
 
 //~ //Implementar uma função ou método
 //~ //SACache createSACache(int c, int a, int l);

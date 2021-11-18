@@ -33,11 +33,7 @@
    ----------------------------------------------------------------------------
 */
 
-#include "FACache.h"
-#include "SACache.h"
-
-#include <string>
-#include <fstream>
+#pragma once
 
 using namespace std;
 
@@ -46,9 +42,16 @@ using namespace std;
  */
 class Cache
 {
-public:
-	~Cache();
+protected:
+	Cache(int size, int lineSize, int associativity);
 
+	int size;			// cache total size in bytes
+	int lineSize;		// line size in bytes
+	int associativity;	// cache associativity
+	int numLines;		// number of lines per set
+	int numSets;		// number of sets, equals to 1 if fully associative cache
+	
+public:
 	/**
 	 * Constructs a Cache of 'size' bytes organized in lines of 'lineSize' bytes, with
 	 * associativity 'associativity'.
@@ -67,49 +70,43 @@ public:
 	 */
 	int getSize();
 	int getLineSize();
+	int getAssociativity();
 	int getNumLines();
 	int getNumSets();
 	
-	/**
-	 * Reads 'size' bytes starting at address 'address'.
-	 * 
-	 * Returns a pointer to a copy of the data, if cache hit, null otherwise.
-	 */
-	void * readData(uint32_t address, int size);
+	//~ /**
+	 //~ * Reads 'size' bytes starting at address 'address'.
+	 //~ * 
+	 //~ * Returns a pointer to a copy of the data, if cache hit, null otherwise.
+	 //~ */
+	//~ virtual void * readData(uint32_t address, int size);
     
-    /**
-     * Fetches one line to cache.
-     * 
-     * The bytes written are the bytes of the line that contains the byte in address
-     * 'address'. The total number of bytes copied is exactly 'Cache::lineSize'.
-     * The argument 'data' is a pointer to the bytes supposed to be copied.
-     */
-    void fetchLine(uint32_t address, char * data);
+    //~ /**
+     //~ * Fetches one line from slower memory and writes to this cache.
+     //~ * 
+     //~ * The bytes written are the bytes of the line that contains the byte in address
+     //~ * 'address'. The total number of bytes copied is exactly 'Cache::lineSize'.
+     //~ * The argument 'data' is a pointer to the bytes supposed to be copied.
+     //~ */
+    //~ virtual void fetchLine(uint32_t address, char * data);
     
-    /**
-     * Overwrites the 32 bit value 'value' in address 'address'.
-     * 
-     * Returns
-     * 		true, if cache hit and writing is successful
-     * 		false, if cache miss
-     */
-    bool writeValue32(uint32_t address, uint32_t value);
+    //~ /**
+     //~ * Overwrites the 32 bit value 'value' in address 'address'.
+     //~ * 
+     //~ * Returns
+     //~ * 		true, if cache hit and writing is successful
+     //~ * 		false, if cache miss
+     //~ */
+    //~ virtual bool writeValue32(uint32_t address, uint32_t value);
 
-    /**
-     * Overwrites the 64 bit value 'value' in address 'address'.
-     * 
-     * Returns
-     * 		true, if cache hit and writing is successful
-     * 		false, if cache miss
-     */
-    bool writeValue64(uint32_t address, uint64_t value);
+    //~ /**
+     //~ * Overwrites the 64 bit value 'value' in address 'address'.
+     //~ * 
+     //~ * Returns
+     //~ * 		true, if cache hit and writing is successful
+     //~ * 		false, if cache miss
+     //~ */
+    //~ virtual bool writeValue64(uint32_t address, uint64_t value);
 
-protected:
-	Cache(int size, int lineSize);
-
-	int size;		// cache total size in bytes
-	int lineSize;	// line size in bytes
-	int numLines;	// number of lines per set
-	int numSets;	// number of sets, equals to 1 if fully associative cache
 };
 

@@ -1,3 +1,6 @@
 /obj/*.o
 /armethyst
 /runtest
+/elf_isummation.o.txt
+/saida.txt
+/txt_isummation.o.txt

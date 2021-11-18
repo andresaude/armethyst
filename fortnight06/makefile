@@ -15,7 +15,7 @@ ODIR=./obj
 # ###################
 # # armethyst
 # ###################
-IFLAGS=-I./$(IDIR) -I./util/$(IDIR) -I$(PROC_IDIR) -I$(CPU_IDIR) -I$(MEM_IDIR)
+IFLAGS=-I./$(IDIR) -I./util/$(IDIR) -I$(PROC_IDIR) -I$(CPU_IDIR) $(MEM_IFLAGS)
 
 #
 # Processor config (selecionar a implementação de Processador desejada)
@@ -73,17 +73,32 @@ $(ODIR)/CPUImpl.o: $(CPU_CFILES) $(CPU_DEPS)
 # Memory
 #
 MEM_DIR=./memory
-MEM_IDIR=$(MEM_DIR)/$(IDIR)
-vpath %.cpp $(MEM_DIR)
-vpath %.h $(MEM_IDIR)
+MEM_IDIRS=$(MEM_DIR)/$(IDIR):$(MEM_DIR)/cache/$(IDIR)
+MEM_IFLAGS = $(patsubst %,-I%,$(subst :, ,$(MEM_IDIRS)))
+MEM_CPPS=Cache.cpp FACache.cpp
+MEM_PARTS=Cache FACache SACache
+MEM_OBJS=$(patsubst %,$(ODIR)/%.o,$(MEM_PARTS))
+MEM_CPP=$(patsubst %,%.cpp,$(MEM_PARTS))
+MEM_H=$(patsubst %,%.h,$(MEM_PARTS))
+vpath %.cpp $(MEM_DIR):$(MEM_DIR)/cache
+vpath %.h $(MEM_IDIRS)
 
+$(ODIR)/Cache.o: Cache.cpp Cache.h
+	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS) 
+
+$(ODIR)/FACache.o: FACache.cpp FACache.h $(ODIR)/Cache.o
+	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS) 
+
+$(ODIR)/SACache.o: SACache.cpp SACache.h $(ODIR)/Cache.o
+	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS) 
+	
 $(ODIR)/BasicMemory.o: BasicMemory.cpp BasicMemory.h
 	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS) 
 
 $(ODIR)/Corei7Memory.o: Corei7Memory.cpp Corei7Memory.h
 	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 
-$(ODIR)/libmem.a: $(ODIR)/BasicMemory.o $(ODIR)/Corei7Memory.o
+$(ODIR)/libmem.a: $(ODIR)/Cache.o $(ODIR)/BasicMemory.o $(ODIR)/Corei7Memory.o
 	ar rcs $(ODIR)/libmem.a $(ODIR)/BasicMemory.o $(ODIR)/Corei7Memory.o
 
 
@@ -103,7 +118,7 @@ _DEPS = config.h CPU.h Memory.h Processor.h Factory.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 _MAINOBJ = armethyst.o $(_OBJ)
-MAINOBJ = $(patsubst %,$(ODIR)/%,$(_MAINOBJ))
+MAINOBJ = $(MEM_OBJS) $(patsubst %,$(ODIR)/%,$(_MAINOBJ))
 
 $(ODIR)/armethyst.o: armethyst.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
