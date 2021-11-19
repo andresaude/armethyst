@@ -35,11 +35,6 @@
 
 #include "Corei7Memory.h"
 
-//#include <iostream>
-//#include <iomanip>
-
-//using namespace std;
-
 Corei7Memory::Corei7Memory(int size)
 {
 	mainMemory = new BasicMemory(size);
@@ -58,8 +53,7 @@ Corei7Memory::~Corei7Memory()
  */
 uint32_t Corei7Memory::readInstruction32(uint64_t address)
 {
-//	return ((uint32_t*)data)[address >> 2];
-	return 0;
+	return mainMemory->readInstruction32(address);
 }
 
 /**
@@ -67,8 +61,7 @@ uint32_t Corei7Memory::readInstruction32(uint64_t address)
  */
 uint32_t Corei7Memory::readData32(uint64_t address)
 {
-//	return ((uint32_t*)data)[address >> 2];
-	return 0;
+	return mainMemory->readData32(address);
 }
 
 /**
@@ -76,8 +69,7 @@ uint32_t Corei7Memory::readData32(uint64_t address)
  */
 uint64_t Corei7Memory::readData64(uint64_t address)
 {
-//	return ((uint64_t*)data)[address >> 3];
-	return 0;
+	return mainMemory->readData64(address);
 }
 
 /**
@@ -86,7 +78,7 @@ uint64_t Corei7Memory::readData64(uint64_t address)
  */
 void Corei7Memory::writeInstruction32(uint64_t address, uint32_t value)
 {
-//	((uint32_t*)data)[address >> 2] = value;
+	mainMemory->writeInstruction32(address,value);
 }
 
 /**
@@ -94,7 +86,7 @@ void Corei7Memory::writeInstruction32(uint64_t address, uint32_t value)
  */
 void Corei7Memory::writeData32(uint64_t address, uint32_t value)
 {
-//	((uint32_t*)data)[address >> 2] = value;
+	mainMemory->writeData32(address,value);
 }
 
 /**
@@ -102,7 +94,7 @@ void Corei7Memory::writeData32(uint64_t address, uint32_t value)
  */
 void Corei7Memory::writeData64(uint64_t address, uint64_t value)
 {
-//	((uint64_t*)data)[address >> 3] = value;
+	mainMemory->writeData64(address,value);
 }
 
 /**
@@ -110,55 +102,13 @@ void Corei7Memory::writeData64(uint64_t address, uint64_t value)
  */
 void Corei7Memory::loadBinary(string filename)
 {
-    //streampos size;
-
-    //ifstream file(filename, ios::in|ios::binary|ios::ate);
-    //if (file.is_open())
-    //{
-        //fileSize = file.tellg();
-        //file.seekg (0, ios::beg);
-        //file.read (data, fileSize);
-        //file.close();
-    //}
-    //else {
-        //cout << "Unable to open file " << filename << endl;
-		//cout << "Aborting... " << endl;
-		//exit(1);
-    //}
-
+	mainMemory->loadBinary(filename);
 }
 
 
 /**
  * Escreve arquivo binario em um arquivo legível
  */
-#define LINE_SIZE 4
 void Corei7Memory::writeBinaryAsText (string basename) {
-    //string filename = "txt_" + basename + ".txt";
-    //ofstream ofp;
-    //int i,j;
-
-    //cout << "Gerado arquivo " << filename << endl << endl;
-    //ofp.open(filename);
-
-    //ofp << uppercase << hex;
-
-    //// caption
-    //ofp << "ADDR    ";
-    //for (j=0; j<LINE_SIZE; j++) {
-        //ofp << "ADDR+" << setfill('0') << setw(2) << 4*j << "  ";
-    //}
-    //ofp << endl << "----------------------------------------------------------------------------" << endl;
-
-
-    //// binary
-    //i=0;
-    //for (i = 0; i < fileSize / 4; i+=LINE_SIZE) {
-        //ofp << setw(4) << 4*i << "    ";
-        //for (j=0; j<LINE_SIZE; j++) {
-            //ofp << setw(8) << ((unsigned int *)data)[i+j] << " ";
-        //}
-        //ofp << endl;
-    //}
-    //ofp.close();
+	mainMemory->writeBinaryAsText(basename);
 }

@@ -137,7 +137,7 @@ TEST_IFLAGS=$(IFLAGS) -I./$(TEST_IDIR) -I$(CPU_DIR)/$(TEST_IDIR) -I$(MEM_DIR)/$(
 #
 # Memory test
 #
-MEM_TEST_CFILES = $(MEM_DIR)/$(TEST_DIR)/BasicMemoryTest.cpp
+MEM_TEST_CFILES = $(MEM_DIR)/$(TEST_DIR)/MemoryTest.cpp
 $(ODIR)/MemoryTest.o: $(MEM_TEST_CFILES) $(MEM_DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(TEST_IFLAGS)
 

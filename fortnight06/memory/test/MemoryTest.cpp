@@ -32,18 +32,18 @@
 
    ----------------------------------------------------------------------------
 */
-#include "BasicMemoryTest.h"
+#include "MemoryTest.h"
 
 #include <iostream>
 #include <iomanip>
 
 using namespace std;
 
-BasicMemoryTest::BasicMemoryTest(int size) : BasicMemory{size}
+MemoryTest::MemoryTest(int size) : BasicMemory{size}
 {
     memLogStream.open(MEMORY_LOG_FILE);
 }
-BasicMemoryTest::~BasicMemoryTest()
+MemoryTest::~MemoryTest()
 {
 	memLogStream.close();
 }
@@ -51,7 +51,7 @@ BasicMemoryTest::~BasicMemoryTest()
 /**
  * Log de BasicMemory::readInstruction32(long address)
  */
-uint32_t BasicMemoryTest::readInstruction32(uint64_t address)
+uint32_t MemoryTest::readInstruction32(uint64_t address)
 {
     memLogStream << hex << "ri " << setfill('0') << setw(16) << address << endl;
  	return BasicMemory::readInstruction32(address);
@@ -60,7 +60,7 @@ uint32_t BasicMemoryTest::readInstruction32(uint64_t address)
 /**
  * Log de BasicMemory::readData32(uint64_t address)
  */
-uint32_t BasicMemoryTest::readData32(uint64_t address)
+uint32_t MemoryTest::readData32(uint64_t address)
 {
     memLogStream << hex << "rd " << setfill('0') << setw(16) << address << endl;
 	lastDataMemAccess = MemAccessType::MAT_READ32;
@@ -70,7 +70,7 @@ uint32_t BasicMemoryTest::readData32(uint64_t address)
 /**
  * Log de BasicMemory::readData64(uint64_t address)
  */
-uint64_t BasicMemoryTest::readData64(uint64_t address)
+uint64_t MemoryTest::readData64(uint64_t address)
 {
     memLogStream << hex << "rd " << setfill('0') << setw(16) << address << endl;
 	lastDataMemAccess = MemAccessType::MAT_READ64;
@@ -80,7 +80,7 @@ uint64_t BasicMemoryTest::readData64(uint64_t address)
 /**
  * Log de BasicMemory::writeInstruction32(uint64_t address)
  */
-void BasicMemoryTest::writeInstruction32(uint64_t address, uint32_t value)
+void MemoryTest::writeInstruction32(uint64_t address, uint32_t value)
 {
     memLogStream << hex << "wi " << setfill('0') << setw(16) << address << endl;
 	lastDataMemAccess = MemAccessType::MAT_WRITE32;
@@ -90,7 +90,7 @@ void BasicMemoryTest::writeInstruction32(uint64_t address, uint32_t value)
 /**
  * Log de BasicMemory::writeData32(uint64_t address)
  */
-void BasicMemoryTest::writeData32(uint64_t address, uint32_t value)
+void MemoryTest::writeData32(uint64_t address, uint32_t value)
 {
     memLogStream << hex << "wd " << setfill('0') << setw(16) << address << endl;
 	lastDataMemAccess = MemAccessType::MAT_WRITE32;
@@ -100,18 +100,18 @@ void BasicMemoryTest::writeData32(uint64_t address, uint32_t value)
 /**
  * Log de BasicMemory::writeData64(uint64_t address)
  */
-void BasicMemoryTest::writeData64(uint64_t address, uint64_t value)
+void MemoryTest::writeData64(uint64_t address, uint64_t value)
 {
     memLogStream << hex << "wd " << setfill('0') << setw(16) << address << endl;
 	lastDataMemAccess = MemAccessType::MAT_WRITE64;
  	BasicMemory::writeData64(address, value);
 }
 
-BasicMemoryTest::MemAccessType BasicMemoryTest::getLastDataMemAccess() {
+MemoryTest::MemAccessType MemoryTest::getLastDataMemAccess() {
 	return lastDataMemAccess;
 }
 
-void BasicMemoryTest::resetLastDataMemAccess() {
+void MemoryTest::resetLastDataMemAccess() {
 	lastDataMemAccess = MemAccessType::MAT_NONE;
 }
 
@@ -123,7 +123,7 @@ void BasicMemoryTest::resetLastDataMemAccess() {
 #define ADDR_COL_SPACE 4
 #define WORD_SIZE 4
 #define WORDS_PER_LINE 4
-void BasicMemoryTest::writeBinaryAsTextELF (string basename) {
+void MemoryTest::writeBinaryAsTextELF (string basename) {
     string filename = "elf_" + basename + ".txt";
     ofstream ofp;
     int i,j;
@@ -187,7 +187,7 @@ void BasicMemoryTest::writeBinaryAsTextELF (string basename) {
  * 
  * Específico para o arquivo de teste usado.
  */
-void BasicMemoryTest::relocateManual() {
+void MemoryTest::relocateManual() {
 	unsigned int *uiData = (unsigned int *)data;
 	long address;
 	unsigned int instruction;

@@ -39,7 +39,7 @@
 
 using namespace std;
 
-Corei7MemoryTest::Corei7MemoryTest(int size) : BasicMemory{size}
+Corei7MemoryTest::Corei7MemoryTest(int size) : Corei7Memory{size}
 {
     memLogStream.open(MEMORY_LOG_FILE);
 }
@@ -54,7 +54,7 @@ Corei7MemoryTest::~Corei7MemoryTest()
 uint32_t Corei7MemoryTest::readInstruction32(uint64_t address)
 {
     memLogStream << hex << "ri " << setfill('0') << setw(16) << address << endl;
- 	return BasicMemory::readInstruction32(address);
+ 	return Corei7Memory::readInstruction32(address);
 }
 
 /**
@@ -64,7 +64,7 @@ uint32_t Corei7MemoryTest::readData32(uint64_t address)
 {
     memLogStream << hex << "rd " << setfill('0') << setw(16) << address << endl;
 	lastDataMemAccess = MemAccessType::MAT_READ32;
- 	return BasicMemory::readData32(address);
+ 	return Corei7Memory::readData32(address);
 }
 
 /**
@@ -74,7 +74,7 @@ uint64_t Corei7MemoryTest::readData64(uint64_t address)
 {
     memLogStream << hex << "rd " << setfill('0') << setw(16) << address << endl;
 	lastDataMemAccess = MemAccessType::MAT_READ64;
- 	return BasicMemory::readData64(address);
+ 	return Corei7Memory::readData64(address);
 }
 
 /**
@@ -84,7 +84,7 @@ void Corei7MemoryTest::writeInstruction32(uint64_t address, uint32_t value)
 {
     memLogStream << hex << "wi " << setfill('0') << setw(16) << address << endl;
 	lastDataMemAccess = MemAccessType::MAT_WRITE32;
- 	BasicMemory::writeInstruction32(address, value);
+ 	Corei7Memory::writeInstruction32(address, value);
 }
 
 /**
@@ -94,7 +94,7 @@ void Corei7MemoryTest::writeData32(uint64_t address, uint32_t value)
 {
     memLogStream << hex << "wd " << setfill('0') << setw(16) << address << endl;
 	lastDataMemAccess = MemAccessType::MAT_WRITE32;
- 	BasicMemory::writeData32(address, value);
+ 	Corei7Memory::writeData32(address, value);
 }
 
 /**
@@ -104,7 +104,7 @@ void Corei7MemoryTest::writeData64(uint64_t address, uint64_t value)
 {
     memLogStream << hex << "wd " << setfill('0') << setw(16) << address << endl;
 	lastDataMemAccess = MemAccessType::MAT_WRITE64;
- 	BasicMemory::writeData64(address, value);
+ 	Corei7Memory::writeData64(address, value);
 }
 
 Corei7MemoryTest::MemAccessType Corei7MemoryTest::getLastDataMemAccess() {

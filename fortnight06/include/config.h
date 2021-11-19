@@ -48,7 +48,7 @@
 #define MEM_IMPL_COREI7 1 // Core i7 based memory hierarchy
 
 // Memory implementation
-#define MEM_IMPL MEM_IMPL_COREI7
+#define MEM_IMPL MEM_IMPL_BASIC
 
 // Memory whole size
 #define MEMORY_SIZE 65536

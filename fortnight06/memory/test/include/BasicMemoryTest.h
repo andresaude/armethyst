@@ -34,6 +34,7 @@
 */
 #include "config.h"
 #include "BasicMemory.h"
+#include <fstream>
 
 using namespace std;
 
