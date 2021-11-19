@@ -6,11 +6,11 @@
 
     (PT) armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
-    (veja a licenÃ§a, em inglÃªs, abaixo).
+    (veja a licença, em inglês, abaixo).
 
     (EN) MIT LICENSE:
 
-    Copyright 2020 AndrÃ© Vital SaÃºde
+    Copyright 2020 André Vital Saúde
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -32,44 +32,77 @@
 
    ----------------------------------------------------------------------------
 */
-#include "config.h"
-//~ #include "BasicMemory.h"
-#include "Memory.h"
+
+#include "BasicMemory.h"
+
+#include <iostream>
+#include <iomanip>
 #include <fstream>
 
 using namespace std;
 
-//~ class MemoryTest : public BasicMemory
-class MemoryTest : public Memory
+Memory::Memory(int size)
 {
-protected:
-	Memory* memImpl;
-	
-public:
-	enum MemAccessType {MAT_NONE, MAT_READ32, MAT_WRITE32, MAT_READ64, MAT_WRITE64};
+	data = new char[size];
+}
 
-	MemoryTest(int size);
-	~MemoryTest();
-		
-	void relocateManual();
-	void writeBinaryAsTextELF (string basename);
-	
-	MemAccessType getLastDataMemAccess();
-	void resetLastDataMemAccess();
-	
-	/*
-	 * Logs dos mÃ©todos da superclasse.
-	 */
-	uint32_t readInstruction32(uint64_t address);
-	uint32_t readData32(uint64_t address);
-	uint64_t readData64(uint64_t address);
-	void writeInstruction32(uint64_t address, uint32_t value);
-	void writeData32(uint64_t address, uint32_t value);
-	void writeData64(uint64_t address, uint64_t value);
+Memory::~Memory()
+{
+	delete[] data;
+}
+/**
+ * carrega arquivo binário na memória
+ */
+void Memory::loadBinary(string filename)
+{
+    streampos size;
 
-private:
-	MemAccessType lastDataMemAccess;
-	ofstream memLogStream;
-	
-};
+    ifstream file(filename, ios::in|ios::binary|ios::ate);
+    if (file.is_open())
+    {
+        fileSize = file.tellg();
+        file.seekg (0, ios::beg);
+        file.read (data, fileSize);
+        file.close();
+    }
+    else {
+        cout << "Unable to open file " << filename << endl;
+		cout << "Aborting... " << endl;
+		exit(1);
+    }
+}
 
+
+/**
+ * Escreve arquivo binario em um arquivo legível
+ */
+#define LINE_SIZE 4
+void Memory::writeBinaryAsText (string basename) {
+    string filename = "txt_" + basename + ".txt";
+    ofstream ofp;
+    int i,j;
+
+    cout << "Gerado arquivo " << filename << endl << endl;
+    ofp.open(filename);
+
+    ofp << uppercase << hex;
+
+    // caption
+    ofp << "ADDR    ";
+    for (j=0; j<LINE_SIZE; j++) {
+        ofp << "ADDR+" << setfill('0') << setw(2) << 4*j << "  ";
+    }
+    ofp << endl << "----------------------------------------------------------------------------" << endl;
+
+
+    // binary
+    i=0;
+    for (i = 0; i < fileSize / 4; i+=LINE_SIZE) {
+        ofp << setw(4) << 4*i << "    ";
+        for (j=0; j<LINE_SIZE; j++) {
+            ofp << setw(8) << ((unsigned int *)data)[i+j] << " ";
+        }
+        ofp << endl;
+    }
+    ofp.close();
+}

@@ -41,9 +41,9 @@
 
 using namespace std;
 
-BasicMemory::BasicMemory(int size)
+BasicMemory::BasicMemory(int size) : Memory(size)
 {
-	data = new char[size];
+	//~ data = new char[size];
 }
 
 BasicMemory::~BasicMemory()

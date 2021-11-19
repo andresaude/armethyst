@@ -79,9 +79,5 @@ public:
 	 */
 	void writeData64(uint64_t address, uint64_t value);
 
-protected:
-	char* data;        //memory data
-	unsigned short fileSize;    //size of the loaded binary file
-
 };
 

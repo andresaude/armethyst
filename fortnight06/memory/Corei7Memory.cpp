@@ -35,7 +35,7 @@
 
 #include "Corei7Memory.h"
 
-Corei7Memory::Corei7Memory(int size)
+Corei7Memory::Corei7Memory(int size) : Memory(size)
 {
 	mainMemory = new BasicMemory(size);
 }
