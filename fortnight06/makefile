@@ -73,7 +73,7 @@ $(ODIR)/CPUImpl.o: $(CPU_CFILES) $(CPU_DEPS)
 # Memory
 #
 MEM_DIR=./memory
-MEM_IDIRS=$(MEM_DIR)/$(IDIR):$(MEM_DIR)/cache/$(IDIR)
+MEM_IDIRS=$(IDIR):$(MEM_DIR)/$(IDIR):$(MEM_DIR)/cache/$(IDIR)
 MEM_IFLAGS = $(patsubst %,-I%,$(subst :, ,$(MEM_IDIRS)))
 MEM_CPPS=Cache.cpp FACache.cpp
 MEM_PARTS=Cache FACache SACache
@@ -95,6 +95,9 @@ $(ODIR)/SACache.o: SACache.cpp SACache.h $(ODIR)/Cache.o
 $(ODIR)/BasicMemory.o: BasicMemory.cpp BasicMemory.h
 	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS) 
 
+$(ODIR)/Memory.o: Memory.cpp Memory.h
+	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS) 
+
 $(ODIR)/Corei7Memory.o: Corei7Memory.cpp Corei7Memory.h
 	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 
@@ -107,7 +110,7 @@ $(ODIR)/libmem.a: $(ODIR)/Cache.o $(ODIR)/BasicMemory.o $(ODIR)/Corei7Memory.o
 # general
 #
 #_OBJ = libmem.a CPUImpl.o ProcessorImpl.o Factory.o Util.o
-_OBJ = Corei7Memory.o BasicMemory.o CPUImpl.o ProcessorImpl.o Factory.o Util.o
+_OBJ = Memory.o Corei7Memory.o BasicMemory.o CPUImpl.o ProcessorImpl.o Factory.o Util.o
 #$(ODIR)/%.o: %.cpp $(DEPS)
 #	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 

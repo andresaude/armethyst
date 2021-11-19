@@ -39,9 +39,16 @@
 
 class Memory
 {
+	protected:
+		unsigned short fileSize;    //size of the loaded binary file
+		char* data;        //memory data
+	
 	public:
-		virtual void loadBinary(std::string filename) = 0;
-		virtual void writeBinaryAsText (std::string basename) = 0;
+		Memory(int size);
+		~Memory();
+		
+		void loadBinary(std::string filename);
+		void writeBinaryAsText (std::string basename);
 
 		/**
 		 * Lê uma instrução de 32 bits considerando um endereçamento

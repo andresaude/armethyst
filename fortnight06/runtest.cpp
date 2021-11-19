@@ -37,8 +37,6 @@
 #include "Util.h"
 
 #include "MemoryTest.h"
-//~ #include "BasicMemoryTest.h"
-//~ #include "Corei7MemoryTest.h"
 #include "BasicCPUTest.h"
 
 #include <iostream>
@@ -104,6 +102,7 @@ int main()
 
 void loadBinary (MemoryTest* memory, string fname)
 {
+
 	// load executable binary
 	memory->loadBinary(fname);
 	memory->relocateManual();
@@ -156,7 +155,6 @@ void test01(BasicCPUTest* cpu, MemoryTest* memory, string fname)
 	xpctdALUout = xpctdA - xpctdB;
 	
 	xpctdRd = xpctdALUout;
-	
 	
 	CALLTEST();
 	RESETTEST();
