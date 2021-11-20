@@ -37,12 +37,16 @@
 
 Corei7Memory::Corei7Memory(int size)
 {
-	mainMemory = new BasicMemory(size);
+	logger = new MemoryLogger("cacheLog.txt");
 	initHierarchy();
+	mainMemory = new BasicMemory(size);
 }
 
 Corei7Memory::~Corei7Memory()
 {
+	// TODO
+	// 1. Fazer 'delete' para toda a memória alocada. Uma boa implementação só terá
+	//		alocado memória no construtor ou nos métodos por ele chamados.
 	delete[] mainMemory;
 }
 
@@ -53,24 +57,11 @@ Corei7Memory::~Corei7Memory()
  */
 void Corei7Memory::initHierarchy() {
 	// TODO
-	// Instanciar as caches, observando a Seção 2.5.4 do documento Intel® 64 and IA-32 Architectures Optimization
-	// Reference Manual, Order Number: 248966-033, June 2016, disponibilizado, mas com algumas alterações
-	// apresentadas no enunciado do trabalho.
-	//
-	// Basicamente:
-	// 		l1i: cache de 32KB, 4 vias, linhas de 64B (escrita não se aplica)
-	// 		l1d: cache de 32KB, 8 vias, linhas de 64B, estratégia write-through
-	// 		l2: cache de 256KB, 8 vias, linhas de 64B, estratégia writeback
-}
-/**
- * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
- *
- * BasicMemory.cpp implementa a arquitetura de Von Neumman, com apenas uma
- * memória, que armazena instruções e dados.
- */
-uint32_t Corei7Memory::readInstruction32(uint64_t address)
-{
-	return mainMemory->readInstruction32(address);
+	// A instanciação da memória principal já está implementada no construtor.
+	// 1. Instanciar as caches, conforme hierarquia definida no enunciado do trabalho:
+	// 		l1i: cache de 2KB, 4 vias, linhas de 64B (escrita não se aplica)
+	// 		l1d: cache de 2KB, 8 vias, linhas de 64B, estratégia write-through
+	// 		l2: cache de 8KB, 8 vias, linhas de 64B, estratégia writeback
 }
 
 /**
@@ -81,11 +72,53 @@ char *Corei7Memory::getData() {
 }
 
 /**
+ * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
+ *
+ * BasicMemory.cpp implementa a arquitetura de Von Neumman, com apenas uma
+ * memória, que armazena instruções e dados.
+ */
+uint32_t Corei7Memory::readInstruction32(uint64_t address)
+{
+	int hitLevel = 1;
+	uint32_t value;
+	
+	// TODO
+	// 1. Implementar a simulação do comportamento da cache real, ou seja:
+	//		Verificar l1i
+	//			se hit, hitLevel = 1, retorna dado lido
+	//			senão, verificar l2
+	//				se hit
+	//					hitLevel = 2, fetch da linha para l1i, retorna dado lido
+	//				senão
+	//					ler dado da memória principal
+	//					hitLevel = 3, fetch da linha para l1i e para l2, retorna dado lido
+
+	// TODO a linha a seguir deve entrar na lógica acima
+	value = mainMemory->readInstruction32(address);
+	
+	// não mexa nas linhas a seguir, são necessárias para a correção do trabalho
+	logger->memlog(MemoryLogger::READI,address,hitLevel);
+	return value;
+}
+
+/**
  * Lê um dado de 32 bits considerando um endereçamento em bytes.
  */
 uint32_t Corei7Memory::readData32(uint64_t address)
 {
-	return mainMemory->readData32(address);
+	int hitLevel = 1;
+	uint32_t value;
+	
+	// TODO
+	// 1. Replicar o código de readInstruction32, alterando apenas l1i para l1d e
+	//	os métodos delegados.
+
+	// TODO a linha a seguir deve entrar na lógica da hierarquia
+	value = mainMemory->readData32(address);
+	
+	// não mexa nas linhas a seguir, são necessárias para a correção do trabalho
+	logger->memlog(MemoryLogger::READ32,address,hitLevel);
+	return value;
 }
 
 /**
@@ -93,7 +126,19 @@ uint32_t Corei7Memory::readData32(uint64_t address)
  */
 uint64_t Corei7Memory::readData64(uint64_t address)
 {
-	return mainMemory->readData64(address);
+	int hitLevel = 1;
+	uint64_t value;
+	
+	// TODO
+	// 1. Replicar o código de readInstruction32, alterando apenas l1i para l1d e
+	//	os métodos delegados.
+
+	// TODO a linha a seguir deve entrar na lógica da hierarquia
+	value = mainMemory->readData64(address);
+	
+	// não mexa nas linhas a seguir, são necessárias para a correção do trabalho
+	logger->memlog(MemoryLogger::READ64,address,hitLevel);
+	return value;
 }
 
 /**
@@ -110,7 +155,20 @@ void Corei7Memory::writeInstruction32(uint64_t address, uint32_t value)
  */
 void Corei7Memory::writeData32(uint64_t address, uint32_t value)
 {
+	int hitLevel = 1;
+	
+	// TODO
+	// 1. Replicar o código de readInstruction32, alterando apenas l1i para l1d e
+	//	os métodos delegados.
+	// 2. Acrescente à lógica implementada, as questões de manutenção da coerência
+	//	de cache, utilizando as estratégias write-through ou writeback, conforme
+	//	enunciado.
+
+	// TODO a linha a seguir deve entrar na lógica da hierarquia
 	mainMemory->writeData32(address,value);
+	
+	// não mexa nas linhas a seguir, são necessárias para a correção do trabalho
+	logger->memlog(MemoryLogger::WRITE32,address,hitLevel);
 }
 
 /**
@@ -118,5 +176,15 @@ void Corei7Memory::writeData32(uint64_t address, uint32_t value)
  */
 void Corei7Memory::writeData64(uint64_t address, uint64_t value)
 {
+	int hitLevel = 1;
+	
+	// TODO
+	// 1. Replicar o código de writeData32, alterando apenas o que for necessário para
+	//	a escrita 64 bits.
+
+	// TODO a linha a seguir deve entrar na lógica da hierarquia
 	mainMemory->writeData64(address,value);
+	
+	// não mexa nas linhas a seguir, são necessárias para a correção do trabalho
+	logger->memlog(MemoryLogger::WRITE64,address,hitLevel);
 }

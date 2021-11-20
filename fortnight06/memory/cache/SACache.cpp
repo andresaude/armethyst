@@ -35,49 +35,117 @@
 
 #include "SACache.h"
 
+#include <cstddef>
+
 using namespace std;
 
 
-SACache::SACache(int size, int lineSize, int associativity) : Cache::Cache(size,lineSize,associativity) {
+/**
+ * Constructs a SACache of 'size' bytes organized in sets of associativity 'associativity'
+ * and line size of 'lineSize' bytes.
+ * 
+ * Constraints: 'size' must be equal to 'numSets*associativity*lineSize', and all the attributes
+ * must be a power of 2.
+ */
+SACache::SACache(unsigned int size, unsigned int lineSize, unsigned int associativity) : Cache::Cache(size,lineSize,associativity) {
 
-	// TODO
-	// 1. Validar os argumentos:
-	//		associativity, lineSize e size são potencia de 2?
-	//		size = múltiplo de lineSize * associativity?
 	bool validArgs = false;
+	// TODO
+	// 1. Note que este construtor chama o construtor da superclasse! Veja o que já é feito
+	//		no construtor da superclasse.
+	// 2. Calcule e inicialize o atributo numSets.
+	// 3. Validar os atributos que acabam e ser inicializados:
+	//		os valores são coerentes, ou seja, 'numSets*associativity*lineSize == size'?
+	//		size, numSets, lineSize e associativity são potências de 2?
 	if (!validArgs) {
 		throw "Bad FACache initialization. Invalid arguments.";
 	}
-
+	
 	// TODO
-	// 2. Calcular e inicializar atributo numSets
-	// 3. Calcular e inicializar atributo numLines
-	// 4. Alocar numSets FACache(size,lineSize) e colocar em um vetor
+	// 4. Alocar o atributo 'sets' com 'numSets' ponteiros para FACache (FACache *)
+	// 5. Percorrer 'sets' e, para cada índice, alocar uma FACache de dimensões coerentes com
+	//		esta SACache.
 }
 
 SACache::~SACache() {
 	// TODO
-	// 1. Fazer 'delete' para toda a memória alocada	
+	// 1. Fazer 'delete' para toda a memória alocada.
+	//		ATENÇÃO: percorra 'sets' e faça delete de cada FACache para depois fazer delete
+	//		de 'sets'
 }
 
+/**
+ * Reads the 32 bit value 'value' in address 'address'.
+ * 
+ * Returns
+ * 		true, if cache hit
+ * 		false, if cache miss
+ */
+bool SACache::read32(uint64_t address, uint32_t * value) {
+	// TODO
+	// 1. Encontre tag, lookup e offset do address. Sugestão: faça um ou mais procedimentos,
+	//		pois isso será utilizado nos próximos métodos. Você pode ainda criar atributos
+	//		privados na classe (SACache.h) e incializa-los no construtor, para armazenar as
+	//		máscaras usadas na extração desses campos.
+	// 2. Delegue a tarefa para read32 da FACache que se encontra em sets[lookup].
+	
+	return false;
+}
 
-//~ //Implementar uma função ou método
-//~ //SACache createSACache(int c, int a, int l);
-//~ //onde SACache é o tipo de dado (struct ou classe) que representa uma cache associativa por conjuntos com capacidade total de c bytes, associatividade a e l bytes por linha. É obrigatório que c, a e l sejam inteiros potências de 2 e que c seja um múltiplo de a*l (testar a corretude da entrada e informar o erro, caso exista, é condição bônus).
-//~ //Cada conjunto da SACache deve ser uma TACache e, portanto, createSACache deve chamar createTACache.
-//~ //Implementar também as seguintes funções ou métodos de acesso a informações sobre o SACache:
-//~ int getSACacheCapacity(SACache sac);
-//~ int getSACacheLineSize(SACache sac);
-//~ que retornam, respectivamente, a capacidade e o tamanho da linha da cache associativa por conjuntos sac.
-//~ Implementar a seguinte função ou método de acesso a dados da cache:
-	//~ bool getSACacheData(SACache sac, int address, int * value);
-//~ que busca o valor do endereço address na cache associativa por conjuntos sac. O valor é retornado no parâmetro de saída value e o método ou função retorna true, se o endereço foi encontrado na cache (hit) ou false, senão (miss). A verificação dos bits de lookup do endereço address para extrair o número do conjunto deve ser feita com o uso de operadores lógicos.
-//~ Implementar a seguinte função ou método de acesso a dados da cache:
-	//~ void setSACacheLine(SACache tac, int address, int *line);
-//~ que escreve toda a linha line, que contém o endereço address, na cache associativa por conjuntos sac, usando setTACacheLine da TACache.
-//~ Implementar a seguinte função ou método de acesso a dados da cache:
-	//~ bool setSACacheData(SACache sac, int address, int value);
-//~ que grava o valor value, do endereço address, na cache associativa por conjuntos sac, utilizando setTACacheData da TACache, e com o mesmo padrão de retorno de setTACacheData.
-//~ Implementar a função
-//~ SACache duplicateSACache(SACache sac);
+/**
+ * Reads the 64 bit value 'value' in address 'address'.
+ * 
+ * Returns
+ * 		true, if cache hit
+ * 		false, if cache miss
+ */
+bool SACache::read64(uint64_t address, uint64_t * value) {
+	// TODO
+	// 1. Repita o código de read32 alterando apenas a delegação da tarefa para read64.
+	return false;
+}
 
+/**
+ * Overwrites the 32 bit value 'value' in address 'address'.
+ * 
+ * Returns
+ * 		true, if cache hit and writing is successful
+ * 		false, if cache miss
+ */
+bool SACache::write32(uint64_t address, uint32_t value) {
+	// TODO
+	// 1. Repita o código de read32 alterando apenas a delegação da tarefa para write32.
+	return false;
+}
+
+/**
+ * Overwrites the 64 bit value 'value' in address 'address'.
+ * 
+ * Returns
+ * 		true, if cache hit and writing is successful
+ * 		false, if cache miss
+ */
+bool SACache::write64(uint64_t address, uint64_t value) {
+	// TODO
+	// 1. Repita o código de read32 alterando apenas a delegação da tarefa para write64.
+	return false;
+}
+
+/**
+ * Fetches one line from slower memory and writes to this cache.
+ * 
+ * The bytes written are the bytes of the line that contains the byte in address
+ * 'address'. The total number of bytes copied is exactly 'Cache::lineSize'.
+ * 
+ * The argument 'data' is a pointer to the whole data of the slower memory from
+ * where the data is to be fetched.
+ * 
+ * Returns:
+ * 		NULL, if the line is not set as modified
+ * 		a pointer to a copy of the line, if the line is set as modified
+ */
+char * SACache::fetchLine(uint64_t address, char * data) {
+	// TODO
+	// 1. Repita o código de read32 alterando apenas a delegação da tarefa para fetchLine.
+	return NULL;
+}

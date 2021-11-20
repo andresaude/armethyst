@@ -35,6 +35,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 using namespace std;
 
 /*
@@ -43,70 +45,91 @@ using namespace std;
 class Cache
 {
 protected:
-	Cache(int size, int lineSize, int associativity);
-
-	int size;			// cache total size in bytes
-	int lineSize;		// line size in bytes
-	int associativity;	// cache associativity
-	int numLines;		// number of lines per set
-	int numSets;		// number of sets, equals to 1 if fully associative cache
+	unsigned int size;			// cache total size in bytes
+	unsigned int lineSize;		// line size in bytes
+	unsigned int associativity;	// cache associativity
+	unsigned int numSets;		// number of sets, equals to 1 if fully associative cache
 	
-public:
 	/**
-	 * Constructs a Cache of 'size' bytes organized in lines of 'lineSize' bytes, with
-	 * associativity 'associativity'.
-	 * 
-	 * Associativity is the number of ways in this cache implementation. If 'associativity'
-	 * is a positive power of 2, the constructed cache is a set associative cache. If
-	 * 'associativity' is less or equal to 0, the constructed cache is a fully associative
-	 * cache. If 'associativity' is positive, but not a power of 2, an exception is raised.
-	 * 
-	 * Constraints: 'size' must be a multiple of 'lineSize', and both must be a power of 2.
+	 * Basic constructor. Initializes the attributes without testing any constraint.
 	 */
-	static Cache* createCache(int size, int lineSize, int associativity);
+	Cache(unsigned int size, unsigned int lineSize, unsigned int associativity);
+
+public:
+	//~ /**
+	 //~ * Constructs a Cache of 'size' bytes organized in lines of 'lineSize' bytes, with
+	 //~ * associativity 'associativity'.
+	 //~ * 
+	 //~ * Associativity is the number of ways (lines of each fully associative set) in this
+	 //~ * cache implementation. The following values are valid:
+	 //~ * 		- 'associativity <= 1': the constructed cache is a fully associative cache (FACache);
+	 //~ * 		- 'associativity > 1': the constructed cache is a set associative cache (SACache).
+	 //~ * 
+	 //~ * The constraints of each cache implementation must also be satisfied. This constructor does
+	 //~ * not handle such constraints.
+	 //~ * 
+	 //~ * Constraints: 'size' must be a multiple of 'lineSize', and both must be a power of 2.
+	 //~ */
+	//~ static Cache* createCache(int size, int lineSize, int associativity);
 
 	/*
 	 * Attribute access methods.
 	 */
-	int getSize();
-	int getLineSize();
-	int getAssociativity();
-	int getNumLines();
-	int getNumSets();
-	
-	//~ /**
-	 //~ * Reads 'size' bytes starting at address 'address'.
-	 //~ * 
-	 //~ * Returns a pointer to a copy of the data, if cache hit, null otherwise.
-	 //~ */
-	//~ virtual void * readData(uint32_t address, int size);
+	unsigned int getSize();
+	unsigned int getLineSize();
+	unsigned int getAssociativity();
+	unsigned int getNumSets();
     
-    //~ /**
-     //~ * Fetches one line from slower memory and writes to this cache.
-     //~ * 
-     //~ * The bytes written are the bytes of the line that contains the byte in address
-     //~ * 'address'. The total number of bytes copied is exactly 'Cache::lineSize'.
-     //~ * The argument 'data' is a pointer to the bytes supposed to be copied.
-     //~ */
-    //~ virtual void fetchLine(uint32_t address, char * data);
-    
-    //~ /**
-     //~ * Overwrites the 32 bit value 'value' in address 'address'.
-     //~ * 
-     //~ * Returns
-     //~ * 		true, if cache hit and writing is successful
-     //~ * 		false, if cache miss
-     //~ */
-    //~ virtual bool writeValue32(uint32_t address, uint32_t value);
+    /**
+     * Reads the 32 bit value 'value' in address 'address'.
+     * 
+     * Returns
+     * 		true, if cache hit
+     * 		false, if cache miss
+     */
+    virtual bool read32(uint64_t address, uint32_t * value) = 0;
 
-    //~ /**
-     //~ * Overwrites the 64 bit value 'value' in address 'address'.
-     //~ * 
-     //~ * Returns
-     //~ * 		true, if cache hit and writing is successful
-     //~ * 		false, if cache miss
-     //~ */
-    //~ virtual bool writeValue64(uint32_t address, uint64_t value);
+    /**
+     * Reads the 64 bit value 'value' in address 'address'.
+     * 
+     * Returns
+     * 		true, if cache hit
+     * 		false, if cache miss
+     */
+    virtual bool read64(uint64_t address, uint64_t * value) = 0;
+
+    /**
+     * Overwrites the 32 bit value 'value' in address 'address'.
+     * 
+     * Returns
+     * 		true, if cache hit and writing is successful
+     * 		false, if cache miss
+     */
+    virtual bool write32(uint64_t address, uint32_t value) = 0;
+
+    /**
+     * Overwrites the 64 bit value 'value' in address 'address'.
+     * 
+     * Returns
+     * 		true, if cache hit and writing is successful
+     * 		false, if cache miss
+     */
+    virtual bool write64(uint64_t address, uint64_t value) = 0;
+	
+    /**
+     * Fetches one line from slower memory and writes to this cache.
+     * 
+     * The bytes written are the bytes of the line that contains the byte in address
+     * 'address'. The total number of bytes copied is exactly 'Cache::lineSize'.
+     * 
+     * The argument 'data' is a pointer to the whole data of the slower memory from
+     * where the data is to be fetched.
+     * 
+     * Returns:
+     * 		null, if the line is not set as modified
+     * 		a pointer to a copy of the line, if the line is set as modified
+     */
+    virtual char * fetchLine(uint64_t address, char * data) = 0;
 
 };
 

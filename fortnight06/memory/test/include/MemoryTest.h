@@ -50,7 +50,6 @@ public:
 	~MemoryTest();
 
 	void relocateManual();
-	//~ void writeBinaryAsTextELF (string basename);
 	
 	MemAccessType getLastDataMemAccess();
 	void resetLastDataMemAccess();

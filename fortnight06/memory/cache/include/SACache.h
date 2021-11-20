@@ -35,33 +35,76 @@
 #pragma once
 
 #include "Cache.h"
+#include "FACache.h"
 
 using namespace std;
 
 class SACache : public Cache
 {
+protected:
+	FACache **sets;
+
 public:
-	SACache(int size, int lineSize, int associativity);
+
+	/**
+	 * Constructs a SACache of 'size' bytes organized in sets of associativity 'associativity'
+	 * and line size of 'lineSize' bytes.
+	 * 
+	 * Constraints: 'size' must be equal to 'numSets*associativity*lineSize', and all the attributes
+	 * must be a power of 2.
+	 */
+	SACache(unsigned int size, unsigned int lineSize, unsigned int associativity);
 	~SACache();
+	
+    /**
+     * Reads the 32 bit value 'value' in address 'address'.
+     * 
+     * Returns
+     * 		true, if cache hit
+     * 		false, if cache miss
+     */
+    bool read32(uint64_t address, uint32_t * value);
+
+    /**
+     * Reads the 64 bit value 'value' in address 'address'.
+     * 
+     * Returns
+     * 		true, if cache hit
+     * 		false, if cache miss
+     */
+    bool read64(uint64_t address, uint64_t * value);
+
+    /**
+     * Overwrites the 32 bit value 'value' in address 'address'.
+     * 
+     * Returns
+     * 		true, if cache hit and writing is successful
+     * 		false, if cache miss
+     */
+    bool write32(uint64_t address, uint32_t value);
+
+    /**
+     * Overwrites the 64 bit value 'value' in address 'address'.
+     * 
+     * Returns
+     * 		true, if cache hit and writing is successful
+     * 		false, if cache miss
+     */
+    bool write64(uint64_t address, uint64_t value);	
+		
+    /**
+     * Fetches one line from slower memory and writes to this cache.
+     * 
+     * The bytes written are the bytes of the line that contains the byte in address
+     * 'address'. The total number of bytes copied is exactly 'Cache::lineSize'.
+     * 
+     * The argument 'data' is a pointer to the whole data of the slower memory from
+     * where the data is to be fetched.
+     * 
+     * Returns:
+     * 		null, if the line is not set as modified
+     * 		a pointer to a copy of the line, if the line is set as modified
+     */
+    char * fetchLine(uint64_t address, char * data);
+    
 };
-
-//~ //Implementar uma função ou método
-//~ //SACache createSACache(int c, int a, int l);
-//~ //onde SACache é o tipo de dado (struct ou classe) que representa uma cache associativa por conjuntos com capacidade total de c bytes, associatividade a e l bytes por linha. É obrigatório que c, a e l sejam inteiros potências de 2 e que c seja um múltiplo de a*l (testar a corretude da entrada e informar o erro, caso exista, é condição bônus).
-//~ //Cada conjunto da SACache deve ser uma TACache e, portanto, createSACache deve chamar createTACache.
-//~ //Implementar também as seguintes funções ou métodos de acesso a informações sobre o SACache:
-//~ int getSACacheCapacity(SACache sac);
-//~ int getSACacheLineSize(SACache sac);
-//~ que retornam, respectivamente, a capacidade e o tamanho da linha da cache associativa por conjuntos sac.
-//~ Implementar a seguinte função ou método de acesso a dados da cache:
-	//~ bool getSACacheData(SACache sac, int address, int * value);
-//~ que busca o valor do endereço address na cache associativa por conjuntos sac. O valor é retornado no parâmetro de saída value e o método ou função retorna true, se o endereço foi encontrado na cache (hit) ou false, senão (miss). A verificação dos bits de lookup do endereço address para extrair o número do conjunto deve ser feita com o uso de operadores lógicos.
-//~ Implementar a seguinte função ou método de acesso a dados da cache:
-	//~ void setSACacheLine(SACache tac, int address, int *line);
-//~ que escreve toda a linha line, que contém o endereço address, na cache associativa por conjuntos sac, usando setTACacheLine da TACache.
-//~ Implementar a seguinte função ou método de acesso a dados da cache:
-	//~ bool setSACacheData(SACache sac, int address, int value);
-//~ que grava o valor value, do endereço address, na cache associativa por conjuntos sac, utilizando setTACacheData da TACache, e com o mesmo padrão de retorno de setTACacheData.
-//~ Implementar a função
-//~ SACache duplicateSACache(SACache sac);
-

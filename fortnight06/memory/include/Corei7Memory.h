@@ -35,6 +35,7 @@
 
 #include "Memory.h"
 #include "BasicMemory.h"
+#include "MemoryLogger.h"
 
 using namespace std;
 
@@ -43,9 +44,9 @@ class Corei7Memory : public Memory
 protected:
 	// TODO
 	// Esta implementação de Corei7Memory é uma mera delegação para a memória principal, declarada
-	// como o atributo mainMemory, tipo BasicMemory. Acrescente agora os atributos:
-	// 			1. l1i, l1d e l2, que correspondem às caches L1 de instruções, L1 de dados e L2, mista. Todas
-	//				são caches associativas por conjunto.
+	// como o atributo mainMemory, tipo BasicMemory.
+	// 1. Acrescente os atributos l1i, l1d e l2, que correspondem às caches L1 de instruções, L1 de
+	//		dados e L2, mista. Todas são caches associativas por conjunto.
 	BasicMemory *mainMemory;
 
 public:
@@ -93,5 +94,6 @@ private:
 	 * Initialize memory hierarchy configuration.
 	 */
 	void initHierarchy();
+	MemoryLogger * logger;
 };
 

@@ -6,11 +6,11 @@
 
     (PT) armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
-    (veja a licenÃ§a, em inglÃªs, abaixo).
+    (veja a licença, em inglês, abaixo).
 
     (EN) MIT LICENSE:
 
-    Copyright 2020 AndrÃ© Vital SaÃºde
+    Copyright 2020 André Vital Saúde
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -33,48 +33,39 @@
    ----------------------------------------------------------------------------
 */
 
-#pragma once
+//~ #pragma once
 
-// Files
-#define FILENAME "isummation.o"
-#define STARTADDRESS 0x40
+#include "MemoryLogger.h"
 
-/*
- * Memory
+#include <iomanip>
+
+using namespace std;
+
+/**
+ * Creates a MemoryLogger that writs do file MEMORY_LOG_FILE defined in config.h.
  */
-
-// Available Memory implementations
-#define MEM_IMPL_BASIC 0  // BasicMemory
-#define MEM_IMPL_COREI7 1 // Core i7 based memory hierarchy
-
-// Memory implementation
-#define MEM_IMPL MEM_IMPL_COREI7
-
-// Memory whole size
-#define MEMORY_SIZE 8388608
-
-// Memory log output file
-#define MEMORY_LOG_FILE "saida.txt"
-
-/*
- * Processor
+MemoryLogger::MemoryLogger() : MemoryLogger(MEMORY_LOG_FILE) {}
+	
+/**
+ * Creates a MemoryLogger that writs do 'filename'.
  */
+MemoryLogger::MemoryLogger(string logfilename) {
+    memLogStream.open(logfilename);
+    
+    // header
+    memLogStream << left << setfill(' ') << setw(16)  << "ACCESS_TYPE ";
+    memLogStream << setw(16)  << "ADDRESS ";
+    memLogStream << right << setw(12)  << " HIT_LEVEL" << endl;
+}
 
-// Available Processor implementations
-#define PROC_IMPL_BASIC 0 // BasicProcessor
+MemoryLogger::~MemoryLogger() {
+	memLogStream.close();
+}	
+	
 
-// Processor implementation
-#define PROC_IMPL PROC_IMPL_BASIC
-
-/*
- * Test levels
- */
-#define TEST_LEVEL_START 0
-#define TEST_LEVEL_IF 1
-#define TEST_LEVEL_ID 2
-#define TEST_LEVEL_EX 3
-#define TEST_LEVEL_MEM 4
-#define TEST_LEVEL_WB 5
-#define TEST_LEVEL TEST_LEVEL_WB
- 
-
+void MemoryLogger::memlog(AccessType type, uint64_t address, int hitLevel) {
+	string strAccessType[5] = {"READI", "READ32", "READ64", "WRITE32", "WRITE64"};
+    memLogStream << left << setfill(' ') << setw(16)  << strAccessType[type];
+    memLogStream << hex << right << setfill('0') << setw(16) << address << " ";
+    memLogStream << setfill(' ') << setw(11) << hitLevel << endl;
+}

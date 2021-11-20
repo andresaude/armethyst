@@ -42,83 +42,51 @@
 
 using namespace std;
 
-Cache::Cache(int size, int lineSize, int associativity) {
+/**
+ * Basic constructor. Initializes the attributes without testing any constraint.
+ */
+Cache::Cache(unsigned int size, unsigned int lineSize, unsigned int associativity) {
 	this->size = size;
 	this->lineSize = lineSize;
 	this->associativity = associativity;
 }
 
-/**
- * Constructs a Cache of 'size' bytes organized in lines of 'lineSize' bytes, with
- * associativity 'associativity'.
- * 
- * Associativity is the number of ways in this cache implementation. If 'associativity'
- * is a positive power of 2, the constructed cache is a set associative cache. If
- * 'associativity' is less or equal to 0, the constructed cache is a fully associative
- * cache. If 'associativity' is positive, but not a power of 2, an exception is raised.
- * 
- * Constraints: 'size' must be a multiple of 'lineSize', and both must be a power of 2.
- */
-Cache* Cache::createCache(int size, int lineSize, int associativity) {
-	Cache *cache = NULL;
-	if (associativity <= 0) {
-		cache = new FACache(size, lineSize);
-	} else {
-		cache = new SACache(size, lineSize, associativity);
-	}
-	return cache;
-}
+//~ /**
+ //~ * Constructs a Cache of 'size' bytes organized in lines of 'lineSize' bytes, with
+ //~ * associativity 'associativity'.
+ //~ * 
+ //~ * Associativity is the number of ways (lines of each fully associative set) in this
+ //~ * cache implementation. The following values are valid:
+ //~ * 		- 'associativity <= 1': the constructed cache is a fully associative cache (FACache);
+ //~ * 		- 'associativity > 1': the constructed cache is a set associative cache (SACache).
+ //~ * 
+ //~ * The constraints of each cache implementation must also be satisfied. This constructor does
+ //~ * not handle such constraints.
+ //~ * 
+ //~ * Constraints: 'size' must be a multiple of 'lineSize', and both must be a power of 2.
+ //~ */
+//~ Cache* Cache::createCache(unsigned int size, unsigned int lineSize, unsigned int associativity) {
+	//~ Cache *cache = NULL;
+	//~ if (associativity <= 1) {
+		//~ cache = new FACache(size, lineSize);
+	//~ } else {
+		//~ cache = new SACache(size, lineSize, associativity);
+	//~ }
+	//~ return cache;
+//~ }
 
 /*
  * Attribute access methods.
  */
-int Cache::getSize() {
+unsigned int Cache::getSize() {
 	return size;
 }
-int Cache::getLineSize() {
+unsigned int Cache::getLineSize() {
 	return lineSize;
 }
-int Cache::getAssociativity() {
+unsigned int Cache::getAssociativity() {
 	return associativity;
 }
-int Cache::getNumLines() {
-	return numLines;
-}
-int Cache::getNumSets() {
+unsigned int Cache::getNumSets() {
 	return numSets;
 }
-
-//~ /**
- //~ * Reads 'size' bytes starting at address 'address'.
- //~ * 
- //~ * Returns a pointer to a copy of the data, if cache hit, null otherwise.
- //~ */
-//~ void * readData(uint32_t address, int size);
-
-//~ /**
- //~ * Fetches one line from slower memory and writes to this cache.
- //~ * 
- //~ * The bytes written are the bytes of the line that contains the byte in address
- //~ * 'address'. The total number of bytes copied is exactly 'Cache::lineSize'.
- //~ * The argument 'data' is a pointer to the bytes supposed to be copied.
- //~ */
-//~ void fetchLine(uint32_t address, char * data);
-
-//~ /**
- //~ * Overwrites the 32 bit value 'value' in address 'address'.
- //~ * 
- //~ * Returns
- //~ * 		true, if cache hit and writing is successful
- //~ * 		false, if cache miss
- //~ */
-//~ bool writeValue32(uint32_t address, uint32_t value);
-
-//~ /**
- //~ * Overwrites the 64 bit value 'value' in address 'address'.
- //~ * 
- //~ * Returns
- //~ * 		true, if cache hit and writing is successful
- //~ * 		false, if cache miss
- //~ */
-//~ bool writeValue64(uint32_t address, uint64_t value);
-

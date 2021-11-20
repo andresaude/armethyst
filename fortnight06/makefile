@@ -101,10 +101,13 @@ $(ODIR)/Corei7Memory.o: Corei7Memory.cpp Corei7Memory.h
 $(ODIR)/MemoryLoader.o: MemoryLoader.cpp MemoryLoader.h
 	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
 
+$(ODIR)/MemoryLogger.o: MemoryLogger.cpp MemoryLogger.h
+	$(CC) -c -o $@ $< $(CFLAGS) $(IFLAGS)
+
 #
 # general
 #
-_OBJ = BasicMemory.o Corei7Memory.o MemoryLoader.o CPUImpl.o ProcessorImpl.o Factory.o Util.o
+_OBJ = BasicMemory.o Corei7Memory.o MemoryLoader.o MemoryLogger.o CPUImpl.o ProcessorImpl.o Factory.o Util.o
 
 #
 # armethyst
