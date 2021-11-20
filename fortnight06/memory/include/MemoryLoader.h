@@ -6,11 +6,11 @@
 
     (PT) armethyst - Um simulador ARM simples escrito em C++ para o ensino de
     Arquitetura de Computadores. Software livre licenciado pela MIT License
-    (veja a licenÃ§a, em inglÃªs, abaixo).
+    (veja a licença, em inglês, abaixo).
 
     (EN) MIT LICENSE:
 
-    Copyright 2020 AndrÃ© Vital SaÃºde
+    Copyright 2020 André Vital Saúde
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -32,38 +32,37 @@
 
    ----------------------------------------------------------------------------
 */
-#include "config.h"
-#include "BasicMemory.h"
+
+#pragma once
+
+#include "Memory.h"
+#include <string>
 
 using namespace std;
 
-class Corei7MemoryTest : public BasicMemory
+class MemoryLoader
 {
+protected:
+	Memory *memory;
+	string filename;
+	unsigned short filesize;	//size of the loaded binary file
+
 public:
-	enum MemAccessType {MAT_NONE, MAT_READ32, MAT_WRITE32, MAT_READ64, MAT_WRITE64};
-
-	Corei7MemoryTest(int size);
-	~Corei7MemoryTest();
-		
-	void relocateManual();
-	void writeBinaryAsTextELF (string basename);
-	
-	MemAccessType getLastDataMemAccess();
-	void resetLastDataMemAccess();
-	
-	/*
-	 * Logs dos mÃ©todos da superclasse.
+	/**
+	 * Creates a MemoryLoader for 'memory' and loads binary file 'filename'.
 	 */
-	uint32_t readInstruction32(uint64_t address);
-	uint32_t readData32(uint64_t address);
-	uint64_t readData64(uint64_t address);
-	void writeInstruction32(uint64_t address, uint32_t value);
-	void writeData32(uint64_t address, uint32_t value);
-	void writeData64(uint64_t address, uint64_t value);
+	MemoryLoader(Memory *memory, string filename);
 
-private:
-	MemAccessType lastDataMemAccess;
-	ofstream memLogStream;
-	
+	/*
+	 * Methods for loading binary files into the memory.
+	 */
+	void loadBinary();
+
+	/*
+	 * Methods for writing memory content to human readable text files.
+	 */
+	void writeBinaryAsText (string basename);	
+	void writeBinaryAsTextELF (string basename);
+
 };
 

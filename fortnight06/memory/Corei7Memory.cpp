@@ -35,9 +35,10 @@
 
 #include "Corei7Memory.h"
 
-Corei7Memory::Corei7Memory(int size) : Memory(size)
+Corei7Memory::Corei7Memory(int size)
 {
 	mainMemory = new BasicMemory(size);
+	initHierarchy();
 }
 
 Corei7Memory::~Corei7Memory()
@@ -45,6 +46,22 @@ Corei7Memory::~Corei7Memory()
 	delete[] mainMemory;
 }
 
+/**
+ * Inicializa a hierarquia de memória. O ideal seria que este procedimento utilizasse um arquivo de configuração,
+ * que descreveria a organização de toda a hierarquia de memória. Mas, para facilitar, vamos fazer isso hard-coded,
+ * ou seja, no código mesmo!
+ */
+void Corei7Memory::initHierarchy() {
+	// TODO
+	// Instanciar as caches, observando a Seção 2.5.4 do documento Intel® 64 and IA-32 Architectures Optimization
+	// Reference Manual, Order Number: 248966-033, June 2016, disponibilizado, mas com algumas alterações
+	// apresentadas no enunciado do trabalho.
+	//
+	// Basicamente:
+	// 		l1i: cache de 32KB, 4 vias, linhas de 64B (escrita não se aplica)
+	// 		l1d: cache de 32KB, 8 vias, linhas de 64B, estratégia write-through
+	// 		l2: cache de 256KB, 8 vias, linhas de 64B, estratégia writeback
+}
 /**
  * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
  *
@@ -54,6 +71,13 @@ Corei7Memory::~Corei7Memory()
 uint32_t Corei7Memory::readInstruction32(uint64_t address)
 {
 	return mainMemory->readInstruction32(address);
+}
+
+/**
+ * Retorna o ponteiro para o início da memória.
+ */
+char *Corei7Memory::getData() {
+	return mainMemory->getData();
 }
 
 /**
@@ -95,20 +119,4 @@ void Corei7Memory::writeData32(uint64_t address, uint32_t value)
 void Corei7Memory::writeData64(uint64_t address, uint64_t value)
 {
 	mainMemory->writeData64(address,value);
-}
-
-/**
- * carrega arquivo binário na memória
- */
-void Corei7Memory::loadBinary(string filename)
-{
-	mainMemory->loadBinary(filename);
-}
-
-
-/**
- * Escreve arquivo binario em um arquivo legível
- */
-void Corei7Memory::writeBinaryAsText (string basename) {
-	mainMemory->writeBinaryAsText(basename);
 }

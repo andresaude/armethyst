@@ -35,7 +35,6 @@
 #pragma once
 
 #include "Memory.h"
-#include <string>
 
 using namespace std;
 
@@ -45,8 +44,10 @@ public:
 	BasicMemory(int size);
 	~BasicMemory();
 
-	void loadBinary(std::string filename);
-	void writeBinaryAsText (std::string basename);
+	/**
+	 * Returns a pointer to the memory data.
+	 */
+	char * getData();
 
 	/**
 	 * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
@@ -79,5 +80,7 @@ public:
 	 */
 	void writeData64(uint64_t address, uint64_t value);
 
+protected:
+	char* data;		//memory data
 };
 

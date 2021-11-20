@@ -38,6 +38,7 @@
 #include "Factory.h"
 #include "Memory.h"
 #include "Processor.h"
+#include "MemoryLoader.h"
 
 #include <iostream>
 
@@ -56,11 +57,11 @@ int main()
 			
 		// (EN) load executable binary
 		// (PT) carrega binário executável
-		memory->loadBinary(FILENAME);
+		MemoryLoader loader{memory, FILENAME};
 		
 		// (EN) create human readable representation of the binary file
 		// (PT) cria representação legível do arquivo binário
-		memory->writeBinaryAsText(FILENAME);
+		loader.writeBinaryAsText(FILENAME);
 
 		// (EN) start processor
 		// (PT) inicia processador

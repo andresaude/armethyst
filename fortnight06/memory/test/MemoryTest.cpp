@@ -40,15 +40,23 @@
 
 using namespace std;
 
-MemoryTest::MemoryTest(int size) : Memory(size)	
+MemoryTest::MemoryTest(Memory *mem)
 {
-	memImpl = new BasicMemory(size);
+	memImpl = mem;
     memLogStream.open(MEMORY_LOG_FILE);
 }
+
 MemoryTest::~MemoryTest()
 {
 	delete[] memImpl;
 	memLogStream.close();
+}
+
+/**
+ * Retorna o ponteiro para o início da memória.
+ */
+char *MemoryTest::getData() {
+	return memImpl->getData();
 }
 
 /**
@@ -118,72 +126,72 @@ void MemoryTest::resetLastDataMemAccess() {
 	lastDataMemAccess = MemAccessType::MAT_NONE;
 }
 
-/**
- * Escreve arquivo binario byte a byte
- */
-#define ADDR_SIZE 2
-#define ADDR_OFFSET_SIZE 1
-#define ADDR_COL_SPACE 4
-#define WORD_SIZE 4
-#define WORDS_PER_LINE 4
-void MemoryTest::writeBinaryAsTextELF (string basename) {
-    string filename = "elf_" + basename + ".txt";
-    ofstream ofp;
-    int i,j;
+//~ /**
+ //~ * Escreve arquivo binario byte a byte
+ //~ */
+//~ #define ADDR_SIZE 2
+//~ #define ADDR_OFFSET_SIZE 1
+//~ #define ADDR_COL_SPACE 4
+//~ #define WORD_SIZE 4
+//~ #define WORDS_PER_LINE 4
+//~ void MemoryTest::writeBinaryAsTextELF (string basename) {
+    //~ string filename = "elf_" + basename + ".txt";
+    //~ ofstream ofp;
+    //~ int i,j;
 
-    ofp.open(filename);
+    //~ ofp.open(filename);
 
-    ofp << uppercase << hex;
+    //~ ofp << uppercase << hex;
 
-    // caption
-    ofp << "ADDR";
-	// acrescenta ADDR_COL_SPACE espaços após o endereço a cada linha, cujo tamanho é 2*ADDR_SIZE
-	// após ADDR deve acrescentar 2*ADDR_SIZE + ADDR_COL_SPACE - 4 espaços,
-	// 		onde 4 é o tamanho de "ADDR"
-	ofp << string(2*ADDR_SIZE + ADDR_COL_SPACE - 4, ' ');
+    //~ // caption
+    //~ ofp << "ADDR";
+	//~ // acrescenta ADDR_COL_SPACE espaços após o endereço a cada linha, cujo tamanho é 2*ADDR_SIZE
+	//~ // após ADDR deve acrescentar 2*ADDR_SIZE + ADDR_COL_SPACE - 4 espaços,
+	//~ // 		onde 4 é o tamanho de "ADDR"
+	//~ ofp << string(2*ADDR_SIZE + ADDR_COL_SPACE - 4, ' ');
 
-    for (j=0; j<WORDS_PER_LINE; j++) {
-        ofp << "ADDR+" << setfill('0') << setw(2*ADDR_OFFSET_SIZE) << WORD_SIZE*j;
-		// acrescenta 1 espaço após cada palavra
-		// após ADDR+OFFSET deve acrescentar
-		//		2*WORD_SIZE+1-2*ADDR_OFFSET_SIZE-5 (5 é o tamanho de "ADDR+")
-		ofp << string(2*WORD_SIZE+1-2*ADDR_OFFSET_SIZE-5,' ');
-    }
-    ofp << endl;
-	ofp << string(2*ADDR_SIZE + ADDR_COL_SPACE-1+WORDS_PER_LINE*(2*WORD_SIZE+1),'-');
-	ofp	<< endl;
+    //~ for (j=0; j<WORDS_PER_LINE; j++) {
+        //~ ofp << "ADDR+" << setfill('0') << setw(2*ADDR_OFFSET_SIZE) << WORD_SIZE*j;
+		//~ // acrescenta 1 espaço após cada palavra
+		//~ // após ADDR+OFFSET deve acrescentar
+		//~ //		2*WORD_SIZE+1-2*ADDR_OFFSET_SIZE-5 (5 é o tamanho de "ADDR+")
+		//~ ofp << string(2*WORD_SIZE+1-2*ADDR_OFFSET_SIZE-5,' ');
+    //~ }
+    //~ ofp << endl;
+	//~ ofp << string(2*ADDR_SIZE + ADDR_COL_SPACE-1+WORDS_PER_LINE*(2*WORD_SIZE+1),'-');
+	//~ ofp	<< endl;
 
-    // data
-#define ELF_LINE_SIZE (WORD_SIZE*WORDS_PER_LINE)
-    i=0;
-	unsigned short us = 0;
-	unsigned char *uData = (unsigned char*)data;
-	string addrcolSpace = string(ADDR_COL_SPACE,' ');
+    //~ // data
+//~ #define ELF_LINE_SIZE (WORD_SIZE*WORDS_PER_LINE)
+    //~ i=0;
+	//~ unsigned short us = 0;
+	//~ unsigned char *uData = (unsigned char*)memImpl->getData();
+	//~ string addrcolSpace = string(ADDR_COL_SPACE,' ');
 	
-	cout << hex;
-    for (i = 0; i < fileSize; i+=ELF_LINE_SIZE) {
-        ofp << setw(2*ADDR_SIZE) << i << addrcolSpace;
-        for (j=0; j<WORDS_PER_LINE; j++) {
-			for (int k=0; k<WORD_SIZE; k+=2) {
+	//~ cout << hex;
+    //~ for (i = 0; i < memImpl->getFilesize(); i+=ELF_LINE_SIZE) {
+        //~ ofp << setw(2*ADDR_SIZE) << i << addrcolSpace;
+        //~ for (j=0; j<WORDS_PER_LINE; j++) {
+			//~ for (int k=0; k<WORD_SIZE; k+=2) {
 					
-				us = ((unsigned short)uData[i+(WORD_SIZE*j)+k]) << 8;
-/* 				if (i == 0x40) {
-					cout << "us = " << us << endl;
-				}
- */				us = us | ((unsigned short)uData[i+(WORD_SIZE*j)+k+1]);
-/* 				if (i == 0x40) {
-					cout << "us2 = " << us << endl;
-				}
- */				ofp << setw(4) << us;
-			}
-			ofp << " ";
-        }
-        ofp << endl;
-    }
+				//~ us = ((unsigned short)uData[i+(WORD_SIZE*j)+k]) << 8;
+//~ /* 				if (i == 0x40) {
+					//~ cout << "us = " << us << endl;
+				//~ }
+ //~ */				us = us | ((unsigned short)uData[i+(WORD_SIZE*j)+k+1]);
+//~ /* 				if (i == 0x40) {
+					//~ cout << "us2 = " << us << endl;
+				//~ }
+ //~ */				ofp << setw(4) << us;
+			//~ }
+			//~ ofp << " ";
+        //~ }
+        //~ ofp << endl;
+    //~ }
 	
-    cout << "Gerado arquivo " << filename << endl << endl;
-    ofp.close();
-}
+    //~ cout << "Gerado arquivo " << filename << endl << endl;
+    //~ ofp.close();
+//~ }
 
 /**
  * Realoca endereços das variáveis.
@@ -191,7 +199,7 @@ void MemoryTest::writeBinaryAsTextELF (string basename) {
  * Específico para o arquivo de teste usado.
  */
 void MemoryTest::relocateManual() {
-	unsigned int *uiData = (unsigned int *)data;
+	unsigned int *uiData = (unsigned int *)memImpl->getData();
 	long address;
 	unsigned int instruction;
 	

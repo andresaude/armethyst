@@ -33,13 +33,11 @@
    ----------------------------------------------------------------------------
 */
 #include "config.h"
-//~ #include "BasicMemory.h"
 #include "Memory.h"
 #include <fstream>
 
 using namespace std;
 
-//~ class MemoryTest : public BasicMemory
 class MemoryTest : public Memory
 {
 protected:
@@ -48,11 +46,11 @@ protected:
 public:
 	enum MemAccessType {MAT_NONE, MAT_READ32, MAT_WRITE32, MAT_READ64, MAT_WRITE64};
 
-	MemoryTest(int size);
+	MemoryTest(Memory *mem);
 	~MemoryTest();
-		
+
 	void relocateManual();
-	void writeBinaryAsTextELF (string basename);
+	//~ void writeBinaryAsTextELF (string basename);
 	
 	MemAccessType getLastDataMemAccess();
 	void resetLastDataMemAccess();
@@ -60,6 +58,7 @@ public:
 	/*
 	 * Logs dos métodos da superclasse.
 	 */
+	char * getData();
 	uint32_t readInstruction32(uint64_t address);
 	uint32_t readData32(uint64_t address);
 	uint64_t readData64(uint64_t address);

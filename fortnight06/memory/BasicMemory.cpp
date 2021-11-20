@@ -33,17 +33,12 @@
    ----------------------------------------------------------------------------
 */
 
+#include "Memory.h"
 #include "BasicMemory.h"
 
-#include <iostream>
-#include <iomanip>
-#include <fstream>
-
-using namespace std;
-
-BasicMemory::BasicMemory(int size) : Memory(size)
+BasicMemory::BasicMemory(int size) 
 {
-	//~ data = new char[size];
+	data = new char[size];
 }
 
 BasicMemory::~BasicMemory()
@@ -104,59 +99,8 @@ void BasicMemory::writeData64(uint64_t address, uint64_t value)
 }
 
 /**
- * carrega arquivo binário na memória
+ * Retorna o ponteiro para o início da memória.
  */
-void BasicMemory::loadBinary(string filename)
-{
-    streampos size;
-
-    ifstream file(filename, ios::in|ios::binary|ios::ate);
-    if (file.is_open())
-    {
-        fileSize = file.tellg();
-        file.seekg (0, ios::beg);
-        file.read (data, fileSize);
-        file.close();
-    }
-    else {
-        cout << "Unable to open file " << filename << endl;
-		cout << "Aborting... " << endl;
-		exit(1);
-    }
-
-}
-
-
-/**
- * Escreve arquivo binario em um arquivo legível
- */
-#define LINE_SIZE 4
-void BasicMemory::writeBinaryAsText (string basename) {
-    string filename = "txt_" + basename + ".txt";
-    ofstream ofp;
-    int i,j;
-
-    cout << "Gerado arquivo " << filename << endl << endl;
-    ofp.open(filename);
-
-    ofp << uppercase << hex;
-
-    // caption
-    ofp << "ADDR    ";
-    for (j=0; j<LINE_SIZE; j++) {
-        ofp << "ADDR+" << setfill('0') << setw(2) << 4*j << "  ";
-    }
-    ofp << endl << "----------------------------------------------------------------------------" << endl;
-
-
-    // binary
-    i=0;
-    for (i = 0; i < fileSize / 4; i+=LINE_SIZE) {
-        ofp << setw(4) << 4*i << "    ";
-        for (j=0; j<LINE_SIZE; j++) {
-            ofp << setw(8) << ((unsigned int *)data)[i+j] << " ";
-        }
-        ofp << endl;
-    }
-    ofp.close();
+char *BasicMemory::getData() {
+	return data;
 }

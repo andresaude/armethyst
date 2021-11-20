@@ -35,53 +35,47 @@
 
 #pragma once
 
-#include <string>
+#include <cstdint>
 
 class Memory
 {
-	protected:
-		unsigned short fileSize;    //size of the loaded binary file
-		char* data;        //memory data
+public:
+
+	/**
+	 * Returns a pointer to the memory data.
+	 */
+	virtual char * getData() = 0;
+
+	/**
+	 * Lê uma instrução de 32 bits considerando um endereçamento
+	 * em bytes.
+	 */
+	virtual uint32_t readInstruction32(uint64_t address) = 0;
+
+	/**
+	 * Lê um dado de 32 bits considerando um endereçamento em bytes.
+	 */
+	virtual uint32_t readData32(uint64_t address) = 0;
 	
-	public:
-		Memory(int size);
-		~Memory();
-		
-		void loadBinary(std::string filename);
-		void writeBinaryAsText (std::string basename);
+	/**
+	 * Lê um dado de 64 bits considerando um endereçamento em bytes.
+	 */
+	virtual uint64_t readData64(uint64_t address) = 0;
+	
+	/**
+	 * Escreve uma instrução de 32 bits considerando um
+	 * endereçamento em bytes.
+	 */
+	virtual void writeInstruction32(uint64_t address, uint32_t value) = 0;
 
-		/**
-		 * Lê uma instrução de 32 bits considerando um endereçamento
-		 * em bytes.
-		 */
-		virtual uint32_t readInstruction32(uint64_t address) = 0;
+	/**
+	 * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
+	 */
+	virtual void writeData32(uint64_t address, uint32_t value) = 0;
 
-		/**
-		 * Lê um dado de 32 bits considerando um endereçamento em bytes.
-		 */
-		virtual uint32_t readData32(uint64_t address) = 0;
-		
-		/**
-		 * Lê um dado de 64 bits considerando um endereçamento em bytes.
-		 */
-		virtual uint64_t readData64(uint64_t address) = 0;
-		
-		/**
-		 * Escreve uma instrução de 32 bits considerando um
-		 * endereçamento em bytes.
-		 */
-		virtual void writeInstruction32(uint64_t address, uint32_t value) = 0;
-
-		/**
-		 * Escreve um dado (value) de 32 bits considerando um endereçamento em bytes.
-		 */
-		virtual void writeData32(uint64_t address, uint32_t value) = 0;
-
-		/**
-		 * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
-		 */
-		virtual void writeData64(uint64_t address, uint64_t value) = 0;
-
-
+	/**
+	 * Escreve um dado (value) de 64 bits considerando um endereçamento em bytes.
+	 */
+	virtual void writeData64(uint64_t address, uint64_t value) = 0;
 };
 

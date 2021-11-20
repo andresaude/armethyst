@@ -35,19 +35,27 @@
 
 #include "Memory.h"
 #include "BasicMemory.h"
-#include <string>
-#include <fstream>
 
 using namespace std;
 
 class Corei7Memory : public Memory
 {
+protected:
+	// TODO
+	// Esta implementação de Corei7Memory é uma mera delegação para a memória principal, declarada
+	// como o atributo mainMemory, tipo BasicMemory. Acrescente agora os atributos:
+	// 			1. l1i, l1d e l2, que correspondem às caches L1 de instruções, L1 de dados e L2, mista. Todas
+	//				são caches associativas por conjunto.
+	BasicMemory *mainMemory;
+
 public:
 	Corei7Memory(int size);
 	~Corei7Memory();
 
-	void loadBinary(std::string filename);
-	void writeBinaryAsText (std::string basename);
+	/**
+	 * Returns a pointer to the memory data.
+	 */
+	char * getData();
 
 	/**
 	 * Lê uma instrução de 32 bits considerando um endereçamento em bytes.
@@ -80,9 +88,10 @@ public:
 	 */
 	void writeData64(uint64_t address, uint64_t value);
 
-protected:
-	BasicMemory *mainMemory;
-	unsigned short fileSize;    //size of the loaded binary file
-
+private:
+	/**
+	 * Initialize memory hierarchy configuration.
+	 */
+	void initHierarchy();
 };
 

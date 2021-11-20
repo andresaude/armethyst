@@ -36,7 +36,9 @@
 #include "config.h"
 #include "Util.h"
 
+#include "Factory.h"
 #include "MemoryTest.h"
+#include "MemoryLoader.h"
 #include "BasicCPUTest.h"
 
 #include <iostream>
@@ -85,7 +87,7 @@ int main()
 #define TEST_FILE_04 "fpops.o"
 
 	// create memory
-	MemoryTest* memory = new MemoryTest(MEMORY_SIZE);
+	MemoryTest* memory = new MemoryTest(Factory::createMemory());
 
 	// create CPU
 	BasicCPUTest *cpu = new BasicCPUTest(memory);
@@ -104,14 +106,17 @@ void loadBinary (MemoryTest* memory, string fname)
 {
 
 	// load executable binary
-	memory->loadBinary(fname);
+	MemoryLoader loader{memory, fname};
+	//~ memory->loadBinary(fname);
+	
+	// relocate variable addresses
 	memory->relocateManual();
 	
 	// create human readable representation of the binary file
-	memory->writeBinaryAsText(fname);
+	loader.writeBinaryAsText(fname);
 
 	// create human readable representation of the binary file
-	memory->writeBinaryAsTextELF(fname);
+	loader.writeBinaryAsTextELF(fname);
 }
 
 #define TEST_HEADER bool fpOp;\
