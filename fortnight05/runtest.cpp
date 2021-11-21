@@ -82,6 +82,7 @@ int main()
 #define TEST_FILE_02 "fpops.o"
 #define TEST_FILE_03 "isummation.o"
 #define TEST_FILE_04 "fpops.o"
+#define TEST_FILE_05 "isummation.o"
 
 	// create memory
 	BasicMemoryTest* memory = new BasicMemoryTest(MEMORY_SIZE);
@@ -92,9 +93,10 @@ int main()
 	// Teste:
 	//	Como não temos todas as instruções implementadas, faremos apenas testes.
 	test01(cpu, memory, TEST_FILE_01);
-	test02(cpu, memory, TEST_FILE_02);
-	test03(cpu, memory, TEST_FILE_03);
-	test04(cpu, memory, TEST_FILE_04);
+	//~ test02(cpu, memory, TEST_FILE_02);
+	//~ test03(cpu, memory, TEST_FILE_03);
+	//~ test04(cpu, memory, TEST_FILE_04);
+	test05(cpu, memory, TEST_FILE_05);
 	
 	return 0;
 }
@@ -614,6 +616,58 @@ void test04(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 
 }
 
+/**
+ * Testa apenas duas instruções de load e store do arquivo isummation.S.
+ */
+void test05(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
+{
+	TEST_HEADER
+	
+	int64_t signedAux;
+
+	//
+	// Test ldrsw x1, [sp, 12] (linha 38)
+	//
+	instruction = "ldrsw x1, [sp, 12]";
+	startAddress = 0x54; 	// endereço de 'ldrsw x1, [sp, 12]'
+	xpctdIR = 0xB9800FE1;
+	xpctdA = STARTSP; 		// SP deve ser lido para A
+	xpctdB = 12;			// valor imediato do offset
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::READ64;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+	
+	xpctdALUout = xpctdA + xpctdB;
+
+	// force data in memory
+	xpctdRd = STARTSP << 2;
+	memory->writeData64(xpctdALUout, STARTSP << 2);
+
+	CALLTEST();
+	RESETTEST();
+	
+	//
+	// Test str w0, [sp, 12] (linha 49)
+	//
+	instruction = "str w0, [sp, 12]";
+	startAddress = 0x80; 	// endereço da instrução
+	xpctdIR = 0xB9000FE0;
+	xpctdA = STARTSP;
+	xpctdB = 12;
+	cpu->setW(0,0x12345);		// valor arbitrário para w1
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::WRITE32;
+	xpctdWBctrl = WBctrlFlag::WB_NONE;
+
+	xpctdALUout = xpctdA + xpctdB;
+
+	// force arbitrary data in memory different from xpctdRd
+	xpctdRd = 0x12345;	
+	memory->writeData32(xpctdALUout, 0x54321);
+
+	CALLTEST();
+	RESETTEST();
+}
 
 /**
  * Testa o estágio IF.
