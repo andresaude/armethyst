@@ -56,21 +56,6 @@ protected:
 	Cache(unsigned int size, unsigned int lineSize, unsigned int associativity);
 
 public:
-	//~ /**
-	 //~ * Constructs a Cache of 'size' bytes organized in lines of 'lineSize' bytes, with
-	 //~ * associativity 'associativity'.
-	 //~ * 
-	 //~ * Associativity is the number of ways (lines of each fully associative set) in this
-	 //~ * cache implementation. The following values are valid:
-	 //~ * 		- 'associativity <= 1': the constructed cache is a fully associative cache (FACache);
-	 //~ * 		- 'associativity > 1': the constructed cache is a set associative cache (SACache).
-	 //~ * 
-	 //~ * The constraints of each cache implementation must also be satisfied. This constructor does
-	 //~ * not handle such constraints.
-	 //~ * 
-	 //~ * Constraints: 'size' must be a multiple of 'lineSize', and both must be a power of 2.
-	 //~ */
-	//~ static Cache* createCache(int size, int lineSize, int associativity);
 
 	/*
 	 * Attribute access methods.
