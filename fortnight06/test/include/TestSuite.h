@@ -1,4 +1,4 @@
-﻿/* ----------------------------------------------------------------------------
+/* ----------------------------------------------------------------------------
 
     (EN) armethyst - A simple ARM Simulator written in C++ for Computer Architecture
     teaching purposes. Free software licensed under the MIT License (see license
@@ -32,21 +32,27 @@
 
    ----------------------------------------------------------------------------
 */
-
-#include "TestSuite.h"
+#include "config.h"
+#include "TestCase.h"
+#include <iostream>
 
 using namespace std;
 
-int main()
+/**
+ * 
+ * Testa as instruções 'sub sp, sp, #16' e 'add w1, w1, w0' do
+ * arquivo isummation.S.
+ */
+class TestSuite
 {
-	// TODO TRY CATCH
-	
-	TestSuite ts = TestSuite{};
-	//~ ts.runSuite(TestSuite::Suite::BASIC_ARITH);
-	//~ ts.runSuite(TestSuite::Suite::BASIC_FLOAT);
-	//~ ts.runSuite(TestSuite::Suite::ALL_LOAD_STORE);
-	//~ ts.runSuite(TestSuite::Suite::ALL_FLOAT);
-	//~ ts.runSuite(TestSuite::Suite::BASIC_LOAD_STORE);
-	ts.runSuite(TestSuite::Suite::MEM_HIERARCHY);
-}
-
+	public:
+		enum class Suite {BASIC_ARITH, BASIC_FLOAT, ALL_LOAD_STORE, ALL_FLOAT, BASIC_LOAD_STORE, MEM_HIERARCHY};
+		
+		TestSuite();
+		~TestSuite();
+		
+		int runSuite(Suite suite);
+		
+	private:
+		TestCase **cases;
+};

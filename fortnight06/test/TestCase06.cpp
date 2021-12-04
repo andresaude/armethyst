@@ -1,4 +1,4 @@
-﻿/* ----------------------------------------------------------------------------
+/* ----------------------------------------------------------------------------
 
     (EN) armethyst - A simple ARM Simulator written in C++ for Computer Architecture
     teaching purposes. Free software licensed under the MIT License (see license
@@ -32,21 +32,53 @@
 
    ----------------------------------------------------------------------------
 */
+#include "TestCase.h"
 
-#include "TestSuite.h"
+#include <iostream>
+
+#include "BasicMemory.h"
+#include "Processor.h"
+#include "Factory.h"
 
 using namespace std;
 
-int main()
-{
-	// TODO TRY CATCH
+int TestCase06::run() {
 	
-	TestSuite ts = TestSuite{};
-	//~ ts.runSuite(TestSuite::Suite::BASIC_ARITH);
-	//~ ts.runSuite(TestSuite::Suite::BASIC_FLOAT);
-	//~ ts.runSuite(TestSuite::Suite::ALL_LOAD_STORE);
-	//~ ts.runSuite(TestSuite::Suite::ALL_FLOAT);
-	//~ ts.runSuite(TestSuite::Suite::BASIC_LOAD_STORE);
-	ts.runSuite(TestSuite::Suite::MEM_HIERARCHY);
+	// TODO aqui não é basic memory
+	throw "not implemented";
+	
+	
+	// create memory
+	BasicMemory* basicmemory = new BasicMemory(MEMORY_SIZE);
+	MemoryTest* memory = new MemoryTest(basicmemory);
+
+	// create CPU
+	BasicCPUTest *cpu = new BasicCPUTest(memory);
+	test06(cpu, memory, TEST_FILE_06);
+	
+	delete memory;
+	delete basicmemory;
+	
+	return 0;
+}
+
+/**
+ * Testa a hierarquia de cache do Corei7Memory com o arquivo isummationLarge.o.
+ * 
+ * Simplesmente roda o processador para que possa ser verificado manualmente o log
+ * de acesso à memória.
+ */
+void TestCase06::test06(BasicCPUTest* cpu, MemoryTest* memory, string fname)
+{
+	
+	cout << "##################\n# " + fname + "\n##################\n\n\n";
+	
+	// (EN) create processor
+	// (PT) cria processador
+	Processor* processor = Factory::createProcessor(memory);
+		
+	// (EN) start processor
+	// (PT) inicia processador
+	processor->run(STARTADDRESS);
 }
 

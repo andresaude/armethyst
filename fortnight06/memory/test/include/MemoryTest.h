@@ -32,6 +32,8 @@
 
    ----------------------------------------------------------------------------
 */
+#pragma once
+
 #include "config.h"
 #include "Memory.h"
 #include <fstream>

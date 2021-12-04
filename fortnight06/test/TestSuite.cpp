@@ -1,4 +1,4 @@
-﻿/* ----------------------------------------------------------------------------
+/* ----------------------------------------------------------------------------
 
     (EN) armethyst - A simple ARM Simulator written in C++ for Computer Architecture
     teaching purposes. Free software licensed under the MIT License (see license
@@ -35,18 +35,59 @@
 
 #include "TestSuite.h"
 
-using namespace std;
+#define TOTAL_NUM_CASES 6
 
-int main()
-{
-	// TODO TRY CATCH
+TestSuite::TestSuite() {
+	cases = new TestCase*[TOTAL_NUM_CASES];
 	
-	TestSuite ts = TestSuite{};
-	//~ ts.runSuite(TestSuite::Suite::BASIC_ARITH);
-	//~ ts.runSuite(TestSuite::Suite::BASIC_FLOAT);
-	//~ ts.runSuite(TestSuite::Suite::ALL_LOAD_STORE);
-	//~ ts.runSuite(TestSuite::Suite::ALL_FLOAT);
-	//~ ts.runSuite(TestSuite::Suite::BASIC_LOAD_STORE);
-	ts.runSuite(TestSuite::Suite::MEM_HIERARCHY);
+	cases[0] = new TestCase01(); // basic arithmetic: add, sub
+	cases[1] = new TestCase02(); // basic float: fadd, fsub
+	cases[2] = new TestCase03(); // basic arithmetic: add, sub
+	cases[3] = new TestCase04(); // basic float: fadd, fsub
+	cases[4] = new TestCase05(); // basic arithmetic: add, sub
+	cases[5] = new TestCase06(); // basic float: fadd, fsub
 }
 
+TestSuite::~TestSuite() {
+	delete [] cases;
+}
+
+int TestSuite::runSuite(TestSuite::Suite suite) {
+	TestCase **suiteCases = new TestCase*[TOTAL_NUM_CASES];
+	int numCases = 0;
+	
+	switch (suite) {
+		case TestSuite::Suite::BASIC_ARITH:
+			numCases = 1;
+			suiteCases[0] = cases[0];
+			break;
+		case TestSuite::Suite::BASIC_FLOAT:
+			numCases = 1;
+			suiteCases[0] = cases[1];
+			break;
+		case TestSuite::Suite::ALL_LOAD_STORE:
+			numCases = 1;
+			suiteCases[0] = cases[2];
+			break;
+		case TestSuite::Suite::ALL_FLOAT:
+			numCases = 1;
+			suiteCases[0] = cases[3];
+			break;
+		case TestSuite::Suite::BASIC_LOAD_STORE:
+			numCases = 1;
+			suiteCases[0] = cases[4];
+			break;
+		case TestSuite::Suite::MEM_HIERARCHY:
+			numCases = 1;
+			suiteCases[0] = cases[5];
+			break;
+		default:
+			throw "Undefined test suite.";
+	}
+	
+	for (int c = 0; c < numCases; c++) {
+		suiteCases[c]->run();
+	}
+
+	return 0;
+}

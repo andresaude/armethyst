@@ -147,10 +147,21 @@ $(ODIR)/CPUTest.o: $(CPU_TEST_CFILES) $(CPU_DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(TEST_IFLAGS)
 
 #
-# test
+# Test suite
+#
+_TESTSUITE = Suite Case Case01 Case02 Case03 Case04 Case05 Case06
+TESTSUITE = $(patsubst %,Test%.o,$(_TESTSUITE))
+
+$(ODIR)/Test%.o: $(TEST_DIR)/Test%.cpp
+	$(CC) -c -o $@ $< $(CFLAGS) $(TEST_IFLAGS)
+
+
+
+#
+# runtest
 #
 
-_TESTOBJ = $(_OBJ) runtest.o CPUTest.o MemoryTest.o 
+_TESTOBJ = $(_OBJ) runtest.o CPUTest.o MemoryTest.o $(TESTSUITE)
 TESTOBJ = $(patsubst %,$(ODIR)/%,$(_TESTOBJ))
 
 $(ODIR)/runtest.o: runtest.cpp $(DEPS)

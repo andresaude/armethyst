@@ -1,4 +1,4 @@
-﻿/* ----------------------------------------------------------------------------
+/* ----------------------------------------------------------------------------
 
     (EN) armethyst - A simple ARM Simulator written in C++ for Computer Architecture
     teaching purposes. Free software licensed under the MIT License (see license
@@ -32,21 +32,77 @@
 
    ----------------------------------------------------------------------------
 */
+#include "TestCase.h"
 
-#include "TestSuite.h"
+#include <iostream>
+
+#include "BasicMemory.h"
 
 using namespace std;
 
-int main()
-{
-	// TODO TRY CATCH
+int TestCase01::run() {
+	// create memory
+	BasicMemory* basicmemory = new BasicMemory(MEMORY_SIZE);
+	MemoryTest* memory = new MemoryTest(basicmemory);
+
+	// create CPU
+	BasicCPUTest *cpu = new BasicCPUTest(memory);
+	test01(cpu, memory, TEST_FILE_01);
 	
-	TestSuite ts = TestSuite{};
-	//~ ts.runSuite(TestSuite::Suite::BASIC_ARITH);
-	//~ ts.runSuite(TestSuite::Suite::BASIC_FLOAT);
-	//~ ts.runSuite(TestSuite::Suite::ALL_LOAD_STORE);
-	//~ ts.runSuite(TestSuite::Suite::ALL_FLOAT);
-	//~ ts.runSuite(TestSuite::Suite::BASIC_LOAD_STORE);
-	ts.runSuite(TestSuite::Suite::MEM_HIERARCHY);
+	delete memory;
+	delete basicmemory;
+	
+	return 0;
+}
+
+/**
+ * Testa as instruções 'sub sp, sp, #16' e 'add w1, w1, w0' do
+ * arquivo isummation.S.
+ */
+void TestCase01::test01(BasicCPUTest* cpu, MemoryTest* memory, string fname)
+{
+
+	TEST_HEADER
+	
+	//
+	// Test SUB
+	//
+	instruction = "sub sp, sp, #16";
+	startAddress = 0x40; // endereço de 'sub sp, sp, #16'
+	xpctdIR = 0xD10043FF;
+	xpctdA = STARTSP; // SP deve ser lido para A
+	xpctdB = 16; 	 // valor imediato da instrução sub
+	xpctdALUctrl = ALUctrlFlag::SUB;
+	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+	
+	xpctdALUout = xpctdA - xpctdB;
+	
+	xpctdRd = xpctdALUout;
+	
+	
+	CALLTEST();
+	RESETTEST();
+		
+
+	//
+	// Test ADD (linha 43)
+	//
+	instruction = "add w1, w1, w0";
+	startAddress = 0x68; // endereço de 'add w1, w1, w0'
+	xpctdIR = 0x0B000021;
+	xpctdA = 7; 			// valor arbitrário para w1
+	xpctdB = 16; 		// valor arbitrário para w0
+	cpu->setW(1,xpctdA); // temos que fazer w1 valer xpctdA
+	cpu->setW(0,xpctdB); // temos que fazer w0 valer xpctdB
+	xpctdALUctrl = ALUctrlFlag::ADD;
+	xpctdMEMctrl = MEMctrlFlag::MEM_NONE;
+	xpctdWBctrl = WBctrlFlag::RegWrite;
+	xpctdALUout = xpctdA + xpctdB;
+
+	xpctdRd = xpctdALUout;
+
+	CALLTEST();
+	RESETTEST();
 }
 
