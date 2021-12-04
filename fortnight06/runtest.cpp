@@ -36,9 +36,14 @@
 #include "config.h"
 #include "Util.h"
 
+#include "MemoryLoader.h"
 #include "MemoryTest.h"
-#include "BasicCPUTest.h"
+#include "BasicMemory.h"
 
+#include "BasicCPUTest.h"
+#include "Processor.h"
+#include "Factory.h"
+	
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -83,38 +88,55 @@ int main()
 #define TEST_FILE_03 "isummation.o"
 #define TEST_FILE_04 "fpops.o"
 #define TEST_FILE_05 "isummation.o"
-#define TEST_FILE_06 "isummation.o"
+//~ #define TEST_FILE_06 "isummationLarge.o"
 
 	// create memory
-	MemoryTest* memory = new MemoryTest(MEMORY_SIZE);
+	BasicMemory* basicmemory = new BasicMemory(MEMORY_SIZE);
+	MemoryTest* memory = new MemoryTest(basicmemory);
 
 	// create CPU
 	BasicCPUTest *cpu = new BasicCPUTest(memory);
 	
 	// Teste:
 	//	Como não temos todas as instruções implementadas, faremos apenas testes.
-	//~ test01(cpu, memory, TEST_FILE_01);
+	test01(cpu, memory, TEST_FILE_01);
 	//~ test02(cpu, memory, TEST_FILE_02);
 	//~ test03(cpu, memory, TEST_FILE_03);
 	//~ test04(cpu, memory, TEST_FILE_04);
-	//~ test05(cpu, memory, TEST_FILE_05);
-	test06(cpu, memory, TEST_FILE_06);
+	test05(cpu, memory, TEST_FILE_05);
+	//~ test06(cpu, memory, TEST_FILE_06);
 	
-	return 0;
+	return 0;	
 }
 
-void loadBinary (MemoryTest* memory, string fname)
+//~ void loadBinary (MemoryTest* memory, string fname)
+//~ {
+	//~ // load executable binary
+	//~ memory->loadBinary(fname);
+	//~ memory->relocateManual();
+	
+	//~ // create human readable representation of the binary file
+	//~ memory->writeBinaryAsText(fname);
+
+	//~ // create human readable representation of the binary file
+	//~ memory->writeBinaryAsTextELF(fname);
+//~ }
+
+void memoryLoadReloc (MemoryTest* memory, string fname)
 {
 	// load executable binary
-	memory->loadBinary(fname);
+	MemoryLoader loader{memory, fname};
+
+	// Relocate
 	memory->relocateManual();
 	
 	// create human readable representation of the binary file
-	memory->writeBinaryAsText(fname);
+	loader.writeBinaryAsText(fname);
 
 	// create human readable representation of the binary file
-	memory->writeBinaryAsTextELF(fname);
+	loader.writeBinaryAsTextELF(fname);
 }
+
 
 #define TEST_HEADER bool fpOp;\
 		string instruction;\
@@ -130,7 +152,7 @@ void loadBinary (MemoryTest* memory, string fname)
 		uint64_t xpctdMDR;\
 		uint64_t xpctdRd;\
 		RESETTEST();\
-		loadBinary(memory,fname);\
+		memoryLoadReloc(memory, fname);\
 		cout << "##################\n# " + fname + "\n##################\n\n\n";
 
 /**
@@ -674,29 +696,18 @@ void test05(BasicCPUTest* cpu, MemoryTest* memory, string fname)
 /**
  * Testa a hierarquia de cache do Corei7Memory com o arquivo isummationLarge.o.
  * 
- * Simplesmente roda o processador e verifica o log de acesso à memória.
+ * Simplesmente roda o processador para que possa ser verificado manualmente o log
+ * de acesso à memória.
  */
 void test06(BasicCPUTest* cpu, MemoryTest* memory, string fname)
 {
 	
 	cout << "##################\n# " + fname + "\n##################\n\n\n";
 	
-	// (EN) create memory
-	// (PT) cria memória
-	Memory* memory = Factory::createMemory();
-	
 	// (EN) create processor
 	// (PT) cria processador
 	Processor* processor = Factory::createProcessor(memory);
 		
-	// (EN) load executable binary
-	// (PT) carrega binário executável
-	memory->loadBinary(FILENAME);
-	
-	// (EN) create human readable representation of the binary file
-	// (PT) cria representação legível do arquivo binário
-	memory->writeBinaryAsText(FILENAME);
-
 	// (EN) start processor
 	// (PT) inicia processador
 	processor->run(STARTADDRESS);
