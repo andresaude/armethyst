@@ -83,4 +83,9 @@ class BasicCPUTest: public BasicCPU
 		int runWB();
 		uint64_t getRd();
 		
+		/**
+		 * Métodos herdados de CPU
+		 */
+		int run(uint64_t startAddress);
+		
 };

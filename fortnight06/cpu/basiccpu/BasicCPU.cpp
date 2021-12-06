@@ -50,7 +50,7 @@ int BasicCPU::run(uint64_t startAddress)
 	PC = startAddress;
 
 	// ciclo da máquina
-	while ((cpuError != CPUerrorCode::NONE) && !processFinished) {
+	while ((cpuError == CPUerrorCode::NONE) && !processFinished) {
 		IF();
 		ID();
 		if (fpOp == FPOpFlag::FP_UNDEF) {
@@ -133,7 +133,8 @@ int BasicCPU::ID()
 		// implementar os demais grupos
 		
 		default:
-			return 1; // instrução não implementada
+			throw "instrução não implementada";
+			//~ return 1; // instrução não implementada
 	}
 };
 
@@ -199,7 +200,7 @@ int BasicCPU::decodeDataProcImm() {
 			// instrução não implementada
 			return 1;
 	}
-	
+
 	// instrução não implementada
 	return 1;
 }
@@ -439,27 +440,22 @@ int BasicCPU::EXF()
  */
 int BasicCPU::MEM()
 {
-	// TODO
-	// Compreender a implementação do switch (MEMctrl) case MEMctrlFlag::XXX
-	// com as chamadas aos métodos corretos que implementam cada caso de acesso
-	// à memória de dados.
-
-	//switch (MEMctrl) {
-	//case MEMctrlFlag::READ32:
-		//MDR = memory->readData32(ALUout);
-		//return 0;
-	//case MEMctrlFlag::WRITE32:
-		//memory->writeData32(ALUout,*Rd);
-		//return 0;
-	//case MEMctrlFlag::READ64:
-		//MDR = memory->readData64(ALUout);
-		//return 0;
-	//case MEMctrlFlag::WRITE64:
-		//memory->writeData64(ALUout,*Rd);
-		//return 0;
-	//default:
-		//return 0;
-	//}
+	switch (MEMctrl) {
+	case MEMctrlFlag::READ32:
+		MDR = memory->readData32(ALUout);
+		return 0;
+	case MEMctrlFlag::WRITE32:
+		memory->writeData32(ALUout,*Rd);
+		return 0;
+	case MEMctrlFlag::READ64:
+		MDR = memory->readData64(ALUout);
+		return 0;
+	case MEMctrlFlag::WRITE64:
+		memory->writeData64(ALUout,*Rd);
+		return 0;
+	default:
+		return 0;
+	}
 
 	return 1;
 }
@@ -474,25 +470,20 @@ int BasicCPU::MEM()
  */
 int BasicCPU::WB()
 {
-	// TODO
-	// Compreender a implementação do switch (WBctrl) case WBctrlFlag::XXX
-	// com as atribuições corretas do registrador destino, quando houver, ou
-	// return 0 no caso WBctrlFlag::WB_NONE.
-	
-    //switch (WBctrl) {
-        //case WBctrlFlag::WB_NONE:
-            //return 0;
-        //case WBctrlFlag::RegWrite:
-            //if (MemtoReg) {
-                //*Rd = MDR;
-            //} else {
-                //*Rd = ALUout;
-            //}
-            //return 0;
-        //default:
-             ////não implementado
+    switch (WBctrl) {
+        case WBctrlFlag::WB_NONE:
+            return 0;
+        case WBctrlFlag::RegWrite:
+            if (MemtoReg) {
+                *Rd = MDR;
+            } else {
+                *Rd = ALUout;
+            }
+            return 0;
+        default:
+            //não implementado
             return 1;
-    //}
+    }
 }
 
 

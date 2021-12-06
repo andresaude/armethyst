@@ -35,18 +35,27 @@
 
 #include "TestSuite.h"
 
+#include <string>
+
 using namespace std;
 
 int main()
 {
-	// TODO TRY CATCH
+	try {	
+		TestSuite ts = TestSuite{};
+		//~ ts.runSuite(TestSuite::Suite::BASIC_ARITH);
+		//~ ts.runSuite(TestSuite::Suite::BASIC_FLOAT);
+		//~ ts.runSuite(TestSuite::Suite::ALL_LOAD_STORE);
+		//~ ts.runSuite(TestSuite::Suite::ALL_FLOAT);
+		//~ ts.runSuite(TestSuite::Suite::BASIC_LOAD_STORE);
+		ts.runSuite(TestSuite::Suite::MEM_HIERARCHY);
+	} catch (const char *ex) {
+		cout << "Exception caught:\n\n\t" << ex << "\n" << endl;
+		return 1;
+	} catch (string ex) {
+		cout << "Exception caught:\n\n\t" << ex << "\n" << endl;
+		return 1;
+	}
 	
-	TestSuite ts = TestSuite{};
-	//~ ts.runSuite(TestSuite::Suite::BASIC_ARITH);
-	//~ ts.runSuite(TestSuite::Suite::BASIC_FLOAT);
-	//~ ts.runSuite(TestSuite::Suite::ALL_LOAD_STORE);
-	//~ ts.runSuite(TestSuite::Suite::ALL_FLOAT);
-	//~ ts.runSuite(TestSuite::Suite::BASIC_LOAD_STORE);
-	ts.runSuite(TestSuite::Suite::MEM_HIERARCHY);
 }
 

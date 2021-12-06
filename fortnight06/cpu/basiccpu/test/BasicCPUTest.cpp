@@ -35,6 +35,10 @@
 
 #include "BasicCPUTest.h"
 
+#include <iostream>
+
+using namespace std;
+
 /**
  * Start PC without executing machine cycles.
  */
@@ -125,3 +129,40 @@ int BasicCPUTest::runWB() {
 uint64_t BasicCPUTest::getRd() {
 	return *Rd;
 }
+
+/**
+ * Métodos herdados de CPU
+ */
+int BasicCPUTest::run(uint64_t startAddress)
+{
+
+	cout << "BasicCPUTest::run(0x" << startAddress << ")\n\n";
+
+	// inicia PC com o valor de startAddress
+	PC = startAddress;
+
+	// ciclo da máquina
+	while ((cpuError == CPUerrorCode::NONE) && !processFinished) {
+		cout << "PC=0x" << PC << "\n\n";
+
+		IF();
+		if (ID()) {
+			throw "Instruction not implemented.";
+		}
+		if (fpOp == FPOpFlag::FP_UNDEF) {
+			EXI();
+		} else {
+			EXF();
+		}
+		MEM();
+		WB();
+		PC += 4;
+	}
+	
+	if (cpuError) {
+		return 1;
+	}
+	
+	return 0;
+};
+

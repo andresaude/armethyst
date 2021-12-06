@@ -273,7 +273,7 @@ class BasicCPU: public CPU
 		/**
 		 * Métodos herdados de CPU
 		 */
-		int run(uint64_t startAddress);
+		virtual int run(uint64_t startAddress);
 		
 	private:
 		/**

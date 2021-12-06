@@ -44,20 +44,15 @@ using namespace std;
 
 int TestCase06::run() {
 	
-	// TODO aqui não é basic memory
-	throw "not implemented";
-	
-	
 	// create memory
-	BasicMemory* basicmemory = new BasicMemory(MEMORY_SIZE);
-	MemoryTest* memory = new MemoryTest(basicmemory);
+	Memory* memory = Factory::createMemory();		
+	MemoryTest* memorytest = new MemoryTest(memory);
 
 	// create CPU
 	BasicCPUTest *cpu = new BasicCPUTest(memory);
-	test06(cpu, memory, TEST_FILE_06);
+	test06(cpu, memorytest, TEST_FILE_06);
 	
-	delete memory;
-	delete basicmemory;
+	delete memorytest;
 	
 	return 0;
 }
@@ -69,16 +64,19 @@ int TestCase06::run() {
  * de acesso à memória.
  */
 void TestCase06::test06(BasicCPUTest* cpu, MemoryTest* memory, string fname)
-{
+{	
+	cout << "#####################\n# " + fname + "\n#####################\n\n\n";
+
+	cout << "# loading memory...\n\n";
+
+	// load and relocate memory
+	memoryLoadReloc(memory,fname);
+
+	cout << "# run CPU at address 0x" << STARTADDRESS << "\n\n";
 	
-	cout << "##################\n# " + fname + "\n##################\n\n\n";
-	
-	// (EN) create processor
-	// (PT) cria processador
-	Processor* processor = Factory::createProcessor(memory);
-		
-	// (EN) start processor
-	// (PT) inicia processador
-	processor->run(STARTADDRESS);
+	// start cpu
+	cpu->run(STARTADDRESS);
+
+	cout << "##################\n# CPU FINISHED\n##################\n\n\n";
 }
 
