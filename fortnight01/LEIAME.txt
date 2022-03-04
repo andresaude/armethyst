@@ -5,7 +5,7 @@ Para compilar o código há três opções.
 
 	a) Abrir o arquivo 'makefile' e alterar a primeira linha, dando o nome do seu compilador.
 
-	b) Ir na linha de comando e digitar 'make'. Deve ser criado um executável de nome 'armethyst' ou 'armethyst.exe'.
+	b) Ir na linha de comando e digitar 'minGW32-make'. Deve ser criado um executável de nome 'armethyst' ou 'armethyst.exe'.
 
 2. Via seu IDE predileto:
 
