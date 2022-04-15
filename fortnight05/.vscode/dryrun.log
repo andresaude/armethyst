@@ -1,0 +1,15 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/mnt/d/Academic/computerScience/3rtModule/GCC117_ArquiteturaDeComputadores I/trabalhoFinalARQ1/armethyst/fortnight05'
+g++ -c -o obj/armethyst.o armethyst.cpp -std=c++14 -I./include -I./util/include -I./processor/basicprocessor/include -I./cpu/basiccpu/include -I./memory/basicmemory/include
+g++ -c -o obj/CPUImpl.o cpu/basiccpu/BasicCPU.cpp -std=c++14 -I./include -I./util/include -I./processor/basicprocessor/include -I./cpu/basiccpu/include -I./memory/basicmemory/include
+g++ -c -o obj/ProcessorImpl.o processor/basicprocessor/BasicProcessor.cpp -std=c++14 -I./include -I./util/include -I./processor/basicprocessor/include -I./cpu/basiccpu/include -I./memory/basicmemory/include
+g++ -c -o obj/MemImpl.o memory/basicmemory/BasicMemory.cpp -std=c++14 -I./include -I./util/include -I./processor/basicprocessor/include -I./cpu/basiccpu/include -I./memory/basicmemory/include
+g++ -c -o obj/Factory.o factory/Factory.cpp -std=c++14 -I./include -I./util/include -I./processor/basicprocessor/include -I./cpu/basiccpu/include -I./memory/basicmemory/include
+g++ -c -o obj/Util.o util/Util.cpp -std=c++14 -I./include -I./util/include -I./processor/basicprocessor/include -I./cpu/basiccpu/include -I./memory/basicmemory/include
+g++ -o armethyst obj/armethyst.o obj/CPUImpl.o obj/ProcessorImpl.o obj/MemImpl.o obj/Factory.o obj/Util.o -std=c++14 -I./include -I./util/include -I./processor/basicprocessor/include -I./cpu/basiccpu/include -I./memory/basicmemory/include
+g++ -c -o obj/runtest.o runtest.cpp -std=c++14 -I./include -I./util/include -I./processor/basicprocessor/include -I./cpu/basiccpu/include -I./memory/basicmemory/include -I././test/include -I./cpu/basiccpu/./test/include -I./memory/basicmemory/./test/include
+g++ -c -o obj/CPUTest.o cpu/basiccpu/./test/BasicCPUTest.cpp -std=c++14 -I./include -I./util/include -I./processor/basicprocessor/include -I./cpu/basiccpu/include -I./memory/basicmemory/include -I././test/include -I./cpu/basiccpu/./test/include -I./memory/basicmemory/./test/include
+g++ -c -o obj/MemoryTest.o memory/basicmemory/./test/BasicMemoryTest.cpp -std=c++14 -I./include -I./util/include -I./processor/basicprocessor/include -I./cpu/basiccpu/include -I./memory/basicmemory/include -I././test/include -I./cpu/basiccpu/./test/include -I./memory/basicmemory/./test/include
+g++ -o runtest obj/CPUImpl.o obj/ProcessorImpl.o obj/MemImpl.o obj/Factory.o obj/Util.o obj/runtest.o obj/CPUTest.o obj/MemoryTest.o -std=c++14 -I./include -I./util/include -I./processor/basicprocessor/include -I./cpu/basiccpu/include -I./memory/basicmemory/include -I././test/include -I./cpu/basiccpu/./test/include -I./memory/basicmemory/./test/include
+make: Leaving directory '/mnt/d/Academic/computerScience/3rtModule/GCC117_ArquiteturaDeComputadores I/trabalhoFinalARQ1/armethyst/fortnight05'
+ 

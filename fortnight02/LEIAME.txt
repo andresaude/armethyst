@@ -5,3 +5,4 @@ Para compilar o código via 'makefile':
 
 	b) Ir na linha de comando e digitar 'make'. Devem ser criados os executáveis de nome 'armethyst' ou 'armethyst.exe' e 'runtest' ou 'runtest.exe'.
 
+	c) txt_isummation.o.txt, saida.txt, runtest, elf_isummation.o.txt, armythyst foram gerados 
