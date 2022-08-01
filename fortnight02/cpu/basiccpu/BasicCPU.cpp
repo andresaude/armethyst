@@ -117,6 +117,12 @@ int BasicCPU::ID()
 			break;
 		// case TODO
 		// x101 Data Processing -- Register on page C4-278
+		case 0x0A000000:
+		case 0x1A000000:
+		case 0x0B000021:
+			fpOP = false;
+			return decodeDataProcReg();
+			break;
 		default:
 			return 1; // instrução não implementada
 	}
@@ -230,6 +236,16 @@ int BasicCPU::decodeDataProcReg() {
 	
 	
 	// instrução não implementada
+	switch (IR & 0x7F20000)
+	{
+		case 0x0B000000:
+			ALUout = A + B;
+			return ALUout;
+			break;
+		
+		default:
+			break;
+	}
 	return 1;
 }
 
