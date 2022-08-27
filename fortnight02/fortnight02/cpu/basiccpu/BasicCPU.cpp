@@ -32,9 +32,8 @@
 
    ----------------------------------------------------------------------------
 */
-#include<iostream>
+
 #include "BasicCPU.h"
-#include <math.h>
 
 BasicCPU::BasicCPU(Memory *memory) {
 	this->memory = memory;
@@ -254,31 +253,26 @@ int BasicCPU::decodeDataProcReg() {
 			// ler A e B
 			n = (IR & 0x000003E0) >> 5;
 			A = getW(n); // 32-bit variant
+			
 			m = (IR & 0x001F0000) >> 16;
-			B = getW(m);
-			//Pega immed6 e converte para decimal
+			B = m;
+
 			imm6 = (IR & 0x0000fc00) >> 10;
-			switch(shift){
-				case 0:
-					B = B << imm6;
-					break;
-				case 1:
-					B = B >> imm6;
-					break;
-				case 10:
-					B = (unsigned int)(((signed int)B) >> imm6);
-					break;
-				default:
-				//qualquer coisa
-				return 0;
-			}
+
+			case 0:
+			   B = B << imm6;
+			case 1:
+			   B = B >> imm6;
+			case 2:
+			   B = (unsigned int)(((signed int)B) >> imm6);
+			
 			// registrador destino
 			d = (IR & 0x0000001F);
 			Rd = &(R[d]);
 			
 			
 			// atribuir ALUctrl
-			//ALUctrl = ALUctrlFlag::ADD;
+			ALUctrl = ALUctrlFlag::ADD;
 			
 			return 0;
 		default:
@@ -433,5 +427,3 @@ int64_t BasicCPU::getX(int n) {
 void BasicCPU::setX(int n, int64_t value) {
 	R[n] = (uint64_t)value;
 }
-
-
