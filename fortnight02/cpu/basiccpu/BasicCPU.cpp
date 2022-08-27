@@ -119,7 +119,6 @@ int BasicCPU::ID()
 		// x101 Data Processing -- Register on page C4-278
 		case 0x0A000000:
 		case 0x1A000000:
-		case 0x0B000021:
 			fpOP = false;
 			return decodeDataProcReg();
 			break;
@@ -233,19 +232,75 @@ int BasicCPU::decodeDataProcReg() {
 	//				'add w1, w1, w0'
 	//		que aparece na linha 43 de isummation.S e no endereço 0x68
 	//		de txt_isummation.o.txt.
+	unsigned int n, m, d;
+	int imm6, shifted;
 	
+	/* Add(shifted register) (pp. 688-689)
+		This section describes the encoding of the Add (shifted register)
+		instruction class. The encodings in this section are decoded from
+		Data Processing -- Immediate on page C6-688.
+	*/
+	switch (IR & 0x7F200000)
+	{		
+		//sf = 0 32 bits 
+		case 0x0B000000:	// Add(shifted register) pp. C6-688
+			// shift = '11' undefined
+			shifted = (IR & 0x00C00000) >> 22;
+			if(shifted == 3)	// Undefined
+				return 1;
+			
+			
+			// ler A e B
+			n = (IR & 0x000003E0) >> 5;
+			A = getX(n); // 64-bit variant
+
+			m = (IR & 0x001F0000) >> 16;
+			B = getX(m);
+			
+			//immediate for shift
+			imm6 = (IR & 0x0000FC00) >> 10;
+			
+			switch(shifted){
+				case 0:	// Logical Shift Left 
+					B = B << imm6;
+					break;
+				case 1:	// Logical Shift Right
+					B = B >> imm6;
+					break;
+				case 2: // Arithmetic Shift Right
+					(signed)B;
+					B = B >> imm6;
+					(unsigned)B;
+					break;
+			}
+
+			// registrador destino
+			d = (IR & 0x0000001F);
+			Rd = &(R[d]);
+			
+			// atribuir ALUctrl
+			ALUctrl = ALUctrlFlag::ADD;
+			
+			// atribuir MEMctrl
+			MEMctrl = MEMctrlFlag::MEM_NONE;
+			
+			// atribuir WBctrl
+			WBctrl = WBctrlFlag::RegWrite;
+			
+			// atribuir MemtoReg
+			MemtoReg = false;
+			
+			return 0;
+
+		//sf = 1 64 bits
+		case 0xFFC0000:	// Instruction not implemented
+
+		default:
+			// instrução não implementada
+			return 1;
+	}
 	
 	// instrução não implementada
-	switch (IR & 0x7F20000)
-	{
-		case 0x0B000000:
-			ALUout = A + B;
-			return ALUout;
-			break;
-		
-		default:
-			break;
-	}
 	return 1;
 }
 
@@ -288,6 +343,10 @@ int BasicCPU::EXI()
 	{
 		case ALUctrlFlag::SUB:
 			ALUout = A - B;
+			// ATIVIDADE FUTURA: setar flags NCZF
+			return 0;
+		case ALUctrlFlag::ADD:
+			ALUout = A + B;
 			// ATIVIDADE FUTURA: setar flags NCZF
 			return 0;
 		default:
