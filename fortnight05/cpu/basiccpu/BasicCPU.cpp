@@ -232,11 +232,11 @@ int BasicCPU::decodeBranches() {
  *		   1: se a instrução não estiver implementada.
  */
 int BasicCPU::decodeLoadStore() {
-	// Load Register Signed Word - C6.2.131 LDRSW (immediate)
-	// Unsigned offset page C6-913
-	unsigned int imm12, n, d;
+	unsigned int imm12, imm9, n, d;
 
 	switch(IR & 0xFFC00000){
+		// Load Register Signed Word - C6.2.131 LDRSW (immediate)
+		// Unsigned offset page C6-913
 		case  0xB9800000:
 		imm12 = (IR & 0x003FFC00) >> 10;
 
@@ -266,6 +266,35 @@ int BasicCPU::decodeLoadStore() {
 
 		return 0;
 
+		// Stored Register - C6.2.257 STR (immediate)
+		// C6 - 1134 - Pre-index
+		case 0xB9000000:
+		imm9 = (IR & 0x001FF000) >> 12;
+
+		n = (IR & 0x000003E0) >> 5;
+		if(n == 31)
+			A = SP;
+		else
+			A = getX(n);
+
+		A >> imm12;
+
+		d = (IR & 0x0000001F);
+		Rd = &(R[d]);
+
+		// atribuir ALUctrl
+		ALUctrl = ALUctrlFlag::STORE;
+		
+		// atribuir MEMctrl
+		MEMctrl = MEMctrlFlag::WRITE64;
+		
+		// atribuir WBctrl
+		WBctrl = WBctrlFlag::WB_NONE;
+		
+		// atribuir MemtoReg
+		MemtoReg = false;
+
+		return 0;
 	}
 	return 1;
 }
