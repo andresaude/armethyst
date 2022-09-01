@@ -47,7 +47,7 @@
 
 // Códigos de controle
 enum FPOpFlag {FP_UNDEF,FP_REG_128,FP_REG_64,FP_REG_32,FP_REG_16,FP_REG_8,FP_VEC_128,FP_VEC_64};
-enum ALUctrlFlag {ALU_UNDEF, ALU_NONE, ADD, SUB, DIV, MUL};
+enum ALUctrlFlag {ALU_UNDEF, ALU_NONE, ADD, SUB, DIV, MUL, LOAD};
 enum MEMctrlFlag {MEM_UNDEF, MEM_NONE, READ32, WRITE32, READ64, WRITE64};
 enum WBctrlFlag {WB_UNDEF, WB_NONE, RegWrite};
 
