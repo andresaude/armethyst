@@ -133,10 +133,13 @@ $(ODIR)/CPUTest.o: $(CPU_TEST_CFILES) $(CPU_DEPS)
 # test
 #
 
-_TESTOBJ = $(_OBJ) runtest.o CPUTest.o MemoryTest.o 
+_TESTOBJ = $(_OBJ) tests.o runtest.o CPUTest.o MemoryTest.o 
 TESTOBJ = $(patsubst %,$(ODIR)/%,$(_TESTOBJ))
 
 $(ODIR)/runtest.o: runtest.cpp $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS) $(TEST_IFLAGS)
+
+$(ODIR)/tests.o: $(TEST_DIR)/tests.cpp $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS) $(TEST_IFLAGS)
 
 runtest: $(TESTOBJ)
