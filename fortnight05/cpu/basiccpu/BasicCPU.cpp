@@ -232,13 +232,14 @@ int BasicCPU::decodeBranches() {
  *		   1: se a instrução não estiver implementada.
  */
 int BasicCPU::decodeLoadStore() {
-	unsigned int imm12, imm9, n, d;
+	unsigned int n, d;
+	unsigned int aux;
 
 	switch(IR & 0xFFC00000){
 		// Load Register Signed Word - C6.2.131 LDRSW (immediate)
 		// Unsigned offset page C6-913
 		case  0xB9800000:
-		imm12 = (IR & 0x003FFC00) >> 10;
+		B = (IR & 0x003FFC00) >> 8;	// imm12 = <pimm>/4 entao multiplica por 4
 
 		n = (IR & 0x000003E0) >> 5;
 		if(n == 31)
@@ -246,14 +247,12 @@ int BasicCPU::decodeLoadStore() {
 		else
 			A = getX(n);
 
-		A >> imm12;
-
 		d = (IR & 0x0000001F);
 		Rd = &(R[d]);
 
 
 		// atribuir ALUctrl
-		ALUctrl = ALUctrlFlag::LOAD;
+		ALUctrl = ALUctrlFlag::ADD;
 		
 		// atribuir MEMctrl
 		MEMctrl = MEMctrlFlag::READ64;
@@ -266,27 +265,30 @@ int BasicCPU::decodeLoadStore() {
 
 		return 0;
 
-		// Stored Register - C6.2.257 STR (immediate)
-		// C6 - 1134 - Pre-index
+		// Load/store register (register offset) C4 - 246
+
+		// Stored Register - C6.2.257 STR (Immediate)
+		// C6 - 1135 - Unsigned offset - 32 Bits
 		case 0xB9000000:
-		imm9 = (IR & 0x001FF000) >> 12;
+
+		//B = (IR & 0x001FF000) >> 8;	// imm12 = <pimm>4 como eh 32 bits multiplicar or 4
+		B = (IR & 0x003FFC00) >> 8;
 
 		n = (IR & 0x000003E0) >> 5;
+		
 		if(n == 31)
 			A = SP;
 		else
 			A = getX(n);
 
-		A >> imm12;
-
 		d = (IR & 0x0000001F);
 		Rd = &(R[d]);
 
 		// atribuir ALUctrl
-		ALUctrl = ALUctrlFlag::STORE;
+		ALUctrl = ALUctrlFlag::ADD;
 		
 		// atribuir MEMctrl
-		MEMctrl = MEMctrlFlag::WRITE64;
+		MEMctrl = MEMctrlFlag::WRITE32;
 		
 		// atribuir WBctrl
 		WBctrl = WBctrlFlag::WB_NONE;
@@ -462,9 +464,6 @@ int BasicCPU::EXI()
 		// TODO
 		case ALUctrlFlag::ADD:
 			ALUout = A + B;
-			return 0;
-		case ALUctrlFlag::LOAD:
-			Rd = &A;
 			return 0;
 		default:
 			// Controle não implementado
