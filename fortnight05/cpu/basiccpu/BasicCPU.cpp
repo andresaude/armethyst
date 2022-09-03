@@ -233,7 +233,6 @@ int BasicCPU::decodeBranches() {
  */
 int BasicCPU::decodeLoadStore() {
 	unsigned int n, d;
-	unsigned int aux;
 
 	switch(IR & 0xFFC00000){
 		// Load Register Signed Word - C6.2.131 LDRSW (immediate)
@@ -282,7 +281,11 @@ int BasicCPU::decodeLoadStore() {
 			A = getX(n);
 
 		d = (IR & 0x0000001F);
-		Rd = &(R[d]);
+		if(d == 31)
+			Rd = &ZR;
+		else
+			Rd = &(R[d]);
+
 
 		// atribuir ALUctrl
 		ALUctrl = ALUctrlFlag::ADD;
