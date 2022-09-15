@@ -233,80 +233,132 @@ int BasicCPU::decodeBranches() {
  */
 int BasicCPU::decodeLoadStore() {
 	unsigned int n, d;
+	unsigned int option, s, m;
+	int BW;
 
-	switch(IR & 0xFFC00000){
+	switch(IR & 0xFFE00000){//0xFFC00000
 		// Load Register Signed Word - C6.2.131 LDRSW (immediate)
 		// Unsigned offset page C6-913
 		case  0xB9800000:
-		B = (IR & 0x003FFC00) >> 8;	// imm12 = <pimm>/4 entao multiplica por 4
+			B = (IR & 0x003FFC00) >> 8;	// imm12 = <pimm>/4 entao multiplica por 4
 
-		n = (IR & 0x000003E0) >> 5;
-		if(n == 31)
-			A = SP;
-		else
-			A = getX(n);
+			n = (IR & 0x000003E0) >> 5;
+			if(n == 31)
+				A = SP;
+			else
+				A = getX(n);
 
-		d = (IR & 0x0000001F);
-		Rd = &(R[d]);
+			d = (IR & 0x0000001F);
+			Rd = &(R[d]);
 
 
-		// atribuir ALUctrl
-		ALUctrl = ALUctrlFlag::ADD;
-		
-		// atribuir MEMctrl
-		MEMctrl = MEMctrlFlag::READ64;
-		
-		// atribuir WBctrl
-		WBctrl = WBctrlFlag::RegWrite;
-		
-		// atribuir MemtoReg
-		MemtoReg = true;
+			// atribuir ALUctrl
+			ALUctrl = ALUctrlFlag::ADD;
+			
+			// atribuir MEMctrl
+			MEMctrl = MEMctrlFlag::READ64;
+			
+			// atribuir WBctrl
+			WBctrl = WBctrlFlag::RegWrite;
+			
+			// atribuir MemtoReg
+			MemtoReg = true;
 
-		return 0;
+			return 0;
 
 		// Load/store register (register offset) C4 - 246
+		// Página C6-891
+		case 0xB8600000:
+
+			m=(IR & 0x001F0000) >> 16;
+			BW=getW(m);
+
+			//B = (IR & 0x001F0000) >> 16;	// Rm
+
+			option = (IR & 0x0000E000) >> 13; // option
+			s = (IR & 0x00001000) >> 12;
+			switch(s){
+				case 0:
+					s = 0;
+					break;
+				case 1:
+					s = 2;
+					break;
+			}
+
+			n = (IR & 0x000003E0) >> 5;
+
+			if(n == 31)
+				A = SP;
+			else
+				A = getX(n);
+
+			switch(option){
+				case 3: // LSL
+					B = BW << s;
+					break;
+			}
+
+			d = (IR & 0x0000001F);
+			Rd = &(R[d]);
+
+
+			// atribuir ALUctrl
+			ALUctrl = ALUctrlFlag::ADD;
+			
+			// atribuir MEMctrl
+			MEMctrl = MEMctrlFlag::READ32;
+			
+			// atribuir WBctrl
+			WBctrl = WBctrlFlag::RegWrite;
+			
+			// atribuir MemtoReg
+			MemtoReg = true;
+
+			return 0;
 
 		// Stored Register - C6.2.257 STR (Immediate)
 		// C6 - 1135 - Unsigned offset - 32 Bits
 		case 0xB9000000:
 
-		//B = (IR & 0x001FF000) >> 8;	// imm12 = <pimm>4 como eh 32 bits multiplicar or 4
-		B = (IR & 0x003FFC00) >> 8;
+			//B = (IR & 0x001FF000) >> 8;	// imm12 = <pimm>4 como eh 32 bits multiplicar or 4
+			B = (IR & 0x003FFC00) >> 8;
 
-		n = (IR & 0x000003E0) >> 5;
-		
-		if(n == 31)
-			A = SP;
-		else
-			A = getX(n);
+			n = (IR & 0x000003E0) >> 5;
+			
+			if(n == 31)
+				A = SP;
+			else
+				A = getX(n);
 
-		d = (IR & 0x0000001F);
-		if(d == 31)
-			Rd = &ZR;
-		else
-			Rd = &(R[d]);
+			d = (IR & 0x0000001F);
+			if(d == 31)
+				Rd = &ZR;
+			else
+				Rd = &(R[d]);
 
 
-		// atribuir ALUctrl
-		ALUctrl = ALUctrlFlag::ADD;
-		
-		// atribuir MEMctrl
-		MEMctrl = MEMctrlFlag::WRITE32;
-		
-		// atribuir WBctrl
-		WBctrl = WBctrlFlag::WB_NONE;
-		
-		// atribuir MemtoReg
-		MemtoReg = false;
+			// atribuir ALUctrl
+			ALUctrl = ALUctrlFlag::ADD;
+			
+			// atribuir MEMctrl
+			MEMctrl = MEMctrlFlag::WRITE32;
+			
+			// atribuir WBctrl
+			WBctrl = WBctrlFlag::WB_NONE;
+			
+			// atribuir MemtoReg
+			MemtoReg = false;
 
-		return 0;
+			return 0;
 	}
 	return 1;
 }
 
 /**
  * Decodifica instruções do grupo
- * 		x101 Data Processing -- Register on page C4-278
+ * 		x101 Data Processing -00000:
+		case 0x0B000000- Register on page C4-278
  *
  * Retorna 0: se executou corretamente e
  *		   1: se a instrução não estiver implementada.
