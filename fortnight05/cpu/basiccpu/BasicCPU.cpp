@@ -297,23 +297,23 @@ int BasicCPU::decodeBranches() {
 
 		// Conditional branch (immediate) page c4-238
 		// page C6-721
-		case 0x54F00000:
-			//o1 = 0 e o0 = 0
-			A = PC;
-			imm9 = (IR & 0x00FFFFE0) >> 7;
+		// case 0x54F00000:
+		// 	//o1 = 0 e o0 = 0
+		// 	A = PC;
+		// 	imm9 = (IR & 0x00FFFFE0) >> 7;
 
-			// atribuir ALUctrl
-			ALUctrl = ALUctrlFlag::ADD;
+		// 	// atribuir ALUctrl
+		// 	ALUctrl = ALUctrlFlag::ADD;
 			
-			// atribuir MEMctrl
-			MEMctrl = MEMctrlFlag::MEM_NONE;
+		// 	// atribuir MEMctrl
+		// 	MEMctrl = MEMctrlFlag::MEM_NONE;
 			
-			// atribuir WBctrl
-			WBctrl = WBctrlFlag::RegWrite;
+		// 	// atribuir WBctrl
+		// 	WBctrl = WBctrlFlag::RegWrite;
 			
-			// atribuir MemtoReg
-			MemtoReg = false;
-			return 0;
+		// 	// atribuir MemtoReg
+		// 	MemtoReg = false;
+		// 	return 0;
 
 	}
 
