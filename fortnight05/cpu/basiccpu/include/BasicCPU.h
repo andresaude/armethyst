@@ -82,7 +82,7 @@ class BasicCPU: public CPU
 		//		de 32 bits, com nomes W0-W30.
 		uint64_t R[31];
 		uint64_t *Rd;
-		const uint64_t ZR = 0;
+		uint64_t ZR = 0;
 		
 		// Banco de registradores ponto flutuante
 		//	Declara os registradores Vn descritos no documento
