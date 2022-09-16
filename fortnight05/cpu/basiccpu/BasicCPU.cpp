@@ -219,7 +219,8 @@ int BasicCPU::decodeDataProcImm() {
  *		   1: se a instrução não estiver implementada.
  */
 int BasicCPU::decodeBranches() {
-	unsigned int op, n, m;
+	unsigned int op, n, m, imm9;
+	unsigned int cond;
 	int32_t BW;
 
 	//Unconditional branch (immediate)
@@ -292,6 +293,26 @@ int BasicCPU::decodeBranches() {
 			// atribuir MemtoReg
 			MemtoReg = false;
 
+			return 0;
+
+		// Conditional branch (immediate) page c4-238
+		// page C6-721
+		case 0x54F00000:
+			//o1 = 0 e o0 = 0
+			A = PC;
+			imm9 = (IR & 0x00FFFFE0) >> 7;
+
+			// atribuir ALUctrl
+			ALUctrl = ALUctrlFlag::ADD;
+			
+			// atribuir MEMctrl
+			MEMctrl = MEMctrlFlag::MEM_NONE;
+			
+			// atribuir WBctrl
+			WBctrl = WBctrlFlag::RegWrite;
+			
+			// atribuir MemtoReg
+			MemtoReg = false;
 			return 0;
 
 	}
@@ -626,7 +647,6 @@ int BasicCPU::EXI()
 			ALUout = A + B;
 			return 0;
 		default:
-			// Controle não implementado
 			return 1;
 	}
 	
