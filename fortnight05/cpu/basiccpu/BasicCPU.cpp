@@ -233,13 +233,13 @@ int BasicCPU::decodeBranches() {
  */
 int BasicCPU::decodeLoadStore() {
 	unsigned int n, d;
-	unsigned int option, s, m;
+	unsigned int option, s, m;// imm9;
 	int BW;
 
 	switch(IR & 0xFFE00000){//0xFFC00000
 		// Load Register Signed Word - C6.2.131 LDRSW (immediate)
 		// Unsigned offset page C6-913
-		case  0xB9800000:
+		case 0xB9800000:
 			B = (IR & 0x003FFC00) >> 8;	// imm12 = <pimm>/4 entao multiplica por 4
 
 			n = (IR & 0x000003E0) >> 5;
@@ -257,6 +257,34 @@ int BasicCPU::decodeLoadStore() {
 			
 			// atribuir MEMctrl
 			MEMctrl = MEMctrlFlag::READ64;
+			
+			// atribuir WBctrl
+			WBctrl = WBctrlFlag::RegWrite;
+			
+			// atribuir MemtoReg
+			MemtoReg = true;
+
+			return 0;
+
+		//Load register immediate - C6.2.119 LDR (immediate)
+		//32-bit variant page c6-886
+		case 0xB9400000:
+			B = (IR & 0x003FFC00) >> 8;
+			n = (IR & 0x000003E0) >> 5;
+
+			if(n == 31)
+				A = SP;
+			else
+				A = getX(n);
+
+			d = (IR & 0x0000001F);
+			Rd = &(R[d]);
+
+			// atribuir ALUctrl
+			ALUctrl = ALUctrlFlag::ADD;
+			
+			// atribuir MEMctrl
+			MEMctrl = MEMctrlFlag::READ32;
 			
 			// atribuir WBctrl
 			WBctrl = WBctrlFlag::RegWrite;
