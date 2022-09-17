@@ -101,7 +101,7 @@ int main()
 	//~ test04(cpu, memory, TEST_FILE_04);
 	//~ test05(cpu, memory, TEST_FILE_05);
 	test06(cpu, memory, TEST_FILE_06);
-	//~ test07(cpu, memory, TEST_FILE_07);
+	test07(cpu, memory, TEST_FILE_07);
 	
 	return 0;
 }
@@ -659,7 +659,8 @@ void test07(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	//
 	// Test CMP
 	//
-	instruction = "cmp w0, 9";
+
+	/*instruction = "cmp w0, 9";
 	startAddress = 0x88; // endereço da instrução
 	xpctdIR = 0x7100241F;
 	xpctdA = 7; 	// valor 7 < 9, para que o branch de BLE seja tomado
@@ -672,7 +673,7 @@ void test07(BasicCPUTest* cpu, BasicMemoryTest* memory, string fname)
 	xpctdALUout = xpctdA - xpctdB;
 	
 	CALLTEST();
-	RESETTEST();
+	RESETTEST();*/
 
 	//
 	// Test ble .L3 (linha 53)

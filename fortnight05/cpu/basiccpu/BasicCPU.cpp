@@ -219,9 +219,9 @@ int BasicCPU::decodeDataProcImm() {
  *		   1: se a instrução não estiver implementada.
  */
 int BasicCPU::decodeBranches() {
-	unsigned int op, n, m, imm9;
+	unsigned int op, n, m;
 	unsigned int cond;
-	int32_t BW;
+	int32_t BW, imm9;
 
 	//Unconditional branch (immediate)
 	switch(IR & 0xFFF00000){ //0xFF000000
@@ -297,23 +297,36 @@ int BasicCPU::decodeBranches() {
 
 		// Conditional branch (immediate) page c4-238
 		// page C6-721
-		// case 0x54F00000:
-		// 	//o1 = 0 e o0 = 0
-		// 	A = PC;
-		// 	imm9 = (IR & 0x00FFFFE0) >> 7;
+		case 0x54F00000:
+			//o1 = 0 e o0 = 0
+			A = PC;
 
-		// 	// atribuir ALUctrl
-		// 	ALUctrl = ALUctrlFlag::ADD;
+			cond = (IR & 0x0000000F);
+			switch (cond){
+				case 13:
+						imm9 = (IR & 0x00FFFFE0) >> 3;
+						imm9 = imm9 | 0xFFFF0000;
+						B = imm9; 
+					if(!(Z_flag == 0 && N_flag == V_flag)){
+						imm9 = (IR & 0x00FFFFE0) >> 5;
+						//imm9 = imm9 | 0xF0000000;
+						B = imm9; 
+					}
+					break;
+			}
+
+			// atribuir ALUctrl
+			ALUctrl = ALUctrlFlag::ADD;
 			
-		// 	// atribuir MEMctrl
-		// 	MEMctrl = MEMctrlFlag::MEM_NONE;
+			// atribuir MEMctrl
+			MEMctrl = MEMctrlFlag::MEM_NONE;
 			
-		// 	// atribuir WBctrl
-		// 	WBctrl = WBctrlFlag::RegWrite;
+			// atribuir WBctrl
+			WBctrl = WBctrlFlag::RegWrite;
 			
-		// 	// atribuir MemtoReg
-		// 	MemtoReg = false;
-		// 	return 0;
+			// atribuir MemtoReg
+			MemtoReg = false;
+			return 0;
 
 	}
 
