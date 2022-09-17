@@ -221,7 +221,7 @@ int BasicCPU::decodeDataProcImm() {
 int BasicCPU::decodeBranches() {
 	unsigned int op, n, m;
 	unsigned int cond;
-	int32_t BW, imm9;
+	int64_t BW, imm9;
 
 	//Unconditional branch (immediate)
 	switch(IR & 0xFFF00000){ //0xFF000000
@@ -232,6 +232,8 @@ int BasicCPU::decodeBranches() {
 				case 0:
 					A = PC;
 					B = (IR & 0x03FFFFFF) << 2;
+					Rd = &PC;
+
 					break;
 			}
 
@@ -255,9 +257,13 @@ int BasicCPU::decodeBranches() {
 			switch(op){
 				case 0:
 					A = PC;
-					BW = (IR & 0x03FFFFFF) << 2;
-					BW = BW | 0xF0000000;
+					// BW = (IR & 0x03FFFFFF) << 2;
+					// BW = BW | 0xF0000000;
+					// B = BW;
+					Rd = &PC;
+					BW = ((int64_t)((IR & 0x03FFFFFF) << 6)) >> 4;
 					B = BW;
+
 					break;
 			}
 
@@ -280,6 +286,7 @@ int BasicCPU::decodeBranches() {
 			B = (IR & 0x0000001F);
 			n = (IR & 0x000003E0) >> 5;
 			A = getX(n);
+			Rd = &PC;
 
 			// atribuir ALUctrl
 			ALUctrl = ALUctrlFlag::ADD;
@@ -300,18 +307,20 @@ int BasicCPU::decodeBranches() {
 		case 0x54F00000:
 			//o1 = 0 e o0 = 0
 			A = PC;
-
+			Rd = &PC;
 			cond = (IR & 0x0000000F);
 			switch (cond){
 				case 13:
-						imm9 = (IR & 0x00FFFFE0) >> 3;
-						imm9 = imm9 | 0xFFFF0000;
-						B = imm9; 
+						// imm9 = ((int64_t)((IR & 0x00FFFFE0) << 8)) >> 4;
+						// B = imm9; 
 					if(!(Z_flag == 0 && N_flag == V_flag)){
-						imm9 = (IR & 0x00FFFFE0) >> 5;
-						//imm9 = imm9 | 0xF0000000;
+						imm9 = ((int64_t)((IR & 0x00FFFFE0) << 8)) >> 4;
 						B = imm9; 
 					}
+					else{
+						B = 0;
+					}
+					
 					break;
 			}
 
