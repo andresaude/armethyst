@@ -261,7 +261,8 @@ int BasicCPU::decodeBranches() {
 					// BW = BW | 0xF0000000;
 					// B = BW;
 					Rd = &PC;
-					BW = ((int64_t)((IR & 0x03FFFFFF) << 6)) >> 4;
+					//BW = ((int64_t)((IR & 0x03FFFFFF) << 6)) >> 4;
+					BW = ((int64_t)(((int32_t)(IR & 0x03FFFFFF)) << 6)) >> 4;
 					B = BW;
 
 					break;
@@ -311,15 +312,15 @@ int BasicCPU::decodeBranches() {
 			cond = (IR & 0x0000000F);
 			switch (cond){
 				case 13:
-						// imm9 = ((int64_t)((IR & 0x00FFFFE0) << 8)) >> 4;
-						// B = imm9; 
+						// imm9 = ((int64_t)(((int32_t)(IR & 0x00FFFFE0)) << 8)) >> 11;
+						// B = imm9;  
 					if(!(Z_flag == 0 && N_flag == V_flag)){
-						imm9 = ((int64_t)((IR & 0x00FFFFE0) << 8)) >> 4;
+						imm9 = ((int64_t)(((int32_t)(IR & 0x00FFFFE0)) << 8)) >> 11;
 						B = imm9; 
 					}
-					else{
-						B = 0;
-					}
+					// else{
+					// 	B = 0;
+					// }
 					
 					break;
 			}
